@@ -23,8 +23,9 @@ export default function Header() {
       <nav style={{ display: "flex", gap: "24px", color: "var(--text-secondary)", fontWeight: 500, alignItems: "center" }}>
         <Link href="#labs" style={{ padding: "8px 12px", borderRadius: "4px" }}>Labs</Link>
         <Link href="#consulting" style={{ padding: "8px 12px", borderRadius: "4px" }}>Consultoria</Link>
+        <a href="https://ecommerce.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>E-commerce</a>
         <a href="https://crmm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>CRM</a>
-        <a href="https://delivery.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--accent-primary)", fontWeight: 600 }}>Delivery SaaS</a>
+        <a href="https://delivery.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>Delivery SaaS</a>
         <Link href="#contact" className="btn-primary" style={{ padding: "8px 16px", color: "#fff" }}>Contato</Link>
       </nav>
     </header>

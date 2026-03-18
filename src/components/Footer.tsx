@@ -19,9 +19,9 @@ export default function Footer() {
           <div>
             <h4 style={{ fontWeight: 600, marginBottom: "16px", fontSize: "14px" }}>Soluções</h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "12px", fontSize: "14px" }} className="text-secondary">
-              <li><a href="https://crmm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-primary)", fontWeight: 500 }}>Infinity CRM</a></li>
+              <li><a href="https://ecommerce.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-primary)", fontWeight: 500 }}>E-commerce Customizado</a></li>
+              <li><a href="https://crmm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-primary)", fontWeight: 500 }}>Infinity CRM</a></li>
               <li><a href="https://delivery.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-primary)", fontWeight: 500 }}>Infinity Delivery SaaS</a></li>
-              <li><a href="#consulting">E-commerce B2B/B2C</a></li>
               <li><a href="#consulting">Cloud & DevOps</a></li>
               <li><a href="#consulting">Growth Marketing</a></li>
               <li><a href="#labs">Pesquisa & AI (Labs)</a></li>
