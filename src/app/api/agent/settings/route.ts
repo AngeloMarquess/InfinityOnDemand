@@ -30,6 +30,11 @@ export async function GET(request: NextRequest) {
         instagram_token: '',
         meta_ads_token: '',
         meta_ad_account_id: '',
+        flash_rules: '',
+        flash_products: '',
+        flash_pricing: '',
+        flash_faq: '',
+        flash_restrictions: '',
       },
     });
   } catch {
@@ -57,6 +62,11 @@ export async function POST(request: NextRequest) {
       instagram_token: body.instagram_token || '',
       meta_ads_token: body.meta_ads_token || '',
       meta_ad_account_id: body.meta_ad_account_id || '',
+      flash_rules: body.flash_rules || '',
+      flash_products: body.flash_products || '',
+      flash_pricing: body.flash_pricing || '',
+      flash_faq: body.flash_faq || '',
+      flash_restrictions: body.flash_restrictions || '',
       updated_at: new Date().toISOString(),
     };
 

@@ -27,11 +27,11 @@ interface Totals {
 
 /* ─── Data ─── */
 const goals = [
-  { metric: 'Seguidores', current: 555, target: 800, unit: '', icon: '👥', color: '#8B5CF6' },
-  { metric: 'Engajamento', current: 0.66, target: 2.5, unit: '%', icon: '📈', color: '#00DB79' },
-  { metric: 'Comentários/post', current: 0.03, target: 3, unit: '', icon: '💬', color: '#F59E0B' },
-  { metric: 'Stories/dia', current: 0, target: 3, unit: '', icon: '📱', color: '#EC4899' },
-  { metric: 'Posts/semana', current: 1.4, target: 5, unit: '', icon: '📅', color: '#06B6D4' },
+  { metric: 'Seguidores', current: 556, target: 1000, unit: '', icon: '👥', color: '#8B5CF6' },
+  { metric: 'Engajamento', current: 0.54, target: 2.5, unit: '%', icon: '📈', color: '#00DB79' },
+  { metric: 'Comentários/post', current: 0.05, target: 3, unit: '', icon: '💬', color: '#F59E0B' },
+  { metric: 'Stories/dia', current: 3, target: 3, unit: '', icon: '📱', color: '#EC4899' },
+  { metric: 'Posts/semana', current: 2.3, target: 5, unit: '', icon: '📅', color: '#06B6D4' },
 ];
 
 const postHistory = [
@@ -41,7 +41,7 @@ const postHistory = [
   { period: 'Jun/25', posts: 0 }, { period: 'Jul/25', posts: 0 }, { period: 'Ago/25', posts: 0 },
   { period: 'Set/25', posts: 1 }, { period: 'Out/25', posts: 0 }, { period: 'Nov/25', posts: 0 },
   { period: 'Dez/25', posts: 0 }, { period: 'Jan/26', posts: 0 }, { period: 'Fev/26', posts: 0 },
-  { period: 'Mar/26', posts: 7 },
+  { period: 'Mar/26', posts: 9 },
 ];
 
 const weeklyPlan = [
@@ -469,9 +469,9 @@ export default function EvolucaoTab() {
           <div>
             <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginBottom: '6px' }}>Meta 30 Dias</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>👥 555 → <strong style={{ color: '#00DB79' }}>800</strong> seguidores</span>
-              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>📈 0.66% → <strong style={{ color: '#00DB79' }}>2.5%</strong> engajamento</span>
-              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>📅 1.4 → <strong style={{ color: '#00DB79' }}>5</strong> posts/sem</span>
+              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>👥 556 → <strong style={{ color: '#00DB79' }}>1.000</strong> seguidores</span>
+              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>📈 0.54% → <strong style={{ color: '#00DB79' }}>2.5%</strong> engajamento</span>
+              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>📅 2.3 → <strong style={{ color: '#00DB79' }}>5</strong> posts/sem</span>
             </div>
           </div>
         </div>

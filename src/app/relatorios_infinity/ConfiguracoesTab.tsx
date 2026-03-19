@@ -14,6 +14,11 @@ interface Settings {
   instagram_token: string;
   meta_ads_token: string;
   meta_ad_account_id: string;
+  flash_rules: string;
+  flash_products: string;
+  flash_pricing: string;
+  flash_faq: string;
+  flash_restrictions: string;
 }
 
 const glassCard: React.CSSProperties = {
@@ -58,6 +63,11 @@ export default function ConfiguracoesTab() {
     instagram_token: '',
     meta_ads_token: '',
     meta_ad_account_id: '',
+    flash_rules: '',
+    flash_products: '',
+    flash_pricing: '',
+    flash_faq: '',
+    flash_restrictions: '',
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -309,6 +319,161 @@ export default function ConfiguracoesTab() {
             Nenhum concorrente adicionado. Adicione para o agente comparar estratégias.
           </p>
         )}
+      </div>
+
+      {/* ── Flash SDR Configuration ── */}
+      <div style={{
+        ...glassCard,
+        background: 'linear-gradient(135deg, rgba(0,219,121,0.06) 0%, rgba(0,170,255,0.03) 100%)',
+        border: '1px solid rgba(0,219,121,0.15)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+          <span style={{ fontSize: '28px' }}>⚡</span>
+          <div>
+            <h3 style={{ fontSize: '20px', fontWeight: 800 }}>Flash SDR — Configuração do Agente</h3>
+            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>Personalize como o Flash responde aos leads no WhatsApp</p>
+          </div>
+        </div>
+        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', marginBottom: '24px', lineHeight: 1.6 }}>
+          Tudo que você escrever aqui será injetado no prompt do Flash. Quanto mais contexto e regras, mais preciso e personalizado ele será.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+          {/* Products */}
+          <div>
+            <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '16px' }}>📦</span> Catálogo de Produtos / Serviços
+            </label>
+            <textarea
+              value={settings.flash_products}
+              onChange={e => update('flash_products', e.target.value)}
+              placeholder={`Liste seus produtos/serviços com descrições. Exemplo:
+
+- Plano Starter: Cardápio digital + painel de pedidos. Ideal para quem está começando.
+- Plano Pro: Tudo do Starter + app do entregador + rastreio ao vivo + relatórios.
+- Plano Enterprise: Tudo do Pro + multi-lojas + API + integrações customizadas.`}
+              rows={6}
+              style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }}
+              onFocus={e => { e.target.style.borderColor = 'rgba(0,219,121,0.4)'; }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+            />
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '4px' }}>O Flash usará essas informações para recomendar o produto certo para cada lead.</p>
+          </div>
+
+          {/* Pricing */}
+          <div>
+            <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '16px' }}>💰</span> Tabela de Preços
+            </label>
+            <textarea
+              value={settings.flash_pricing}
+              onChange={e => update('flash_pricing', e.target.value)}
+              placeholder={`Coloque sua tabela de preços. Exemplo:
+
+- Starter: R$ 197/mês (até 200 pedidos)
+- Pro: R$ 397/mês (pedidos ilimitados + app entregador)
+- Enterprise: Sob consulta (volume e customizações)
+- Setup: R$ 500 (único, inclui migração de cardápio)
+
+Obs: Desconto de 10% no plano anual.`}
+              rows={5}
+              style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }}
+              onFocus={e => { e.target.style.borderColor = 'rgba(0,219,121,0.4)'; }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+            />
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '4px' }}>Se preenchido, o Flash poderá informar preços diretamente. Se vazio, ele convida para conversar com equipe.</p>
+          </div>
+
+          {/* FAQ */}
+          <div>
+            <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '16px' }}>❓</span> Perguntas Frequentes (FAQ)
+            </label>
+            <textarea
+              value={settings.flash_faq}
+              onChange={e => update('flash_faq', e.target.value)}
+              placeholder={`Perguntas e respostas que o Flash deve saber. Exemplo:
+
+P: Qual o prazo de implantação?
+R: A implantação leva de 3 a 7 dias úteis, dependendo do volume de produtos.
+
+P: Posso usar meu próprio domínio?
+R: Sim! Configuramos um domínio personalizado para cada cliente.
+
+P: Tem contrato de fidelidade?
+R: Não. Todos os planos são mensais sem fidelidade.`}
+              rows={6}
+              style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }}
+              onFocus={e => { e.target.style.borderColor = 'rgba(0,219,121,0.4)'; }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+            />
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '4px' }}>O Flash responderá automaticamente a essas perguntas sem precisar de intervenção humana.</p>
+          </div>
+
+          {/* Custom Rules */}
+          <div>
+            <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '16px' }}>📋</span> Regras Personalizadas
+            </label>
+            <textarea
+              value={settings.flash_rules}
+              onChange={e => update('flash_rules', e.target.value)}
+              placeholder={`Regras que o Flash deve seguir. Exemplo:
+
+- Sempre mencione que temos suporte 24h
+- Quando o lead perguntar sobre integração com iFood, diga que temos integração nativa
+- Se o lead mencionar Rappi ou iFood, destaque que nossa plataforma elimina as taxas de marketplace
+- Sempre ofereça uma demo gratuita antes de falar de preço
+- Se o lead for de Recife, mencione que temos equipe local`}
+              rows={5}
+              style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }}
+              onFocus={e => { e.target.style.borderColor = 'rgba(0,219,121,0.4)'; }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+            />
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '4px' }}>Regras extras que guiarão o comportamento do Flash em cada conversa.</p>
+          </div>
+
+          {/* Restrictions */}
+          <div>
+            <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '16px' }}>🚫</span> Restrições / O que NÃO fazer
+            </label>
+            <textarea
+              value={settings.flash_restrictions}
+              onChange={e => update('flash_restrictions', e.target.value)}
+              placeholder={`Coisas que o Flash NÃO deve fazer. Exemplo:
+
+- Nunca falar mal de concorrentes diretamente
+- Nunca prometer prazo inferior a 3 dias úteis
+- Não oferecer descontos superiores a 15%
+- Não mencionar funcionalidades que ainda estão em desenvolvimento
+- Nunca compartilhar informações de outros clientes`}
+              rows={4}
+              style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }}
+              onFocus={e => { e.target.style.borderColor = 'rgba(239,68,68,0.4)'; }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+            />
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '4px' }}>Defina limites claros para o agente. Ele seguirá rigorosamente estas restrições.</p>
+          </div>
+
+        </div>
+
+        {/* Preview prompt size */}
+        <div style={{
+          marginTop: '20px', padding: '12px 16px', borderRadius: '10px',
+          backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        }}>
+          <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
+            📊 Tamanho do contexto: <strong style={{ color: 'rgba(255,255,255,0.6)' }}>
+              {(settings.flash_products + settings.flash_pricing + settings.flash_faq + settings.flash_rules + settings.flash_restrictions).length}
+            </strong> caracteres
+          </span>
+          <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)' }}>
+            Recomendado: até 3.000 caracteres
+          </span>
+        </div>
       </div>
 
       {/* OpenAI Key Guide */}
