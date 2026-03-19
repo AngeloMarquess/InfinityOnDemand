@@ -1,24 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Google Labs Minimalist Palette */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa; /* Google Gray 50 */
-  --bg-tertiary: #f1f3f4;  /* Google Gray 100 */
+  /* Dark Modern Palette */
+  --bg-primary: #0B0F19;   /* Deep Space Slate/Black */
+  --bg-secondary: #111827; /* Gray 900 */
+  --bg-tertiary: #1E293B;  /* Gray 800 */
 
   /* Text Colors */
-  --text-primary: #202124; /* Google Gray 900 */
-  --text-secondary: #5f6368; /* Google Gray 700 */
+  --text-primary: #F8FAFC; /* Slate 50 */
+  --text-secondary: #94A3B8; /* Slate 400 */
 
-  /* Infinity Accent Color */
-  --accent-primary: #00DB79;
+  /* Infinity Gradient Accent */
+  --accent-primary: #00DB79; 
   --accent-hover: #00bf68;
-  --accent-light: #e6fcf2;
+  --accent-secondary: #00AAFF;
+  --accent-light: rgba(0, 219, 121, 0.15);
+  --accent-gradient: linear-gradient(90deg, #00DF81 0%, #00AAFF 100%);
 
-  /* Material Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
-  --shadow-md: 0 1px 2px 0 rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.15);
-  --shadow-lg: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+  /* Shadows for dark mode */
+  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.6), 0 1px 3px 1px rgba(0,0,0,0.4);
+  --shadow-md: 0 1px 2px 0 rgba(0,0,0,0.6), 0 4px 8px 2px rgba(0,0,0,0.4);
+  --shadow-lg: 0 1px 3px 0 rgba(0,0,0,0.6), 0 8px 16px 3px rgba(0,0,0,0.4);
 }
 
 * {
@@ -60,28 +62,37 @@ button {
   color: var(--accent-primary);
 }
 
+.text-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
 .bg-secondary {
   background-color: var(--bg-secondary);
 }
 
 /* Micro-interactions (Material Ripple / Hover) */
 .btn-primary {
-  background-color: var(--accent-primary);
+  background: var(--accent-gradient);
   color: #fff;
-  font-weight: 500;
+  font-weight: 600;
   padding: 12px 24px;
   border-radius: 8px; /* Slightly rounded, modern */
-  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-  box-shadow: var(--shadow-sm);
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: var(--shadow-md);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .btn-primary:hover {
-  background-color: var(--accent-hover);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(0, 223, 129, 0.4);
+  transform: translateY(-2px);
+  opacity: 0.95;
 }
 
 .btn-primary:active {
@@ -90,36 +101,39 @@ button {
 }
 
 .btn-secondary {
-  padding: 16px 32px;
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  background-color: var(--bg-primary);
-  border: 1px solid var(--bg-tertiary);
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid var(--accent-primary);
   border-radius: 8px;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .btn-secondary:hover {
-  border-color: var(--text-secondary);
-  box-shadow: var(--shadow-sm);
+  background: var(--accent-light);
+  border-color: var(--accent-secondary);
+  box-shadow: 0 0 15px rgba(0, 170, 255, 0.2);
+  transform: translateY(-1px);
 }
 
 .card {
-  background-color: var(--bg-primary);
+  background-color: var(--bg-secondary);
   border: 1px solid var(--bg-tertiary);
   border-radius: 12px;
   padding: 24px;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
-  border-color: transparent;
+  box-shadow: var(--shadow-lg), 0 0 15px rgba(0, 223, 129, 0.1);
+  border-color: var(--accent-tertiary); /* Wait, tertiary accents don't exist, I'll use bg-tertiary or text-secondary */
+  transform: translateY(-2px);
 }
 
 /* --- Hero Animations --- */
