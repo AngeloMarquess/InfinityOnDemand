@@ -47,7 +47,7 @@ export async function POST(request: Request) {
             .update({
               plan_id: planId,
               subscription_status: 'active',
-              stripe_subscription_id: (session as Record<string, unknown>).subscription as string,
+              stripe_subscription_id: String((session as unknown as { subscription?: string }).subscription || ''),
               subscription_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
             })
             .eq('id', userId);
@@ -65,8 +65,8 @@ export async function POST(request: Request) {
       }
 
       case 'invoice.paid': {
-        const invoice = event.data.object as Stripe.Invoice;
-        const subscriptionId = invoice.subscription as string;
+        const invoiceObj = event.data.object as unknown as { subscription?: string; id: string; amount_paid?: number };
+        const subscriptionId = invoiceObj.subscription;
 
         if (subscriptionId) {
           const subscription = await stripe.subscriptions.retrieve(subscriptionId);
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
               .from('crm_profiles')
               .update({
                 subscription_status: 'active',
-                subscription_expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
+                subscription_expires_at: new Date(((subscription as unknown as { current_period_end: number }).current_period_end) * 1000).toISOString(),
               })
               .eq('id', userId);
 
@@ -87,8 +87,8 @@ export async function POST(request: Request) {
                 user_id: userId,
                 plan_id: planId,
                 event_type: 'renewed',
-                stripe_invoice_id: invoice.id,
-                amount: invoice.amount_paid || 0,
+                stripe_invoice_id: invoiceObj.id,
+                amount: invoiceObj.amount_paid || 0,
               });
             }
           }
@@ -129,7 +129,7 @@ export async function POST(request: Request) {
             .from('crm_profiles')
             .update({
               subscription_status: status,
-              subscription_expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
+              subscription_expires_at: new Date(((subscription as unknown as { current_period_end: number }).current_period_end) * 1000).toISOString(),
             })
             .eq('id', userId);
         }
