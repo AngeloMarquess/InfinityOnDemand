@@ -73,20 +73,40 @@ export async function POST(request: Request) {
     let priceId = plan.stripe_price_id;
 
     if (!priceId) {
-      // Create product + price in Stripe
-      const product = await stripe.products.create({
-        name: `CRM Infinity — Plano ${plan.name}`,
-        description: plan.description || undefined,
-      });
+      // Use existing Stripe product or create new one
+      const productId = plan.stripe_product_id;
 
-      const price = await stripe.prices.create({
-        product: product.id,
-        unit_amount: plan.price_monthly,
-        currency: 'brl',
-        recurring: { interval: 'month' },
-      });
+      if (productId) {
+        // Product exists, just create a price for it
+        const price = await stripe.prices.create({
+          product: productId,
+          unit_amount: plan.price_monthly,
+          currency: 'brl',
+          recurring: { interval: 'month' },
+        });
+        priceId = price.id;
+      } else {
+        // Create product + price in Stripe
+        const product = await stripe.products.create({
+          name: `CRM Infinity — Plano ${plan.name}`,
+          description: plan.description || undefined,
+        });
 
-      priceId = price.id;
+        const price = await stripe.prices.create({
+          product: product.id,
+          unit_amount: plan.price_monthly,
+          currency: 'brl',
+          recurring: { interval: 'month' },
+        });
+
+        priceId = price.id;
+
+        // Save product ID
+        await supabase
+          .from('crm_plans')
+          .update({ stripe_product_id: product.id })
+          .eq('id', plan_id);
+      }
 
       // Save Stripe price ID back to plan
       await supabase
