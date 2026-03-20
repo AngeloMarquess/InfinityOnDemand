@@ -8,12 +8,24 @@ function getServiceSupabase() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 }
 
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+}
+
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders() });
+}
+
 export async function POST(request: Request) {
   try {
-    const { plan_id, user_id, success_url, cancel_url } = await request.json();
+    const { plan_id, user_id, user_email, success_url, cancel_url } = await request.json();
 
     if (!plan_id || !user_id) {
-      return NextResponse.json({ error: 'plan_id e user_id são obrigatórios.' }, { status: 400 });
+      return NextResponse.json({ error: 'plan_id e user_id são obrigatórios.' }, { status: 400, headers: corsHeaders() });
     }
 
     const supabase = getServiceSupabase();
@@ -26,11 +38,11 @@ export async function POST(request: Request) {
       .single();
 
     if (planError || !plan) {
-      return NextResponse.json({ error: 'Plano não encontrado.' }, { status: 404 });
+      return NextResponse.json({ error: 'Plano não encontrado.' }, { status: 404, headers: corsHeaders() });
     }
 
     if (plan.price_monthly === 0) {
-      return NextResponse.json({ error: 'Plano gratuito não precisa de checkout.' }, { status: 400 });
+      return NextResponse.json({ error: 'Plano gratuito não precisa de checkout.' }, { status: 400, headers: corsHeaders() });
     }
 
     // Get or create Stripe customer
@@ -41,10 +53,11 @@ export async function POST(request: Request) {
       .single();
 
     let customerId = profile?.stripe_customer_id;
+    const emailToUse = profile?.email || user_email;
 
     if (!customerId) {
       const customer = await stripe.customers.create({
-        email: profile?.email || undefined,
+        email: emailToUse || undefined,
         metadata: { supabase_user_id: user_id },
       });
       customerId = customer.id;
@@ -83,13 +96,14 @@ export async function POST(request: Request) {
     }
 
     // Create Checkout Session
+    const crmDomain = 'https://crmm.infinityondemand.com.br';
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: success_url || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3099'}/crm/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancel_url || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3099'}/crm/pricing`,
+      success_url: success_url || `${crmDomain}/dashboard?checkout=success`,
+      cancel_url: cancel_url || `${crmDomain}/?checkout=cancelled`,
       metadata: {
         supabase_user_id: user_id,
         plan_id: plan_id,
@@ -102,9 +116,9 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ url: session.url, session_id: session.id });
+    return NextResponse.json({ url: session.url, session_id: session.id }, { headers: corsHeaders() });
   } catch (err) {
     console.error('Stripe checkout error:', err);
-    return NextResponse.json({ error: 'Erro ao criar sessão de checkout.' }, { status: 500 });
+    return NextResponse.json({ error: 'Erro ao criar sessão de checkout.' }, { status: 500, headers: corsHeaders() });
   }
 }
