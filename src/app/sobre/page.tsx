@@ -142,8 +142,8 @@ export default function SobrePage() {
               display: "flex",
               flexDirection: "column",
             }}>
-              <div style={{ height: "340px", overflow: "hidden" }}>
-                <img src="/ciclo-100k.jpg" alt="Premiação Ciclo 100K — Infinity OnDemand" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <div style={{ overflow: "hidden" }}>
+                <img src="/ciclo-100k.jpg" alt="Premiação Ciclo 100K — Infinity OnDemand" style={{ width: "100%", height: "auto", display: "block" }} />
               </div>
               <div style={{ padding: "32px", backgroundColor: "var(--bg-primary)", flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
