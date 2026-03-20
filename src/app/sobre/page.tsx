@@ -81,6 +81,9 @@ export default function SobrePage() {
                 <p>
                   Hoje, a Infinity desenvolve plataformas SaaS proprietárias, sistemas de gestão integrados e ecossistemas completos de vendas online — sempre movida pela mesma inquietude daquela noite no posto.
                 </p>
+                <p>
+                  Angelo também é fundador da <a href="https://innoveda.com.br/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-primary)", fontWeight: 600, textDecoration: "none", borderBottom: "1px solid rgba(0,219,121,0.3)" }}>Innoveda</a>, e-commerce especializado em <strong style={{ color: "var(--text-primary)" }}>smartphones</strong> e <strong style={{ color: "var(--text-primary)" }}>smartwatches</strong> — prova viva de que a Infinity pratica o que prega, operando seu próprio e-commerce com a mesma tecnologia que oferece aos clientes.
+                </p>
               </div>
             </div>
           </div>
