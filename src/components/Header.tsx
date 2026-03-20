@@ -42,6 +42,7 @@ export default function Header() {
 
         {/* Desktop nav */}
         <nav className="nav-desktop">
+          <Link href="/sobre" style={{ padding: "8px 12px", borderRadius: "4px" }}>Sobre</Link>
           <Link href="#labs" style={{ padding: "8px 12px", borderRadius: "4px" }}>Labs</Link>
           <Link href="#consulting" style={{ padding: "8px 12px", borderRadius: "4px" }}>Consultoria</Link>
           <a href="https://ecommerce.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>E-commerce</a>
@@ -126,6 +127,7 @@ export default function Header() {
         {/* Navigation links */}
         <nav className="mobile-menu-links">
           <Link href="/" onClick={closeMenu}>Início</Link>
+          <Link href="/sobre" onClick={closeMenu}>Sobre nós</Link>
           <Link href="#labs" onClick={closeMenu}>Labs</Link>
           <Link href="#consulting" onClick={closeMenu}>Consultoria</Link>
           <a href="https://ecommerce.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" onClick={closeMenu}>

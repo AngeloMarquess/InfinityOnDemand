@@ -89,7 +89,7 @@ export default function Footer() {
           <div>
             <h4 style={{ fontWeight: 700, marginBottom: "20px", fontSize: "15px", color: "var(--text-primary)" }}>Empresa</h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "14px", fontSize: "14px" }}>
-              <li><a href="#about" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Sobre nós</a></li>
+              <li><a href="/sobre" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Sobre nós</a></li>
               <li><a href="#labs" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Pesquisa & AI (Labs)</a></li>
               <li><a href="#contact" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Carreiras</a></li>
               <li><a href="#contact" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Contato</a></li>
