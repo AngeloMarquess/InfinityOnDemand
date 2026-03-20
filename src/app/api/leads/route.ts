@@ -12,36 +12,36 @@ export async function POST(request: Request) {
       );
     }
 
-    // CRM Supabase — use service role key to bypass RLS
-    const crmUrl = process.env.CRM_SUPABASE_URL;
-    const crmServiceKey = process.env.CRM_SUPABASE_SERVICE_ROLE_KEY;
-    const crmUserId = process.env.CRM_OWNER_USER_ID;
+    // Use the Infinity Supabase (consolidated CRM tables with crm_ prefix)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const crmOwnerId = process.env.CRM_OWNER_USER_ID;
 
-    if (!crmUrl || !crmServiceKey || !crmUserId) {
-      console.error('Missing CRM Supabase env vars');
+    if (!supabaseUrl || !supabaseServiceKey || !crmOwnerId) {
+      console.error('Missing Supabase env vars for CRM lead insert');
       return NextResponse.json(
-        { error: 'Configuração do CRM ausente.' },
+        { error: 'Configuração do servidor ausente.' },
         { status: 500 }
       );
     }
 
-    const supabaseCRM = createClient(crmUrl, crmServiceKey);
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get the "Novo Lead" stage for this user
-    const { data: stages } = await supabaseCRM
-      .from('stages')
+    // Get the "Novo Lead" stage for the CRM owner
+    const { data: stages } = await supabase
+      .from('crm_stages')
       .select('id')
-      .eq('user_id', crmUserId)
+      .eq('user_id', crmOwnerId)
       .eq('name', 'Novo Lead')
       .limit(1);
 
     const stageId = stages?.[0]?.id || null;
 
-    // Insert contact as a new lead
-    const { data, error } = await supabaseCRM
-      .from('contacts')
+    // Insert contact as a new lead into crm_contacts
+    const { data, error } = await supabase
+      .from('crm_contacts')
       .insert({
-        user_id: crmUserId,
+        user_id: crmOwnerId,
         name: nome,
         email: email,
         phone: whatsapp,
