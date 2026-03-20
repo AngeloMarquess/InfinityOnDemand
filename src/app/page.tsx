@@ -9,20 +9,20 @@ export default function Home() {
       <Header />
 
       {/* Hero Section */}
-      <section className="bg-secondary" style={{ flex: 1, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", padding: "120px 48px", overflow: "hidden", minHeight: "80vh" }}>
+      <section className="bg-secondary section-padding" style={{ flex: 1, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", overflow: "hidden", minHeight: "80vh" }}>
         
         {/* Left Content */}
-        <div style={{ maxWidth: "600px", flex: "1 1 500px", zIndex: 1, marginBottom: "40px" }}>
+        <div style={{ maxWidth: "600px", flex: "1 1 300px", zIndex: 1, marginBottom: "40px", width: "100%" }}>
           <div style={{ display: "inline-block", padding: "6px 16px", backgroundColor: "var(--accent-light)", color: "var(--accent-primary)", borderRadius: "20px", fontSize: "14px", fontWeight: 600, marginBottom: "24px" }}>
             Novas tecnologias escaláveis
           </div>
-          <h1 style={{ fontSize: "64px", fontWeight: 700, letterSpacing: "-1.5px", lineHeight: 1.1, marginBottom: "24px", color: "var(--text-primary)" }}>
+          <h1 style={{ fontSize: "clamp(32px, 6vw, 64px)", fontWeight: 700, letterSpacing: "-1.5px", lineHeight: 1.1, marginBottom: "24px", color: "var(--text-primary)" }}>
             A engenharia por trás do <br /> <span className="text-accent">crescimento</span> digital.
           </h1>
-          <p className="text-secondary" style={{ fontSize: "20px", marginBottom: "40px", maxWidth: "480px", lineHeight: 1.6 }}>
+          <p className="text-secondary" style={{ fontSize: "clamp(16px, 2.5vw, 20px)", marginBottom: "40px", maxWidth: "480px", lineHeight: 1.6 }}>
             A Infinity OnDemand une o poder das tecnologias web mais avançadas com consultoria de negócios para transformar operações e-commerce e processos B2B.
           </p>
-          <div style={{ display: "flex", gap: "16px" }}>
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
             <a href="#consulting" className="btn-primary" style={{ padding: "16px 32px", fontSize: "18px", display: "inline-flex" }}>
               Ver Nossos Serviços
             </a>
@@ -33,11 +33,11 @@ export default function Home() {
         </div>
 
         {/* Floating Animation Elements (Right Side - Light Theme) */}
-        <div style={{ position: "relative", zIndex: 1, flex: "1 1 400px", height: "400px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ position: "relative", zIndex: 1, flex: "1 1 300px", height: "400px", display: "flex", alignItems: "center", justifyContent: "center" }}>
           
           {/* Main Chart Card */}
           <div className="animate-float" style={{ 
-            width: "360px", 
+            width: "100%", maxWidth: "360px", 
             backgroundColor: "var(--bg-secondary)", 
             borderRadius: "20px", 
             padding: "32px", 
@@ -91,16 +91,16 @@ export default function Home() {
       </section>
 
       {/* Labs Showcase Section */}
-      <section id="labs" style={{ padding: "120px 48px", backgroundColor: "var(--bg-primary)" }}>
+      <section id="labs" className="section-padding" style={{ backgroundColor: "var(--bg-primary)" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "60px" }}>
-            <h2 style={{ fontSize: "36px", fontWeight: 700, letterSpacing: "-1px", marginBottom: "16px" }}>Infinity Labs</h2>
+            <h2 style={{ fontSize: "clamp(28px, 4vw, 36px)", fontWeight: 700, letterSpacing: "-1px", marginBottom: "16px" }}>Infinity Labs</h2>
             <p className="text-secondary" style={{ fontSize: "18px", maxWidth: "600px", margin: "0 auto" }}>
               Nosso núcleo de pesquisa e desenvolvimento. Testamos tecnologias emergentes para criar soluções práticas para o seu e-commerce.
             </p>
           </div>
           
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "32px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: "32px" }}>
             {/* Project 1 */}
             <div className="card" style={{ display: "flex", flexDirection: "column" }}>
               <div style={{ height: "200px", borderRadius: "12px", marginBottom: "24px", overflow: "hidden" }}>
@@ -135,13 +135,13 @@ export default function Home() {
       </section>
 
       {/* Featured Product: CRM */}
-      <section style={{ padding: "80px 48px", backgroundColor: "var(--bg-primary)", borderTop: "1px solid var(--bg-tertiary)" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto", backgroundColor: "var(--bg-secondary)", borderRadius: "24px", padding: "64px", display: "flex", flexWrap: "wrap", gap: "48px", alignItems: "center", border: "1px solid var(--bg-tertiary)" }}>
+      <section className="section-padding-sm" style={{ backgroundColor: "var(--bg-primary)", borderTop: "1px solid var(--bg-tertiary)" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", backgroundColor: "var(--bg-secondary)", borderRadius: "24px", padding: "clamp(24px, 4vw, 64px)", display: "flex", flexWrap: "wrap", gap: "32px", alignItems: "center", border: "1px solid var(--bg-tertiary)" }}>
           <div style={{ flex: "1 1 400px" }}>
             <div style={{ display: "inline-block", padding: "6px 16px", backgroundColor: "var(--bg-primary)", color: "var(--accent-secondary)", borderRadius: "20px", fontSize: "14px", fontWeight: 600, marginBottom: "16px", boxShadow: "var(--shadow-sm)", border: "1px solid var(--bg-tertiary)" }}>
               Plataforma Proprietária
             </div>
-            <h2 style={{ fontSize: "40px", fontWeight: 700, letterSpacing: "-1px", lineHeight: 1.2, marginBottom: "24px", color: "var(--text-primary)" }}>
+            <h2 style={{ fontSize: "clamp(28px, 5vw, 40px)", fontWeight: 700, letterSpacing: "-1px", lineHeight: 1.2, marginBottom: "24px", color: "var(--text-primary)" }}>
               Infinity CRM
             </h2>
             <p style={{ fontSize: "18px", color: "var(--text-secondary)", marginBottom: "32px", lineHeight: 1.6 }}>
@@ -166,21 +166,21 @@ export default function Home() {
       </section>
 
       {/* Featured Product: Delivery SaaS */}
-      <section style={{ padding: "100px 48px", backgroundColor: "var(--bg-secondary)", borderTop: "1px solid var(--bg-tertiary)" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexWrap: "wrap", gap: "64px", alignItems: "center" }}>
+      <section className="section-padding-md" style={{ backgroundColor: "var(--bg-secondary)", borderTop: "1px solid var(--bg-tertiary)" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexWrap: "wrap", gap: "32px", alignItems: "center" }}>
           
           <div style={{ flex: "1 1 500px", order: 2 }}>
             <div style={{ display: "inline-block", padding: "6px 16px", backgroundColor: "var(--bg-primary)", color: "var(--accent-secondary)", borderRadius: "20px", fontSize: "14px", fontWeight: 600, marginBottom: "16px", border: "1px solid var(--bg-tertiary)" }}>
               Plataforma SaaS Multi-Tenant
             </div>
-            <h2 style={{ fontSize: "40px", fontWeight: 700, letterSpacing: "-1px", lineHeight: 1.2, marginBottom: "24px", color: "var(--text-primary)" }}>
+            <h2 style={{ fontSize: "clamp(28px, 5vw, 40px)", fontWeight: 700, letterSpacing: "-1px", lineHeight: 1.2, marginBottom: "24px", color: "var(--text-primary)" }}>
               Infinity Delivery OS
             </h2>
             <p style={{ fontSize: "18px", color: "var(--text-secondary)", marginBottom: "32px", lineHeight: 1.6 }}>
               O sistema definitivo para operações de delivery e pizzarias. Uma infraestrutura robusta, comercializada no modelo SaaS, com front-end reativo de ponta e painel administrativo 100% integrado ao Ponto de Venda.
             </p>
             
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "40px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(250px, 100%), 1fr))", gap: "24px", marginBottom: "40px" }}>
                <div>
                   <h4 style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}><span>📦</span> Gestão Kanban</h4>
                   <p className="text-secondary" style={{ fontSize: "14px", lineHeight: 1.5 }}>Painel admin com recursos modernos de <i style={{color: "var(--text-primary)"}}>drag-and-drop</i> para acompanhamento visual do fluxo de pedidos e arquivamento inteligente.</p>
@@ -236,14 +236,14 @@ export default function Home() {
       </section>
 
       {/* Featured Service: E-commerce */}
-      <section style={{ padding: "100px 48px", backgroundColor: "var(--bg-primary)", borderTop: "1px solid var(--bg-tertiary)" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexWrap: "wrap", gap: "64px", alignItems: "center" }}>
+      <section className="section-padding-md" style={{ backgroundColor: "var(--bg-primary)", borderTop: "1px solid var(--bg-tertiary)" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexWrap: "wrap", gap: "32px", alignItems: "center" }}>
           
           <div style={{ flex: "1 1 500px", order: 1 }}>
             <div style={{ display: "inline-block", padding: "6px 16px", backgroundColor: "var(--bg-secondary)", color: "var(--accent-secondary)", borderRadius: "20px", fontSize: "14px", fontWeight: 600, marginBottom: "16px", border: "1px solid var(--bg-tertiary)" }}>
               Fábrica de Lojas Virtuais
             </div>
-            <h2 style={{ fontSize: "40px", fontWeight: 700, letterSpacing: "-1px", lineHeight: 1.2, marginBottom: "24px", color: "var(--text-primary)" }}>
+            <h2 style={{ fontSize: "clamp(28px, 5vw, 40px)", fontWeight: 700, letterSpacing: "-1px", lineHeight: 1.2, marginBottom: "24px", color: "var(--text-primary)" }}>
               Desenvolvimento de E-commerce
             </h2>
             <p style={{ fontSize: "18px", color: "var(--text-secondary)", marginBottom: "32px", lineHeight: 1.6 }}>
@@ -289,10 +289,10 @@ export default function Home() {
       </section>
 
       {/* Consulting Services Section */}
-      <section id="consulting" style={{ padding: "120px 48px", backgroundColor: "#ffffff" }}>
+      <section id="consulting" className="section-padding" style={{ backgroundColor: "#ffffff" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <h2 style={{ fontSize: "36px", fontWeight: 700, letterSpacing: "-1px", marginBottom: "60px", textAlign: "center", color: "#0B0F19" }}>Consultoria <span style={{ background: "var(--accent-gradient)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Especializada</span></h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px" }}>
+          <h2 style={{ fontSize: "clamp(28px, 4vw, 36px)", fontWeight: 700, letterSpacing: "-1px", marginBottom: "60px", textAlign: "center", color: "#0B0F19" }}>Consultoria <span style={{ background: "var(--accent-gradient)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Especializada</span></h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: "24px" }}>
             
             <div style={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "24px", transition: "box-shadow 0.3s ease, transform 0.3s ease" }} onMouseOver={(e) => { e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.08)"; e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseOut={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}>
               <div style={{ width: "56px", height: "56px", borderRadius: "16px", background: "linear-gradient(135deg, #00DF81 0%, #00AAFF 100%)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px", boxShadow: "0 4px 15px rgba(0,223,129,0.25)" }}>
@@ -339,8 +339,8 @@ export default function Home() {
       </section>
 
       {/* Flash AI SDR CTA */}
-      <section style={{ padding: "80px 48px", background: "linear-gradient(135deg, rgba(0,223,129,0.08) 0%, rgba(0,170,255,0.08) 100%)", borderTop: "1px solid var(--bg-tertiary)", borderBottom: "1px solid var(--bg-tertiary)" }}>
-        <div style={{ maxWidth: "900px", margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "32px" }}>
+      <section className="section-padding-sm" style={{ background: "linear-gradient(135deg, rgba(0,223,129,0.08) 0%, rgba(0,170,255,0.08) 100%)", borderTop: "1px solid var(--bg-tertiary)", borderBottom: "1px solid var(--bg-tertiary)" }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: "32px" }}>
           <div style={{ flex: "1 1 400px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "16px" }}>
               <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--accent-gradient)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px", boxShadow: "0 0 30px rgba(0,223,129,0.3)" }}>⚡</div>
@@ -367,12 +367,12 @@ export default function Home() {
       </section>
 
       {/* Contact Form Section */}
-      <section id="contact" style={{ padding: "120px 48px", backgroundColor: "var(--bg-secondary)", display: "flex", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+      <section id="contact" className="section-padding" style={{ backgroundColor: "var(--bg-secondary)", display: "flex", justifyContent: "center", position: "relative", overflow: "hidden" }}>
         {/* Subtle green glow behind the form */}
         <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", maxWidth: "800px", height: "100%", background: "radial-gradient(circle, rgba(0,219,121,0.15) 0%, transparent 60%)", zIndex: 0, pointerEvents: "none" }}></div>
         
-        <div style={{ maxWidth: "600px", width: "100%", backgroundColor: "rgba(255, 255, 255, 0.03)", borderRadius: "24px", padding: "48px", border: "1px solid rgba(0, 219, 121, 0.2)", backdropFilter: "blur(20px)", boxShadow: "0 30px 60px rgba(0,0,0,0.3)", zIndex: 1, position: "relative" }}>
-          <h2 style={{ fontSize: "36px", fontWeight: 700, letterSpacing: "-0.5px", marginBottom: "16px", textAlign: "center", color: "#ffffff" }}>Pronto para escalar?</h2>
+        <div style={{ maxWidth: "600px", width: "100%", backgroundColor: "rgba(255, 255, 255, 0.03)", borderRadius: "24px", padding: "clamp(24px, 4vw, 48px)", border: "1px solid rgba(0, 219, 121, 0.2)", backdropFilter: "blur(20px)", boxShadow: "0 30px 60px rgba(0,0,0,0.3)", zIndex: 1, position: "relative" }}>
+          <h2 style={{ fontSize: "clamp(28px, 4vw, 36px)", fontWeight: 700, letterSpacing: "-0.5px", marginBottom: "16px", textAlign: "center", color: "#ffffff" }}>Pronto para escalar?</h2>
           <p style={{ textAlign: "center", marginBottom: "40px", color: "rgba(255, 255, 255, 0.7)", fontSize: "18px" }}>Fale com nossos engenheiros e consultores.</p>
           
           <form style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -396,12 +396,12 @@ export default function Home() {
       </section>
 
       {/* Blog Section */}
-      <section style={{ padding: "120px 48px", backgroundColor: "var(--bg-primary)", borderTop: "1px solid var(--bg-tertiary)" }}>
+      <section className="section-padding" style={{ backgroundColor: "var(--bg-primary)", borderTop: "1px solid var(--bg-tertiary)" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "60px", flexWrap: "wrap", gap: "16px" }}>
             <div>
               <div style={{ display: "inline-block", padding: "6px 16px", backgroundColor: "var(--bg-secondary)", color: "var(--accent-primary)", borderRadius: "20px", fontSize: "13px", fontWeight: 600, marginBottom: "16px", border: "1px solid var(--bg-tertiary)", letterSpacing: "1px", textTransform: "uppercase" }}>Blog</div>
-              <h2 style={{ fontSize: "40px", fontWeight: 800, letterSpacing: "-1px" }}>
+              <h2 style={{ fontSize: "clamp(28px, 5vw, 40px)", fontWeight: 800, letterSpacing: "-1px" }}>
                 Insights do <span className="text-gradient">Infinity Blog</span>
               </h2>
               <p className="text-secondary" style={{ fontSize: "17px", marginTop: "8px" }}>Artigos, guias e novidades sobre tecnologia, e-commerce e inovação.</p>
@@ -414,7 +414,7 @@ export default function Home() {
             </a>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "32px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: "32px" }}>
 
             {/* Blog Post 1 - Featured Large */}
             <a href="#" style={{ textDecoration: "none", color: "inherit", borderRadius: "20px", overflow: "hidden", backgroundColor: "var(--bg-secondary)", border: "1px solid var(--bg-tertiary)", transition: "transform 0.3s ease, box-shadow 0.3s ease", display: "flex", flexDirection: "column" }}

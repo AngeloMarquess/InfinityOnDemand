@@ -6,17 +6,17 @@ export default function Footer() {
       padding: "80px 48px 32px",
       backgroundColor: "var(--bg-secondary)",
       borderTop: "1px solid var(--bg-tertiary)"
-    }}>
+    }} className="section-padding-sm">
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
 
         {/* Top Section: Logo + Columns */}
-        <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", gap: "48px", marginBottom: "60px" }}>
+        <div className="footer-grid">
 
           {/* Brand Column */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
               {/* Infinity Logo SVG */}
-              <svg width="44" height="22" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 0 8px rgba(0, 219, 121, 0.5))' }}>
+              <svg width="44" height="22" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 0 8px rgba(0, 219, 121, 0.5))', flexShrink: 0 }}>
                 <defs>
                   <linearGradient id="inf-grad-footer" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#00DB79" />
@@ -34,7 +34,7 @@ export default function Footer() {
               Inovação, tecnologia e performance. Ajudamos empresas a escalarem através de soluções de software de ponta e consultoria estratégica.
             </p>
             {/* Social Icons */}
-            <div style={{ display: "flex", gap: "12px" }}>
+            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
               {/* Instagram */}
               <a href="https://instagram.com/infinityondemand" target="_blank" rel="noopener noreferrer" style={{ width: 40, height: 40, borderRadius: "10px", backgroundColor: "var(--bg-tertiary)", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.3s ease, transform 0.2s ease" }}
                 onMouseOver={(e) => { e.currentTarget.style.background = "var(--accent-gradient)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
@@ -101,14 +101,14 @@ export default function Footer() {
           <div>
             <h4 style={{ fontWeight: 700, marginBottom: "20px", fontSize: "15px", color: "var(--text-primary)" }}>Contato</h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "14px", fontSize: "14px" }}>
-              <li className="text-secondary" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ color: "var(--accent-primary)" }}>📧</span> contato@infinityondemand.com.br
+              <li className="text-secondary" style={{ display: "flex", alignItems: "center", gap: "8px", wordBreak: "break-all" }}>
+                <span style={{ color: "var(--accent-primary)", flexShrink: 0 }}>📧</span> contato@infinityondemand.com.br
               </li>
               <li className="text-secondary" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ color: "var(--accent-primary)" }}>📱</span> (81) 97102-7939
+                <span style={{ color: "var(--accent-primary)", flexShrink: 0 }}>📱</span> (81) 97102-7939
               </li>
               <li className="text-secondary" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ color: "var(--accent-primary)" }}>🌐</span> infinityondemand.com.br
+                <span style={{ color: "var(--accent-primary)", flexShrink: 0 }}>🌐</span> infinityondemand.com.br
               </li>
             </ul>
           </div>
@@ -118,7 +118,7 @@ export default function Footer() {
         <div style={{ height: "1px", background: "linear-gradient(90deg, transparent 0%, var(--bg-tertiary) 20%, var(--bg-tertiary) 80%, transparent 100%)", marginBottom: "24px" }} />
 
         {/* Bottom Bar */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
+        <div className="footer-bottom">
           <div className="text-secondary" style={{ fontSize: "13px" }}>
             &copy; {new Date().getFullYear()} Infinity OnDemand. Todos os direitos reservados.
           </div>
