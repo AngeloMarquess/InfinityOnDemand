@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { checkPlanLimit } from '@/lib/crm/subscription';
 
 export async function POST(request: Request) {
   try {
@@ -12,22 +13,26 @@ export async function POST(request: Request) {
       );
     }
 
-    // Use the Infinity Supabase (consolidated CRM tables with crm_ prefix)
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const crmOwnerId = process.env.CRM_OWNER_USER_ID;
 
     if (!supabaseUrl || !supabaseServiceKey || !crmOwnerId) {
       console.error('Missing Supabase env vars for CRM lead insert');
-      return NextResponse.json(
-        { error: 'Configuração do servidor ausente.' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Configuração do servidor ausente.' }, { status: 500 });
+    }
+
+    // Check plan limits before inserting
+    const limitCheck = await checkPlanLimit(crmOwnerId, 'leads');
+    if (!limitCheck.allowed) {
+      return NextResponse.json({
+        error: `Limite de leads do plano ${limitCheck.plan} atingido (${limitCheck.current}/${limitCheck.limit}). Faça upgrade.`,
+      }, { status: 403 });
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get the "Novo Lead" stage for the CRM owner
+    // Get the "Novo Lead" stage
     const { data: stages } = await supabase
       .from('crm_stages')
       .select('id')
@@ -37,7 +42,7 @@ export async function POST(request: Request) {
 
     const stageId = stages?.[0]?.id || null;
 
-    // Insert contact as a new lead into crm_contacts
+    // Insert contact
     const { data, error } = await supabase
       .from('crm_contacts')
       .insert({
@@ -55,18 +60,12 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error('Error inserting lead into CRM:', error);
-      return NextResponse.json(
-        { error: 'Erro ao salvar o lead no CRM.' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Erro ao salvar o lead no CRM.' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, lead: data });
   } catch (err) {
     console.error('Unexpected error in /api/leads:', err);
-    return NextResponse.json(
-      { error: 'Erro interno do servidor.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Erro interno do servidor.' }, { status: 500 });
   }
 }
