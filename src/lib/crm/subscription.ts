@@ -93,6 +93,11 @@ export async function checkPlanLimit(
     return { allowed: false, current: 0, limit: 0, plan: 'unknown' };
   }
 
+  // Blocked accounts cannot perform any actions
+  if (info.subscription_status === 'blocked') {
+    return { allowed: false, current: 0, limit: 0, plan: `${info.plan_name} (bloqueado)` };
+  }
+
   const limitMap: Record<string, keyof PlanLimits> = {
     leads: 'max_leads',
     proposals: 'max_proposals',

@@ -140,5 +140,40 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, message: 'Assinatura cancelada' });
   }
 
+  if (action === 'block') {
+    await supabase
+      .from('crm_profiles')
+      .update({
+        subscription_status: 'blocked',
+      })
+      .eq('id', user_id);
+
+    await supabase.from('crm_subscription_history').insert({
+      user_id,
+      plan_id: 'free',
+      event_type: 'blocked',
+    });
+
+    return NextResponse.json({ success: true, message: 'Conta bloqueada por inadimplência' });
+  }
+
+  if (action === 'unblock') {
+    const currentPlanId = plan_id || 'free';
+    await supabase
+      .from('crm_profiles')
+      .update({
+        subscription_status: currentPlanId === 'free' ? 'free' : 'active',
+      })
+      .eq('id', user_id);
+
+    await supabase.from('crm_subscription_history').insert({
+      user_id,
+      plan_id: currentPlanId,
+      event_type: 'unblocked',
+    });
+
+    return NextResponse.json({ success: true, message: 'Conta desbloqueada' });
+  }
+
   return NextResponse.json({ error: 'Ação inválida.' }, { status: 400 });
 }

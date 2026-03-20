@@ -72,6 +72,7 @@ export default function AdminCRMPage() {
     switch (status) {
       case 'active': return '#22c55e';
       case 'cancelled': return '#ef4444';
+      case 'blocked': return '#dc2626';
       case 'past_due': return '#f59e0b';
       default: return 'var(--text-tertiary)';
     }
@@ -168,7 +169,7 @@ export default function AdminCRMPage() {
               </thead>
               <tbody>
                 {clients.map(client => (
-                  <tr key={client.id} style={{ borderBottom: '1px solid var(--bg-tertiary)' }}>
+                  <tr key={client.id} style={{ borderBottom: '1px solid var(--bg-tertiary)', background: client.subscription_status === 'blocked' ? 'rgba(220,38,38,0.08)' : undefined }}>
                     <td style={{ padding: '14px 16px', fontWeight: 600 }}>{client.full_name || '—'}</td>
                     <td style={{ padding: '14px 16px', color: 'var(--text-secondary)' }}>{client.email}</td>
                     <td style={{ padding: '14px 16px' }}>
@@ -181,7 +182,7 @@ export default function AdminCRMPage() {
                     </td>
                     <td style={{ padding: '14px 16px' }}>
                       <span style={{ color: statusColor(client.subscription_status), fontWeight: 600, fontSize: '13px' }}>
-                        ● {client.subscription_status || 'free'}
+                        {client.subscription_status === 'blocked' ? '🚫' : '●'} {client.subscription_status || 'free'}
                       </span>
                     </td>
                     <td style={{ padding: '14px 16px' }}>{client.usage.leads}</td>
@@ -191,9 +192,9 @@ export default function AdminCRMPage() {
                       {new Date(client.created_at).toLocaleDateString('pt-BR')}
                     </td>
                     <td style={{ padding: '14px 16px' }}>
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                         <select
-                          disabled={actionLoading === client.id}
+                          disabled={actionLoading === client.id || client.subscription_status === 'blocked'}
                           defaultValue={client.plan_id}
                           onChange={e => handleAction(client.id, 'change_plan', e.target.value)}
                           style={{
@@ -217,6 +218,31 @@ export default function AdminCRMPage() {
                             }}
                           >
                             Cancelar
+                          </button>
+                        )}
+                        {client.subscription_status !== 'blocked' ? (
+                          <button
+                            onClick={() => { if (confirm(`Bloquear ${client.full_name || client.email}?`)) handleAction(client.id, 'block'); }}
+                            disabled={actionLoading === client.id}
+                            style={{
+                              padding: '6px 10px', borderRadius: '8px', fontSize: '12px',
+                              background: 'rgba(220,38,38,0.15)', color: '#dc2626',
+                              border: '1px solid rgba(220,38,38,0.3)', cursor: 'pointer'
+                            }}
+                          >
+                            🔒 Bloquear
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleAction(client.id, 'unblock', client.plan_id)}
+                            disabled={actionLoading === client.id}
+                            style={{
+                              padding: '6px 10px', borderRadius: '8px', fontSize: '12px',
+                              background: 'rgba(34,197,94,0.15)', color: '#22c55e',
+                              border: '1px solid rgba(34,197,94,0.3)', cursor: 'pointer'
+                            }}
+                          >
+                            🔓 Desbloquear
                           </button>
                         )}
                       </div>
