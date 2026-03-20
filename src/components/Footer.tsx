@@ -119,6 +119,57 @@ export default function Footer() {
         {/* Divider */}
         <div style={{ height: "1px", background: "linear-gradient(90deg, transparent 0%, var(--bg-tertiary) 20%, var(--bg-tertiary) 80%, transparent 100%)", marginBottom: "24px" }} />
 
+        {/* Security Badges */}
+        <div style={{ display: "flex", gap: "24px", justifyContent: "center", alignItems: "center", marginBottom: "24px", flexWrap: "wrap" }}>
+          
+          {/* SSL Badge */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: "10px",
+            padding: "10px 20px", borderRadius: "10px",
+            border: "1px solid rgba(0, 219, 121, 0.25)",
+            background: "rgba(0, 219, 121, 0.05)",
+          }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="11" width="18" height="11" rx="2" stroke="url(#ssl-grad)" strokeWidth="1.5"/>
+              <path d="M7 11V7a5 5 0 0110 0v4" stroke="url(#ssl-grad)" strokeWidth="1.5" strokeLinecap="round"/>
+              <circle cx="12" cy="16" r="1.5" fill="url(#ssl-grad)"/>
+              <defs>
+                <linearGradient id="ssl-grad" x1="3" y1="5" x2="21" y2="22" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#00DB79"/>
+                  <stop offset="1" stopColor="#00AAFF"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div>
+              <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent-primary)", letterSpacing: "0.5px", textTransform: "uppercase", lineHeight: 1 }}>Site Seguro</div>
+              <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.3 }}>SSL 256 Bits</div>
+            </div>
+          </div>
+
+          {/* Google Safe Browsing Badge */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: "10px",
+            padding: "10px 20px", borderRadius: "10px",
+            border: "1px solid rgba(0, 170, 255, 0.25)",
+            background: "rgba(0, 170, 255, 0.05)",
+          }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L4 5v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V5l-8-3z" stroke="url(#gsb-grad)" strokeWidth="1.5" strokeLinejoin="round"/>
+              <path d="M9 12l2 2 4-4" stroke="url(#gsb-grad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <defs>
+                <linearGradient id="gsb-grad" x1="4" y1="2" x2="20" y2="24" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#00AAFF"/>
+                  <stop offset="1" stopColor="#00DB79"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div>
+              <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent-secondary)", letterSpacing: "0.5px", lineHeight: 1 }}>Google</div>
+              <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.3 }}>Safe Browsing</div>
+            </div>
+          </div>
+        </div>
+
         {/* Bottom Bar */}
         <div className="footer-bottom">
           <div className="text-secondary" style={{ fontSize: "13px" }}>
