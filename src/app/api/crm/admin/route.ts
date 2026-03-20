@@ -12,65 +12,76 @@ export async function GET(request: Request) {
   const adminKey = searchParams.get('key');
 
   if (adminKey !== process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(-10)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized', debug: 'key_mismatch' }, { status: 401 });
   }
 
-  const supabase = getServiceSupabase();
+  try {
+    const supabase = getServiceSupabase();
 
-  // Get all CRM profiles with plan info
-  const { data: profiles, error } = await supabase
-    .from('crm_profiles')
-    .select('id, email, full_name, plan_id, subscription_status, subscription_expires_at, stripe_customer_id, created_at')
-    .order('created_at', { ascending: false });
+    // Get all CRM profiles with plan info
+    const { data: profiles, error } = await supabase
+      .from('crm_profiles')
+      .select('id, email, full_name, plan_id, subscription_status, subscription_expires_at, stripe_customer_id, created_at')
+      .order('created_at', { ascending: false });
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error('Error fetching crm_profiles:', error);
+      return NextResponse.json({ error: error.message, hint: 'Rode o SQL crm_migration.sql e crm_insert_profiles.sql no Supabase' }, { status: 500 });
+    }
+
+    // Get plans
+    const { data: plans, error: plansError } = await supabase.from('crm_plans').select('*');
+
+    if (plansError) {
+      console.error('Error fetching crm_plans:', plansError);
+      return NextResponse.json({ error: plansError.message, hint: 'Rode o SQL crm_subscription_migration.sql no Supabase' }, { status: 500 });
+    }
+
+    // Get usage counts for each user
+    const clientsWithStats = await Promise.all(
+      (profiles || []).map(async (profile) => {
+        const [leads, proposals, tasks] = await Promise.all([
+          supabase.from('crm_contacts').select('id', { count: 'exact', head: true }).eq('user_id', profile.id),
+          supabase.from('crm_proposals').select('id', { count: 'exact', head: true }).eq('user_id', profile.id),
+          supabase.from('crm_tasks').select('id', { count: 'exact', head: true }).eq('user_id', profile.id),
+        ]);
+
+        const plan = plans?.find(p => p.id === profile.plan_id);
+
+        return {
+          ...profile,
+          plan_name: plan?.name || 'Free',
+          plan_price: plan?.price_monthly || 0,
+          usage: {
+            leads: leads.count || 0,
+            proposals: proposals.count || 0,
+            tasks: tasks.count || 0,
+          },
+        };
+      })
+    );
+
+    // Calculate summary stats
+    const totalClients = clientsWithStats.length;
+    const activeSubscriptions = clientsWithStats.filter(c => c.subscription_status === 'active').length;
+    const mrr = clientsWithStats
+      .filter(c => c.subscription_status === 'active')
+      .reduce((sum, c) => sum + (c.plan_price || 0), 0);
+
+    return NextResponse.json({
+      summary: {
+        total_clients: totalClients,
+        active_subscriptions: activeSubscriptions,
+        mrr: mrr, // in cents
+        mrr_formatted: `R$ ${(mrr / 100).toFixed(2)}`,
+      },
+      plans: plans || [],
+      clients: clientsWithStats,
+    });
+  } catch (err) {
+    console.error('Admin API error:', err);
+    return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });
   }
-
-  // Get plans
-  const { data: plans } = await supabase.from('crm_plans').select('*');
-
-  // Get usage counts for each user
-  const clientsWithStats = await Promise.all(
-    (profiles || []).map(async (profile) => {
-      const [leads, proposals, tasks] = await Promise.all([
-        supabase.from('crm_contacts').select('id', { count: 'exact', head: true }).eq('user_id', profile.id),
-        supabase.from('crm_proposals').select('id', { count: 'exact', head: true }).eq('user_id', profile.id),
-        supabase.from('crm_tasks').select('id', { count: 'exact', head: true }).eq('user_id', profile.id),
-      ]);
-
-      const plan = plans?.find(p => p.id === profile.plan_id);
-
-      return {
-        ...profile,
-        plan_name: plan?.name || 'Free',
-        plan_price: plan?.price_monthly || 0,
-        usage: {
-          leads: leads.count || 0,
-          proposals: proposals.count || 0,
-          tasks: tasks.count || 0,
-        },
-      };
-    })
-  );
-
-  // Calculate summary stats
-  const totalClients = clientsWithStats.length;
-  const activeSubscriptions = clientsWithStats.filter(c => c.subscription_status === 'active').length;
-  const mrr = clientsWithStats
-    .filter(c => c.subscription_status === 'active')
-    .reduce((sum, c) => sum + (c.plan_price || 0), 0);
-
-  return NextResponse.json({
-    summary: {
-      total_clients: totalClients,
-      active_subscriptions: activeSubscriptions,
-      mrr: mrr, // in cents
-      mrr_formatted: `R$ ${(mrr / 100).toFixed(2)}`,
-    },
-    plans: plans || [],
-    clients: clientsWithStats,
-  });
 }
 
 // POST /api/crm/admin/clients — update a client's plan manually
