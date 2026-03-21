@@ -327,148 +327,6 @@ export default function RelatoriosInfinity() {
     setLoginPassword('');
   };
 
-  // ─── Login Screen ───
-  if (authLoading) {
-    return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#08090b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: '#00DB79', fontSize: '18px', fontFamily: "'Inter', sans-serif" }}>⏳ Carregando...</div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#08090b',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: "'Inter', sans-serif",
-        padding: '20px',
-      }}>
-        <div style={{
-          width: '100%',
-          maxWidth: '420px',
-          background: 'linear-gradient(135deg, #111318 0%, #0c0e12 100%)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: '24px',
-          padding: '48px 36px',
-          position: 'relative',
-          overflow: 'hidden',
-        }}>
-          {/* Glow effect */}
-          <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '200px', height: '200px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,219,121,0.15), transparent)', filter: 'blur(40px)' }} />
-          <div style={{ position: 'absolute', bottom: '-40px', left: '-40px', width: '150px', height: '150px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,170,255,0.1), transparent)', filter: 'blur(30px)' }} />
-
-          {/* Logo */}
-          <div style={{ textAlign: 'center', marginBottom: '32px', position: 'relative' }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px' }}>📊</div>
-            <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', marginBottom: '4px' }}>
-              Infinity <span style={{ background: 'linear-gradient(135deg, #00DB79, #00AAFF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Analytics</span>
-            </h1>
-            <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>Acesso restrito a administradores</p>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleLogin} style={{ position: 'relative' }}>
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '6px', fontWeight: 600 }}>Email</label>
-              <input
-                type="email"
-                value={loginEmail}
-                onChange={e => setLoginEmail(e.target.value)}
-                placeholder="admin@infinityondemand.com.br"
-                required
-                style={{
-                  width: '100%',
-                  padding: '14px 16px',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  backgroundColor: 'rgba(255,255,255,0.04)',
-                  color: '#fff',
-                  fontSize: '15px',
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                  boxSizing: 'border-box',
-                }}
-                onFocus={e => e.target.style.borderColor = 'rgba(0,219,121,0.4)'}
-                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-              />
-            </div>
-
-            <div style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '6px', fontWeight: 600 }}>Senha</label>
-              <input
-                type="password"
-                value={loginPassword}
-                onChange={e => setLoginPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                style={{
-                  width: '100%',
-                  padding: '14px 16px',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  backgroundColor: 'rgba(255,255,255,0.04)',
-                  color: '#fff',
-                  fontSize: '15px',
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                  boxSizing: 'border-box',
-                }}
-                onFocus={e => e.target.style.borderColor = 'rgba(0,219,121,0.4)'}
-                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-              />
-            </div>
-
-            {loginError && (
-              <div style={{
-                padding: '12px 16px',
-                borderRadius: '10px',
-                backgroundColor: 'rgba(239,68,68,0.1)',
-                border: '1px solid rgba(239,68,68,0.2)',
-                color: '#EF4444',
-                fontSize: '13px',
-                marginBottom: '16px',
-                fontWeight: 500,
-              }}>
-                ⚠️ {loginError}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loginLoading}
-              style={{
-                width: '100%',
-                padding: '14px',
-                borderRadius: '12px',
-                border: 'none',
-                background: loginLoading ? 'rgba(0,219,121,0.3)' : 'linear-gradient(135deg, #00DB79, #00AAFF)',
-                color: '#fff',
-                fontSize: '16px',
-                fontWeight: 700,
-                fontFamily: 'inherit',
-                cursor: loginLoading ? 'not-allowed' : 'pointer',
-                transition: 'all 0.3s',
-                letterSpacing: '0.3px',
-              }}
-            >
-              {loginLoading ? '⏳ Entrando...' : '🔐 Entrar'}
-            </button>
-          </form>
-
-          <p style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.2)', marginTop: '24px' }}>
-            Infinity OnDemand © 2026
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   // Carregar imagens do Supabase Storage
   const loadImagesFromSupabase = useCallback(async () => {
     try {
@@ -715,6 +573,60 @@ export default function RelatoriosInfinity() {
     { id: 'sdr' as const, label: 'Flash SDR', icon: '💬' },
     { id: 'config' as const, label: 'Configurações', icon: '⚙️' },
   ];
+
+  // ─── Auth Guards (placed after ALL hooks to respect Rules of Hooks) ───
+  if (authLoading) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: '#08090b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#00DB79', fontSize: '18px', fontFamily: "'Inter', sans-serif" }}>⏳ Carregando...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: '#08090b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif", padding: '20px' }}>
+        <div style={{ width: '100%', maxWidth: '420px', background: 'linear-gradient(135deg, #111318 0%, #0c0e12 100%)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '48px 36px', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '200px', height: '200px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,219,121,0.15), transparent)', filter: 'blur(40px)' }} />
+          <div style={{ position: 'absolute', bottom: '-40px', left: '-40px', width: '150px', height: '150px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,170,255,0.1), transparent)', filter: 'blur(30px)' }} />
+          <div style={{ textAlign: 'center', marginBottom: '32px', position: 'relative' }}>
+            <div style={{ fontSize: '40px', marginBottom: '12px' }}>📊</div>
+            <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', marginBottom: '4px' }}>
+              Infinity <span style={{ background: 'linear-gradient(135deg, #00DB79, #00AAFF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Analytics</span>
+            </h1>
+            <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>Acesso restrito a administradores</p>
+          </div>
+          <form onSubmit={handleLogin} style={{ position: 'relative' }}>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '6px', fontWeight: 600 }}>Email</label>
+              <input type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} placeholder="admin@infinityondemand.com.br" required
+                style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.04)', color: '#fff', fontSize: '15px', fontFamily: 'inherit', outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box' as const }}
+                onFocus={e => e.target.style.borderColor = 'rgba(0,219,121,0.4)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+              />
+            </div>
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '6px', fontWeight: 600 }}>Senha</label>
+              <input type="password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} placeholder="••••••••" required
+                style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.04)', color: '#fff', fontSize: '15px', fontFamily: 'inherit', outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box' as const }}
+                onFocus={e => e.target.style.borderColor = 'rgba(0,219,121,0.4)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+              />
+            </div>
+            {loginError && (
+              <div style={{ padding: '12px 16px', borderRadius: '10px', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#EF4444', fontSize: '13px', marginBottom: '16px', fontWeight: 500 }}>
+                ⚠️ {loginError}
+              </div>
+            )}
+            <button type="submit" disabled={loginLoading}
+              style={{ width: '100%', padding: '14px', borderRadius: '12px', border: 'none', background: loginLoading ? 'rgba(0,219,121,0.3)' : 'linear-gradient(135deg, #00DB79, #00AAFF)', color: '#fff', fontSize: '16px', fontWeight: 700, fontFamily: 'inherit', cursor: loginLoading ? 'not-allowed' : 'pointer', transition: 'all 0.3s', letterSpacing: '0.3px' }}
+            >
+              {loginLoading ? '⏳ Entrando...' : '🔐 Entrar'}
+            </button>
+          </form>
+          <p style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.2)', marginTop: '24px' }}>Infinity OnDemand © 2026</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#08090b', color: '#fff', fontFamily: "'Inter', sans-serif" }}>
