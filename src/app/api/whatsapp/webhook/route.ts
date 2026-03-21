@@ -85,11 +85,14 @@ export async function POST(request: NextRequest) {
       .from('whatsapp_conversations')
       .select('role, message, status')
       .eq('phone', from)
-      .order('created_at', { ascending: true })
-      .limit(30);
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    // Reverse so oldest is first (OpenAI expects chronological order)
+    const sortedHistory = (history || []).reverse();
 
     // Skip bot if already transferred or handled by human
-    const isTransferred = history?.some(h => h.status === 'transferred' || h.status === 'human');
+    const isTransferred = sortedHistory.some(h => h.status === 'transferred' || h.status === 'human');
     if (isTransferred) {
       console.log(`⏹️ Skipping bot for ${from} (Transferred to human)`);
       return NextResponse.json({ status: 'transferred_skipped' }, { status: 200 });
@@ -100,7 +103,7 @@ export async function POST(request: NextRequest) {
     const isAttendantRequest = attendantKeywords.some(k => messageText.toLowerCase().includes(k));
 
     if (isAttendantRequest) {
-      const userRequests = (history || []).filter(h => 
+      const userRequests = sortedHistory.filter(h => 
         h.role === 'lead' && attendantKeywords.some(k => h.message.toLowerCase().includes(k))
       );
       
@@ -133,11 +136,14 @@ export async function POST(request: NextRequest) {
       .eq('client_id', 'default')
       .single();
 
-    // Build conversation messages for OpenAI
-    const conversationMessages = (history || []).map(h => ({
+    // Build conversation messages for OpenAI (only last 10 messages for focus)
+    const conversationMessages = sortedHistory.map(h => ({
       role: h.role === 'lead' ? 'user' as const : 'assistant' as const,
       content: h.message,
     }));
+
+    // Debug: Log what we're sending to OpenAI
+    console.log(`🧠 Sending ${conversationMessages.length} messages to GPT. Last user msg: "${messageText}"`);
 
     // Generate Flash response
     const apiKey = settings?.openai_api_key || process.env.OPENAI_API_KEY;
@@ -147,7 +153,7 @@ export async function POST(request: NextRequest) {
     }
 
     const openai = new OpenAI({ apiKey });
-    const systemPrompt = buildSDRPrompt(settings || {});
+    const systemPrompt = buildSDRPrompt(settings || {}, contactName);
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -278,14 +284,20 @@ async function transcribeWhatsAppAudio(mediaId: string): Promise<string> {
 }
 
 // ─── Flash SDR System Prompt ───
-function buildSDRPrompt(settings: Record<string, unknown>): string {
+function buildSDRPrompt(settings: Record<string, unknown>, contactName?: string): string {
   const flashRules = settings.flash_rules as string || '';
   const flashProducts = settings.flash_products as string || '';
   const flashPricing = settings.flash_pricing as string || '';
   const flashFaq = settings.flash_faq as string || '';
   const flashRestrictions = settings.flash_restrictions as string || '';
+  const leadName = contactName || 'Lead';
 
   let prompt = `Você é o **Flash** ⚡ — SDR (Sales Development Representative) da ${settings.business_name || 'Infinity On Demand'}.
+
+## REGRA CRÍTICA
+- O nome do lead é **${leadName}**. SEMPRE use o nome "${leadName}" ao se dirigir ao cliente. NUNCA use outro nome.
+- NUNCA diga apenas "Oi, como posso ajudar?". SEMPRE responda diretamente ao que o lead perguntou ou disse.
+- Se o lead fez uma pergunta, RESPONDA a pergunta. Não mude de assunto.
 
 ## SEU PAPEL
 Você é um vendedor consultivo via WhatsApp. Seu objetivo é:
