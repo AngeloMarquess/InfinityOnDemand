@@ -66,65 +66,95 @@
   pointer-events: none;
 }
 
-/* 3D CSS Cube */
+/* 3D CSS Cube — Resend-style solid/glossy */
 .cons-cube-wrapper {
   position: absolute;
-  right: 10%;
+  right: 12%;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-55%);
   z-index: 1;
-  perspective: 800px;
+  perspective: 900px;
 }
 
 .cons-cube-scene {
-  width: clamp(180px, 22vw, 280px);
-  height: clamp(180px, 22vw, 280px);
+  width: clamp(200px, 25vw, 320px);
+  height: clamp(200px, 25vw, 320px);
   position: relative;
   transform-style: preserve-3d;
-  animation: cons-cube-spin 20s linear infinite;
+  animation: cons-cube-spin 25s linear infinite;
+}
+
+/* Reflection / shadow below cube */
+.cons-cube-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 40px;
+  background: radial-gradient(ellipse, rgba(0, 170, 255, 0.15) 0%, transparent 70%);
+  filter: blur(15px);
 }
 
 @keyframes cons-cube-spin {
-  0%   { transform: rotateX(-20deg) rotateY(0deg); }
-  100% { transform: rotateX(-20deg) rotateY(360deg); }
+  0%   { transform: rotateX(-25deg) rotateY(0deg); }
+  100% { transform: rotateX(-25deg) rotateY(360deg); }
 }
 
 .cons-cube-face {
   position: absolute;
   width: 100%;
   height: 100%;
-  border-radius: 20px;
-  border: 1.5px solid rgba(0, 219, 121, 0.25);
-  background: rgba(0, 219, 121, 0.04);
-  backdrop-filter: blur(8px);
-  box-shadow: inset 0 0 40px rgba(0, 219, 121, 0.06), 0 0 30px rgba(0, 170, 255, 0.05);
+  border-radius: 16px;
+  backface-visibility: visible;
 }
 
-.cons-cube-face--front  { transform: translateZ(calc(clamp(180px, 22vw, 280px) / 2)); }
-.cons-cube-face--back   { transform: rotateY(180deg) translateZ(calc(clamp(180px, 22vw, 280px) / 2)); }
-.cons-cube-face--right  { transform: rotateY(90deg) translateZ(calc(clamp(180px, 22vw, 280px) / 2)); border-color: rgba(0, 170, 255, 0.25); background: rgba(0, 170, 255, 0.04); box-shadow: inset 0 0 40px rgba(0, 170, 255, 0.06), 0 0 30px rgba(0, 219, 121, 0.05); }
-.cons-cube-face--left   { transform: rotateY(-90deg) translateZ(calc(clamp(180px, 22vw, 280px) / 2)); border-color: rgba(0, 170, 255, 0.25); background: rgba(0, 170, 255, 0.04); }
-.cons-cube-face--top    { transform: rotateX(90deg) translateZ(calc(clamp(180px, 22vw, 280px) / 2)); border-color: rgba(0, 219, 121, 0.35); background: linear-gradient(135deg, rgba(0,219,121,0.08), rgba(0,170,255,0.08)); }
-.cons-cube-face--bottom { transform: rotateX(-90deg) translateZ(calc(clamp(180px, 22vw, 280px) / 2)); background: rgba(0, 0, 0, 0.3); }
-
-/* Cube face inner glow lines */
-.cons-cube-face::after {
-  content: '';
-  position: absolute;
-  inset: 20%;
-  border: 1px solid rgba(0, 219, 121, 0.12);
-  border-radius: 12px;
+/* Front — gradient green to blue */
+.cons-cube-face--front {
+  transform: translateZ(calc(clamp(200px, 25vw, 320px) / 2));
+  background: linear-gradient(135deg, #00DF81 0%, #00AAFF 100%);
+  opacity: 0.85;
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.2);
 }
 
-.cons-cube-face--right::after,
-.cons-cube-face--left::after {
-  border-color: rgba(0, 170, 255, 0.12);
+/* Back — dark with subtle green edge */
+.cons-cube-face--back {
+  transform: rotateY(180deg) translateZ(calc(clamp(200px, 25vw, 320px) / 2));
+  background: linear-gradient(135deg, #0a1a2e, #0d2844);
+  border: 1px solid rgba(0, 219, 121, 0.15);
+  opacity: 0.9;
 }
 
-.cons-cube-face--top::after {
-  inset: 25%;
-  border-color: rgba(0, 219, 121, 0.2);
-  box-shadow: 0 0 20px rgba(0, 219, 121, 0.1);
+/* Right — blue glossy */
+.cons-cube-face--right {
+  transform: rotateY(90deg) translateZ(calc(clamp(200px, 25vw, 320px) / 2));
+  background: linear-gradient(180deg, #00AAFF 0%, #0066CC 100%);
+  opacity: 0.75;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.25);
+}
+
+/* Left — dark blue with sheen */
+.cons-cube-face--left {
+  transform: rotateY(-90deg) translateZ(calc(clamp(200px, 25vw, 320px) / 2));
+  background: linear-gradient(180deg, #0d2844, #00AAFF);
+  opacity: 0.7;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Top — bright white/green shine */
+.cons-cube-face--top {
+  transform: rotateX(90deg) translateZ(calc(clamp(200px, 25vw, 320px) / 2));
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(0, 219, 121, 0.5));
+  opacity: 0.6;
+  box-shadow: inset 0 0 80px rgba(0, 219, 121, 0.2);
+}
+
+/* Bottom — deep shadow */
+.cons-cube-face--bottom {
+  transform: rotateX(-90deg) translateZ(calc(clamp(200px, 25vw, 320px) / 2));
+  background: #030812;
+  opacity: 0.9;
 }
 
 .cons-glow-1 {

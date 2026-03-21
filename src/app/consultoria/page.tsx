@@ -266,6 +266,102 @@ export default function ConsultoriaPage() {
         </div>
       </section>
 
+      {/* Deploy / Code Section — Resend-style */}
+      <section style={{ padding: '120px 48px', backgroundColor: '#050510', borderTop: '1px solid var(--bg-tertiary)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '120%', height: '120%', background: 'radial-gradient(ellipse at 50% 50%, rgba(0,170,255,0.04) 0%, transparent 60%)', pointerEvents: 'none' }} />
+        <div className="cons-container">
+          <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+            <div className="cons-badge" style={{ margin: '0 auto 20px' }}>{'</>'} Engenharia de Software</div>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800, letterSpacing: '-1.5px', marginBottom: '16px' }}>
+              Do código ao <span className="text-gradient">deploy</span> em minutos
+            </h2>
+            <p className="text-secondary" style={{ fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>
+              APIs robustas, arquitetura modular e deploy automatizado. Cada sistema que construímos é projetado para escalar.
+            </p>
+          </div>
+
+          {/* Code Preview Card */}
+          <div style={{ maxWidth: '1000px', margin: '0 auto', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 40px 100px rgba(0,0,0,0.5), 0 0 60px rgba(0,170,255,0.05)', background: '#0d1117' }}>
+            {/* Window Chrome */}
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(0,0,0,0.3)' }}>
+              <div style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: '#ff5f56' }} />
+              <div style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: '#ffbd2e' }} />
+              <div style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: '#27c93f' }} />
+              <div style={{ display: 'flex', gap: '0', marginLeft: '20px' }}>
+                <div style={{ padding: '6px 16px', fontSize: '12px', fontWeight: 600, color: '#e6edf3', background: 'rgba(255,255,255,0.06)', borderRadius: '6px 6px 0 0', borderBottom: '2px solid var(--accent-primary)' }}>api/route.ts</div>
+                <div style={{ padding: '6px 16px', fontSize: '12px', fontWeight: 500, color: '#8b949e' }}>dashboard.tsx</div>
+                <div style={{ padding: '6px 16px', fontSize: '12px', fontWeight: 500, color: '#8b949e' }}>schema.sql</div>
+              </div>
+            </div>
+
+            {/* Code Content */}
+            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+              {/* Code Editor */}
+              <div style={{ flex: '1 1 500px', padding: '32px 24px', fontFamily: "'JetBrains Mono', 'Fira Code', monospace", fontSize: '13px', lineHeight: 1.8, color: '#8b949e', borderRight: '1px solid rgba(255,255,255,0.06)', overflowX: 'auto' }}>
+                <pre style={{ margin: 0 }}>
+{`  `}<span style={{ color: '#ff7b72' }}>import</span>{` { `}<span style={{ color: '#79c0ff' }}>createClient</span>{` } `}<span style={{ color: '#ff7b72' }}>from</span>{` `}<span style={{ color: '#a5d6ff' }}>{`'@supabase/supabase-js'`}</span>{`
+  `}<span style={{ color: '#ff7b72' }}>import</span>{` { `}<span style={{ color: '#79c0ff' }}>NextResponse</span>{` } `}<span style={{ color: '#ff7b72' }}>from</span>{` `}<span style={{ color: '#a5d6ff' }}>{`'next/server'`}</span>{`
+
+  `}<span style={{ color: '#ff7b72' }}>export async function</span>{` `}<span style={{ color: '#d2a8ff' }}>POST</span>{`(req: Request) {
+    `}<span style={{ color: '#ff7b72' }}>const</span>{` `}<span style={{ color: '#79c0ff' }}>supabase</span>{` = `}<span style={{ color: '#d2a8ff' }}>createClient</span>{`(
+      process.env.`}<span style={{ color: '#79c0ff' }}>SUPABASE_URL</span>{`!,
+      process.env.`}<span style={{ color: '#79c0ff' }}>SUPABASE_KEY</span>{`!
+    )
+
+    `}<span style={{ color: '#ff7b72' }}>const</span>{` { nome, email } = `}<span style={{ color: '#ff7b72' }}>await</span>{` req.`}<span style={{ color: '#d2a8ff' }}>json</span>{`()
+
+    `}<span style={{ color: '#ff7b72' }}>const</span>{` { data } = `}<span style={{ color: '#ff7b72' }}>await</span>{` supabase
+      .`}<span style={{ color: '#d2a8ff' }}>from</span>{`(`}<span style={{ color: '#a5d6ff' }}>'leads'</span>{`)
+      .`}<span style={{ color: '#d2a8ff' }}>insert</span>{`({ nome, email, status: `}<span style={{ color: '#a5d6ff' }}>'novo'</span>{` })
+
+    `}<span style={{ color: '#ff7b72' }}>return</span>{` NextResponse.`}<span style={{ color: '#d2a8ff' }}>json</span>{`({ `}<span style={{ color: '#79c0ff' }}>success</span>{`: `}<span style={{ color: '#79c0ff' }}>true</span>{`, data })
+  }`}
+                </pre>
+              </div>
+
+              {/* Preview Panel */}
+              <div style={{ flex: '1 1 380px', padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'rgba(0,0,0,0.2)' }}>
+                <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '20px' }}>✦ RESPOSTA EM TEMPO REAL</div>
+                <div style={{ background: 'rgba(0,219,121,0.06)', border: '1px solid rgba(0,219,121,0.15)', borderRadius: '12px', padding: '20px', fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: '#e6edf3', lineHeight: 1.8 }}>
+                  <div style={{ color: '#8b949e', marginBottom: '4px' }}>{'// 200 OK — 23ms'}</div>
+                  <div>{'{'}</div>
+                  <div style={{ paddingLeft: '16px' }}><span style={{ color: '#79c0ff' }}>&quot;success&quot;</span>: <span style={{ color: '#79c0ff' }}>true</span>,</div>
+                  <div style={{ paddingLeft: '16px' }}><span style={{ color: '#79c0ff' }}>&quot;data&quot;</span>: {'{'}</div>
+                  <div style={{ paddingLeft: '32px' }}><span style={{ color: '#79c0ff' }}>&quot;id&quot;</span>: <span style={{ color: '#a5d6ff' }}>&quot;f47ac10b...&quot;</span>,</div>
+                  <div style={{ paddingLeft: '32px' }}><span style={{ color: '#79c0ff' }}>&quot;status&quot;</span>: <span style={{ color: '#a5d6ff' }}>&quot;novo&quot;</span>,</div>
+                  <div style={{ paddingLeft: '32px' }}><span style={{ color: '#79c0ff' }}>&quot;created_at&quot;</span>: <span style={{ color: '#a5d6ff' }}>&quot;now()&quot;</span></div>
+                  <div style={{ paddingLeft: '16px' }}>{'}'}</div>
+                  <div>{'}'}</div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
+                  {['Vercel', 'Edge Runtime', 'Auto-scale'].map((tag, i) => (
+                    <div key={i} style={{ padding: '6px 14px', borderRadius: '8px', background: 'rgba(0,170,255,0.1)', border: '1px solid rgba(0,170,255,0.2)', fontSize: '11px', fontWeight: 600, color: 'var(--accent-secondary)' }}>
+                      {tag}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Deploy Features */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginTop: '64px', maxWidth: '1000px', margin: '64px auto 0' }}>
+            {[
+              { icon: '⚡', title: 'Deploy Automático', desc: 'Push para o Git e o deploy acontece em segundos via Vercel. Zero downtime.' },
+              { icon: '🌍', title: 'Edge Network Global', desc: 'Seu sistema distribuído em 30+ data centers mundiais. Latência abaixo de 50ms.' },
+              { icon: '🔐', title: 'SSL + Auth Integrado', desc: 'HTTPS automático, autenticação multi-fator e Row Level Security no banco.' },
+            ].map((f, i) => (
+              <div key={i} style={{ padding: '28px', borderRadius: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', transition: 'all 0.3s ease' }}>
+                <div style={{ fontSize: '32px', marginBottom: '16px' }}>{f.icon}</div>
+                <h4 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>{f.title}</h4>
+                <p className="text-secondary" style={{ fontSize: '14px', lineHeight: 1.6 }}>{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Tech Stack */}
       <section style={{ padding: '80px 48px', backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--bg-tertiary)' }}>
         <div className="cons-container">
