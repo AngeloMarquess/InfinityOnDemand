@@ -11,6 +11,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'to and message are required' }, { status: 400 });
     }
 
+    // Fix Brazilian number format (add 9 if missing)
+    let formattedTo = to.replace(/\D/g, '');
+    if (formattedTo.startsWith('55')) {
+      const ddd = formattedTo.substring(2, 4);
+      const body = formattedTo.substring(4);
+      if (body.length === 8 && /^[6-9]/.test(body)) {
+        formattedTo = `55${ddd}9${body}`;
+      }
+    }
+
     const url = `https://graph.facebook.com/v21.0/${PHONE_NUMBER_ID}/messages`;
 
     const res = await fetch(url, {
@@ -22,7 +32,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         messaging_product: 'whatsapp',
         recipient_type: 'individual',
-        to,
+        to: formattedTo,
         type: 'text',
         text: { body: message },
       }),

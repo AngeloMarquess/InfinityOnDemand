@@ -105,6 +105,7 @@ export default function FlashSDRTab() {
     open: '#F59E0B',
     qualified: '#00DB79',
     scheduled: '#8B5CF6',
+    transferred: '#EF4444',
     closed: 'rgba(255,255,255,0.3)',
   };
 
@@ -112,6 +113,7 @@ export default function FlashSDRTab() {
     open: '🟡 Novo',
     qualified: '🟢 Qualificado',
     scheduled: '🟣 Agendado',
+    transferred: '🚨 Transf.',
     closed: '⚪ Fechado',
   };
 
@@ -138,6 +140,27 @@ export default function FlashSDRTab() {
               {conversations.length} conversa{conversations.length !== 1 ? 's' : ''}
             </span>
           </div>
+          <button 
+            onClick={async () => {
+              const to = prompt('Digite o número para teste (ex: 5581971027939)');
+              if (!to) return;
+              try {
+                const res = await fetch(`/api/whatsapp/test-delivery?to=${to}`);
+                const data = await res.json();
+                alert(`RESULTADO DIAGNÓSTICO:\nStatus: ${data.status}\nOK: ${data.ok}\nMeta:\n${JSON.stringify(data.meta_response, null, 2)}`);
+              } catch (err: any) {
+                alert(`ERRO AO CONECTAR NA API: ${err.message}`);
+              }
+            }}
+            style={{
+              padding: '6px 12px', borderRadius: '8px',
+              border: '1px solid rgba(0,219,121,0.3)', backgroundColor: 'rgba(0,219,121,0.05)',
+              color: '#00DB79', fontSize: '10px', fontWeight: 700, cursor: 'pointer',
+              marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px'
+            }}
+          >
+            📡 TESTAR
+          </button>
         </div>
 
         {/* Conversations */}
@@ -253,10 +276,23 @@ export default function FlashSDRTab() {
                     backgroundColor: msg.role === 'lead' ? 'rgba(255,255,255,0.05)' : 'rgba(0,219,121,0.1)',
                     border: msg.role === 'lead' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,219,121,0.15)',
                   }}>
-                    <p style={{ fontSize: '13px', lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', whiteSpace: 'pre-wrap' }}>{msg.message}</p>
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.2)', marginTop: '4px', display: 'block', textAlign: msg.role === 'lead' ? 'left' : 'right' }}>
-                      {new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+                    <p style={{ fontSize: '13px', lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', whiteSpace: 'pre-wrap' }}>
+                      {(msg as any).metadata?.audio && <span style={{ marginRight: '6px' }}>🎙️</span>}
+                      {msg.message}
+                    </p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', gap: '8px' }}>
+                      {!(msg as any).metadata?.meta_ok && (msg as any).role === 'flash' && (
+                        <button 
+                          onClick={() => alert(`ERRO META: Status ${ (msg as any).metadata?.meta_status}\n${JSON.stringify((msg as any).metadata?.meta_response, null, 2)}`)}
+                          style={{ fontSize: '9px', color: '#EF4444', fontWeight: 700, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
+                        >
+                          ⚠️ ERRO META (Ver Detalhes)
+                        </button>
+                      )}
+                      <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.2)', flex: 1, textAlign: msg.role === 'lead' ? 'left' : 'right' }}>
+                        {new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
                   </div>
                   {msg.role === 'flash' && (
                     <img src="/flash-avatar.png" alt="Flash" style={{

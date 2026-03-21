@@ -41,14 +41,31 @@ export async function POST(request: NextRequest) {
     const contact = value.contacts?.[0];
     const from = message.from; // phone number
     const contactName = contact?.profile?.name || 'Lead';
-    const messageText = message.text?.body || '';
     const messageType = message.type;
+    let messageText = '';
 
-    // Only handle text messages for now
-    if (messageType !== 'text' || !messageText) {
-      // Acknowledge non-text messages
-      await sendWhatsAppMessage(from, '⚡ Recebi sua mensagem! No momento, consigo responder apenas mensagens de texto. Me envie sua dúvida por escrito!');
-      return NextResponse.json({ status: 'non_text_acknowledged' }, { status: 200 });
+    // If it's audio/voice, transcribe it using Whisper
+    if (messageType === 'audio' || messageType === 'voice') {
+      const mediaId = message.audio?.id || message.voice?.id;
+      if (mediaId) {
+        console.log(`🎙️ Processing audio from ${contactName}...`);
+        messageText = await transcribeWhatsAppAudio(mediaId);
+        if (!messageText) {
+          await sendWhatsAppMessage(from, '⚡ Desculpe, não consegui entender o áudio. Pode me mandar por escrito?');
+          return NextResponse.json({ status: 'audio_error' }, { status: 200 });
+        }
+      }
+    } else if (messageType === 'text') {
+      messageText = message.text?.body || '';
+    }
+
+    // Only handle if we have some text to work with
+    if (!messageText) {
+      if (messageType !== 'text' && messageType !== 'audio' && messageType !== 'voice') {
+        // Acknowledge other non-text messages
+        await sendWhatsAppMessage(from, '⚡ Recebi sua mensagem, mas no momento consigo entender apenas texto ou áudio. Me envie sua dúvida por escrito!');
+      }
+      return NextResponse.json({ status: 'non_handled_type' }, { status: 200 });
     }
 
     console.log(`📩 WhatsApp from ${contactName} (${from}): ${messageText}`);
@@ -60,15 +77,54 @@ export async function POST(request: NextRequest) {
       role: 'lead',
       message: messageText,
       status: 'open',
+      metadata: (messageType === 'audio' || messageType === 'voice') ? { audio: true } : null
     });
 
     // Load conversation history for context
     const { data: history } = await supabase
       .from('whatsapp_conversations')
-      .select('role, message')
+      .select('role, message, status')
       .eq('phone', from)
       .order('created_at', { ascending: true })
-      .limit(20);
+      .limit(30);
+
+    // Skip bot if already transferred or handled by human
+    const isTransferred = history?.some(h => h.status === 'transferred' || h.status === 'human');
+    if (isTransferred) {
+      console.log(`⏹️ Skipping bot for ${from} (Transferred to human)`);
+      return NextResponse.json({ status: 'transferred_skipped' }, { status: 200 });
+    }
+
+    // ─── Attendant Hand-off Logic ───
+    const attendantKeywords = ['atendente', 'humano', 'falar com alguém', 'pessoa', 'suporte', 'ajuda', 'falar com ricardo', 'falar com angelo'];
+    const isAttendantRequest = attendantKeywords.some(k => messageText.toLowerCase().includes(k));
+
+    if (isAttendantRequest) {
+      const userRequests = (history || []).filter(h => 
+        h.role === 'lead' && attendantKeywords.some(k => h.message.toLowerCase().includes(k))
+      );
+      
+      // If this is the 3rd request (asked 2 times in history)
+      if (userRequests.length >= 2) {
+        const ownerPhone = '5581971027939'; // User's requested phone
+        const notification = `🚨 *HAND-OFF FLASH*\n\nO cliente *${contactName}* (+${from}) pediu atendimento humano pela ${userRequests.length + 1}ª vez.\n\n*Última mensagem:* "${messageText}"\n\nAbra o painel para assumir: https://flash.infinityondemand.com.br/relatorios_infinity`;
+        
+        await sendWhatsAppMessage(ownerPhone, notification);
+        
+        const finalLeadMsg = `Certo, ${contactName}! Percebi que você deseja falar com um especialista. Eu já acionei o meu supervisor humano (Angelo/Ricardo) e ele vai assumir essa conversa a partir de agora! 👨‍💻`;
+        await sendWhatsAppMessage(from, finalLeadMsg);
+        
+        await supabase.from('whatsapp_conversations').insert({
+          phone: from,
+          name: contactName,
+          role: 'flash',
+          message: finalLeadMsg,
+          status: 'transferred'
+        });
+        
+        return NextResponse.json({ status: 'transferred' }, { status: 200 });
+      }
+    }
 
     // Load business settings for context
     const { data: settings } = await supabase
@@ -106,16 +162,31 @@ export async function POST(request: NextRequest) {
     const flashResponse = completion.choices[0]?.message?.content || 'Obrigado pela mensagem! Um consultor vai entrar em contato em breve.';
 
     // Send response via WhatsApp
-    await sendWhatsAppMessage(from, flashResponse);
+    const sendRes = await sendWhatsAppMessage(from, flashResponse);
+    
+    // Raio-X: Get Meta response body for debugging
+    let metaResponse = {};
+    try {
+      metaResponse = await sendRes.clone().json();
+    } catch {
+      metaResponse = { raw: 'Could not parse JSON' };
+    }
 
     // Save Flash response to Supabase
-    await supabase.from('whatsapp_conversations').insert({
+    const { error: insertError } = await supabase.from('whatsapp_conversations').insert({
       phone: from,
       name: contactName,
       role: 'flash',
       message: flashResponse,
       status: 'open',
+      metadata: { 
+        meta_status: sendRes.status, 
+        meta_ok: sendRes.ok, 
+        meta_response: metaResponse 
+      }
     });
+
+    if (insertError) console.error('Supabase insert error:', insertError);
 
     console.log(`⚡ Flash replied to ${contactName}: ${flashResponse.substring(0, 100)}...`);
 
@@ -127,9 +198,26 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// ─── Formatting ───
+function formatWhatsAppTo(to: string): string {
+  let cleaned = to.replace(/\D/g, '');
+  if (cleaned.startsWith('55')) {
+    const ddd = cleaned.substring(2, 4);
+    const body = cleaned.substring(4);
+    // If it's a mobile number (starts with 6-9) and missing the 9th digit
+    if (body.length === 8 && /^[6-9]/.test(body)) {
+      return `55${ddd}9${body}`;
+    }
+  }
+  return cleaned;
+}
+
 // ─── Send WhatsApp Message ───
 async function sendWhatsAppMessage(to: string, text: string) {
+  const formattedTo = formatWhatsAppTo(to);
   const url = `https://graph.facebook.com/v21.0/${PHONE_NUMBER_ID}/messages`;
+
+  console.log(`📡 Sending to ${formattedTo} (original: ${to})...`);
 
   const res = await fetch(url, {
     method: 'POST',
@@ -140,7 +228,7 @@ async function sendWhatsAppMessage(to: string, text: string) {
     body: JSON.stringify({
       messaging_product: 'whatsapp',
       recipient_type: 'individual',
-      to,
+      to: formattedTo,
       type: 'text',
       text: { body: text },
     }),
@@ -152,6 +240,41 @@ async function sendWhatsAppMessage(to: string, text: string) {
   }
 
   return res;
+}
+
+// ─── Transcribe Audio with Whisper ───
+async function transcribeWhatsAppAudio(mediaId: string): Promise<string> {
+  try {
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    // 1. Get Media URL from Meta
+    const mediaUrlRes = await fetch(`https://graph.facebook.com/v21.0/${mediaId}`, {
+      headers: { 'Authorization': `Bearer ${WHATSAPP_TOKEN}` }
+    });
+    const mediaData = await mediaUrlRes.json();
+    if (!mediaData.url) return '';
+
+    // 2. Download the audio file
+    const audioContentRes = await fetch(mediaData.url, {
+      headers: { 'Authorization': `Bearer ${WHATSAPP_TOKEN}` }
+    });
+    const audioBuffer = Buffer.from(await audioContentRes.arrayBuffer());
+
+    // 3. Create a virtual file for OpenAI (OpenAI Node SDK requires a file-like object)
+    // We create a tiny buffer wrapper with name/type
+    const audioFile = new File([audioBuffer], 'voice_note.ogg', { type: 'audio/ogg' });
+
+    // 4. Send to Whisper
+    const transcription = await openai.audio.transcriptions.create({
+      file: audioFile,
+      model: 'whisper-1'
+    });
+
+    return transcription.text || '';
+  } catch (error) {
+    console.error('Whisper Transcription Error:', error);
+    return '';
+  }
 }
 
 // ─── Flash SDR System Prompt ───
