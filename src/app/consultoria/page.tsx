@@ -410,7 +410,7 @@ export default function ConsultoriaPage() {
             </p>
           </div>
           <a
-            href="https://wa.me/5581971027939?text=Ol%C3%A1%20Flash!%20Quero%20saber%20mais%20sobre%20consultoria%20e%20sistemas%20personalizados%20da%20Infinity."
+            href="https://wa.me/558193997207?text=Ol%C3%A1%20Flash!%20Quero%20saber%20mais%20sobre%20consultoria%20e%20sistemas%20personalizados%20da%20Infinity."
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary"

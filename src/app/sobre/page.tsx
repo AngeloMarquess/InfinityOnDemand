@@ -357,7 +357,7 @@ export default function SobrePage() {
               Falar com a Infinity
             </a>
             <a
-              href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Vi%20o%20site%20e%20quero%20saber%20mais%20sobre%20a%20Infinity%20OnDemand."
+              href="https://wa.me/558193997207?text=Ol%C3%A1!%20Vi%20o%20site%20e%20quero%20saber%20mais%20sobre%20a%20Infinity%20OnDemand."
               target="_blank"
               rel="noopener noreferrer"
               className="btn-secondary"

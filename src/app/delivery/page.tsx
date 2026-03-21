@@ -483,7 +483,7 @@ export default function DeliveryPage() {
                       </li>
                     ))}
                   </ul>
-                  <a href={plan.name === "Enterprise" ? "https://wa.me/5581971027939?text=Ol%C3%A1%20Flash!%20Quero%20saber%20mais%20sobre%20o%20plano%20Enterprise%20do%20Infinity%20Delivery." : "#contact"} target={plan.name === "Enterprise" ? "_blank" : undefined} rel={plan.name === "Enterprise" ? "noopener noreferrer" : undefined} className={plan.highlight ? "btn-primary" : "btn-secondary"} style={{ width: "100%", padding: "16px", fontSize: "16px", textAlign: "center", justifyContent: "center" }}>
+                  <a href={plan.name === "Enterprise" ? "https://wa.me/558193997207?text=Ol%C3%A1%20Flash!%20Quero%20saber%20mais%20sobre%20o%20plano%20Enterprise%20do%20Infinity%20Delivery." : "#contact"} target={plan.name === "Enterprise" ? "_blank" : undefined} rel={plan.name === "Enterprise" ? "noopener noreferrer" : undefined} className={plan.highlight ? "btn-primary" : "btn-secondary"} style={{ width: "100%", padding: "16px", fontSize: "16px", textAlign: "center", justifyContent: "center" }}>
                     {plan.cta}
                   </a>
                 </div>
@@ -508,7 +508,7 @@ export default function DeliveryPage() {
             </p>
           </div>
           <a 
-            href="https://wa.me/5581971027939?text=Ol%C3%A1%20Flash!%20Quero%20saber%20mais%20sobre%20o%20Infinity%20Delivery%20OS." 
+            href="https://wa.me/558193997207?text=Ol%C3%A1%20Flash!%20Quero%20saber%20mais%20sobre%20o%20Infinity%20Delivery%20OS." 
             target="_blank" 
             rel="noopener noreferrer"
             className="btn-primary" 
@@ -600,7 +600,7 @@ export default function DeliveryPage() {
               Comece Agora — É Grátis
             </a>
             <a 
-              href="https://wa.me/5581971027939?text=Ol%C3%A1%20Flash!%20Quero%20saber%20mais%20sobre%20o%20Infinity%20Delivery%20OS." 
+              href="https://wa.me/558193997207?text=Ol%C3%A1%20Flash!%20Quero%20saber%20mais%20sobre%20o%20Infinity%20Delivery%20OS." 
               target="_blank" 
               rel="noopener noreferrer"
               className="btn-secondary" 

@@ -897,7 +897,7 @@ export default function RelatoriosInfinity() {
             }}>
               <h3 style={{ fontSize: '28px', fontWeight: 700, color: '#fff', marginBottom: '12px' }}>Pronto para executar este plano?</h3>
               <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.5)', marginBottom: '28px' }}>Agende uma sessão de estratégia com Angelo Marques e comece a escalar sua presença digital.</p>
-              <a href="https://wa.me/5581971027939" target="_blank" rel="noopener noreferrer" style={{
+              <a href="https://wa.me/558193997207" target="_blank" rel="noopener noreferrer" style={{
                 display: 'inline-flex', alignItems: 'center', gap: '10px',
                 padding: '16px 36px', borderRadius: '14px',
                 background: 'linear-gradient(135deg, #00DB79 0%, #00bf68 100%)',
