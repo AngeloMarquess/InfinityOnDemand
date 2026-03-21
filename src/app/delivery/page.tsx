@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Image from "next/image";
@@ -56,6 +57,40 @@ const testimonials = [
 ];
 
 export default function DeliveryPage() {
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formSuccess, setFormSuccess] = useState(false);
+
+  const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 11) value = value.slice(0, 11);
+    if (value.length > 2) value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+    if (value.length > 9) value = `${value.slice(0, 10)}-${value.slice(10)}`;
+    setWhatsapp(value);
+  };
+
+  const handleLeadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nome || !email) return;
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, whatsapp, origin: 'delivery' }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      setFormSuccess(true);
+      setNome('');
+      setEmail('');
+      setWhatsapp('');
+    } catch {
+      alert('Houve um erro ao enviar. Tente novamente.');
+    }
+    setIsSubmitting(false);
+  };
   return (
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Header />
@@ -510,6 +545,43 @@ export default function DeliveryPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Contact Form Section */}
+      <section id="contact" style={{ padding: "120px 48px", backgroundColor: "var(--bg-primary)", borderTop: "1px solid var(--bg-tertiary)", display: "flex", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", maxWidth: "800px", height: "100%", background: "radial-gradient(circle, rgba(0,170,255,0.12) 0%, transparent 60%)", zIndex: 0, pointerEvents: "none" }}></div>
+        <div style={{ maxWidth: "600px", width: "100%", backgroundColor: "rgba(255, 255, 255, 0.03)", borderRadius: "24px", padding: "clamp(24px, 4vw, 48px)", border: "1px solid rgba(0, 170, 255, 0.2)", backdropFilter: "blur(20px)", boxShadow: "0 30px 60px rgba(0,0,0,0.3)", zIndex: 1, position: "relative" }}>
+          <h2 style={{ fontSize: "clamp(28px, 4vw, 36px)", fontWeight: 700, letterSpacing: "-0.5px", marginBottom: "16px", textAlign: "center", color: "#ffffff" }}>Quer testar <span className="text-gradient">grátis</span>?</h2>
+          <p style={{ textAlign: "center", marginBottom: "40px", color: "rgba(255, 255, 255, 0.7)", fontSize: "18px" }}>Deixe seus dados e entraremos em contato para uma demonstração personalizada.</p>
+          {formSuccess ? (
+            <div style={{ textAlign: 'center', padding: '40px 0' }}>
+              <div style={{ fontSize: '48px', marginBottom: '16px' }}>✅</div>
+              <h3 style={{ fontSize: '24px', fontWeight: 600, color: '#fff', marginBottom: '8px' }}>Dados enviados com sucesso!</h3>
+              <p style={{ color: 'rgba(255,255,255,0.7)' }}>Entraremos em contato em breve para agendar sua demonstração.</p>
+              <button type="button" onClick={() => setFormSuccess(false)} className="btn-primary" style={{ marginTop: '20px', padding: '12px 24px', border: 'none', borderRadius: '12px', cursor: 'pointer' }}>Enviar novamente</button>
+            </div>
+          ) : (
+          <form style={{ display: "flex", flexDirection: "column", gap: "24px" }} onSubmit={handleLeadSubmit}>
+            <div>
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: 500, fontSize: "14px", color: "rgba(255,255,255,0.9)" }}>Nome do Restaurante</label>
+              <input type="text" placeholder="Ex: Pizzaria Família Faria" required value={nome} onChange={e => setNome(e.target.value)} style={{ width: "100%", padding: "14px 16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", backgroundColor: "rgba(0,0,0,0.2)", color: "#fff", fontSize: "16px", fontFamily: "inherit", outline: "none", transition: "all 0.2s" }} onFocus={(e) => { e.target.style.backgroundColor="rgba(0,0,0,0.4)"; e.target.style.borderColor="var(--accent-secondary)"; }} onBlur={(e) => { e.target.style.backgroundColor="rgba(0,0,0,0.2)"; e.target.style.borderColor="rgba(255,255,255,0.1)"; }} />
+            </div>
+            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+              <div style={{ flex: "1 1 200px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: 500, fontSize: "14px", color: "rgba(255,255,255,0.9)" }}>E-mail</label>
+                <input type="email" placeholder="seu@email.com" required value={email} onChange={e => setEmail(e.target.value)} style={{ width: "100%", padding: "14px 16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", backgroundColor: "rgba(0,0,0,0.2)", color: "#fff", fontSize: "16px", fontFamily: "inherit", outline: "none", transition: "all 0.2s" }} onFocus={(e) => { e.target.style.backgroundColor="rgba(0,0,0,0.4)"; e.target.style.borderColor="var(--accent-secondary)"; }} onBlur={(e) => { e.target.style.backgroundColor="rgba(0,0,0,0.2)"; e.target.style.borderColor="rgba(255,255,255,0.1)"; }} />
+              </div>
+              <div style={{ flex: "1 1 200px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: 500, fontSize: "14px", color: "rgba(255,255,255,0.9)" }}>WhatsApp</label>
+                <input type="text" placeholder="(11) 99999-9999" maxLength={15} value={whatsapp} onChange={handleWhatsappChange} style={{ width: "100%", padding: "14px 16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", backgroundColor: "rgba(0,0,0,0.2)", color: "#fff", fontSize: "16px", fontFamily: "inherit", outline: "none", transition: "all 0.2s" }} onFocus={(e) => { e.target.style.backgroundColor="rgba(0,0,0,0.4)"; e.target.style.borderColor="var(--accent-secondary)"; }} onBlur={(e) => { e.target.style.backgroundColor="rgba(0,0,0,0.2)"; e.target.style.borderColor="rgba(255,255,255,0.1)"; }} />
+              </div>
+            </div>
+            <button type="submit" className="btn-primary" disabled={isSubmitting} style={{ width: "100%", padding: "18px", fontSize: "16px", marginTop: "12px", border: "none", borderRadius: "12px", cursor: "pointer", opacity: isSubmitting ? 0.7 : 1 }}>
+              {isSubmitting ? 'Enviando...' : 'Agendar Demonstração Gratuita'}
+            </button>
+          </form>
+          )}
         </div>
       </section>
 

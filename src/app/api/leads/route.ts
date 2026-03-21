@@ -4,11 +4,11 @@ import { checkPlanLimit } from '@/lib/crm/subscription';
 
 export async function POST(request: Request) {
   try {
-    const { nome, email, whatsapp } = await request.json();
+    const { nome, email, whatsapp, origin: formOrigin, message } = await request.json();
 
-    if (!nome || !email || !whatsapp) {
+    if (!nome || !email) {
       return NextResponse.json(
-        { error: 'Nome, email e WhatsApp são obrigatórios.' },
+        { error: 'Nome e email são obrigatórios.' },
         { status: 400 }
       );
     }
@@ -41,6 +41,10 @@ export async function POST(request: Request) {
       .limit(1);
 
     const stageId = stages?.[0]?.id || null;
+    const leadOrigin = formOrigin || 'site';
+    const leadNotes = message
+      ? `Lead capturado via ${leadOrigin} em ${new Date().toLocaleDateString('pt-BR')}.\nMensagem: ${message}`
+      : `Lead capturado via ${leadOrigin} em ${new Date().toLocaleDateString('pt-BR')}.`;
 
     // Insert contact
     const { data, error } = await supabase
@@ -49,11 +53,11 @@ export async function POST(request: Request) {
         user_id: crmOwnerId,
         name: nome,
         email: email,
-        phone: whatsapp,
-        origin: 'ecommerce-site',
+        phone: whatsapp || null,
+        origin: leadOrigin,
         contact_type: 'lead',
         stage_id: stageId,
-        notes: `Lead capturado via landing page de e-commerce em ${new Date().toLocaleDateString('pt-BR')}.`,
+        notes: leadNotes,
       })
       .select()
       .single();
