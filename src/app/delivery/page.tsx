@@ -615,6 +615,68 @@ export default function DeliveryPage() {
         </div>
       </section>
 
+
+      {/* FAQ Section — AEO/GEO */}
+      <section style={{ padding: "100px 48px", backgroundColor: "var(--bg-primary)", borderTop: "1px solid var(--bg-tertiary)" }}>
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "60px" }}>
+            <h2 style={{ fontSize: "36px", fontWeight: 800, letterSpacing: "-1px", marginBottom: "16px" }}>
+              Perguntas <span className="text-gradient">Frequentes</span>
+            </h2>
+            <p className="text-secondary" style={{ fontSize: "18px" }}>Tudo que você precisa saber sobre o Infinity Delivery OS.</p>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {[
+              {
+                q: "Preciso de um app próprio para ter um sistema de delivery?",
+                a: "Não! O Infinity Delivery OS funciona 100% via web. Seu cliente acessa o cardápio digital pelo celular, sem precisar baixar nenhum aplicativo. Basta compartilhar o link ou usar QR Code."
+              },
+              {
+                q: "Qual a diferença entre o Infinity Delivery OS e o iFood?",
+                a: "O iFood cobra comissões de até 27% por pedido e você não tem controle dos dados dos clientes. Com o Infinity Delivery OS, você tem seu próprio domínio, zero comissão por pedido, acesso total aos dados e personalização completa da marca."
+              },
+              {
+                q: "Quanto tempo leva para configurar meu cardápio digital?",
+                a: "O setup completo pode ser feito em menos de 5 minutos. Você cadastra seus produtos, personaliza as cores e logo, e já pode começar a receber pedidos. Oferecemos 14 dias de teste grátis, sem necessidade de cartão de crédito."
+              },
+              {
+                q: "O sistema funciona para pizzarias, hamburguerias e outros tipos de restaurante?",
+                a: "Sim! O Infinity Delivery OS foi projetado para qualquer tipo de estabelecimento: pizzarias, hamburguerias, restaurantes orientais, açaiterias, padarias, food trucks e mais. Já temos cases como Dom Black, Recanto Oriental e Pizzaria Família Faria."
+              },
+              {
+                q: "Posso integrar o sistema com impressoras da cozinha e notas fiscais?",
+                a: "Sim. O plano Professional inclui integração com impressoras térmicas para pedidos na cozinha. O plano Enterprise oferece integrações com sistemas fiscais (NFC-e/NF-e) e ERPs. Fale com nosso consultor Flash para mais detalhes."
+              },
+            ].map((item, i) => (
+              <details key={i} style={{
+                borderRadius: "16px",
+                border: "1px solid var(--bg-tertiary)",
+                backgroundColor: "var(--bg-secondary)",
+                overflow: "hidden",
+              }}>
+                <summary style={{
+                  padding: "20px 24px",
+                  cursor: "pointer",
+                  fontWeight: 700,
+                  fontSize: "16px",
+                  color: "var(--text-primary)",
+                  listStyle: "none",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}>
+                  {item.q}
+                  <span style={{ color: "var(--accent-primary)", fontSize: "20px", flexShrink: 0, marginLeft: "12px" }}>+</span>
+                </summary>
+                <div style={{ padding: "0 24px 20px", fontSize: "15px", lineHeight: 1.7, color: "var(--text-secondary)" }}>
+                  {item.a}
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </main>
   );

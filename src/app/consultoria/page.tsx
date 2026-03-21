@@ -491,6 +491,68 @@ export default function ConsultoriaPage() {
         </div>
       </section>
 
+
+      {/* FAQ Section — AEO/GEO */}
+      <section style={{ padding: '100px 48px', backgroundColor: 'var(--bg-primary)', borderTop: '1px solid var(--bg-tertiary)' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <h2 style={{ fontSize: '36px', fontWeight: 800, letterSpacing: '-1px', marginBottom: '16px' }}>
+              Perguntas <span className="text-gradient">Frequentes</span>
+            </h2>
+            <p className="text-secondary" style={{ fontSize: '18px' }}>Tire suas dúvidas sobre consultoria e sistemas personalizados.</p>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {[
+              {
+                q: 'Qual a diferença entre contratar uma consultoria e uma agência de marketing?',
+                a: 'Uma agência de marketing foca em campanhas e anúncios. A Infinity OnDemand vai além: fazemos diagnóstico do negócio, desenvolvemos sistemas sob medida, automações e estratégia de longo prazo. Combinamos consultoria estratégica com engenharia de software avançada.'
+              },
+              {
+                q: 'Vocês desenvolvem sistemas do zero ou usam plataformas prontas?',
+                a: 'Depende do projeto. Temos módulos prontos (CRM, Financeiro, Delivery, E-commerce) que podem ser combinados rapidamente. Mas também desenvolvemos sistemas 100% do zero quando o projeto exige. Cada módulo funciona de forma independente e pode ser integrado conforme a necessidade.'
+              },
+              {
+                q: 'Quanto custa uma consultoria com a Infinity OnDemand?',
+                a: 'O diagnóstico inicial é gratuito. A partir dele, montamos uma proposta personalizada de acordo com o escopo do projeto. Trabalhamos com sprints ágeis e entregas semanais, garantindo transparência total no investimento. Entre em contato pelo WhatsApp para uma avaliação sem compromisso.'
+              },
+              {
+                q: 'Quais tecnologias vocês utilizam nos projetos?',
+                a: 'Trabalhamos com stack moderna e de alta performance: React, Next.js, TypeScript, Node.js, Supabase, PostgreSQL, Docker e Vercel. Também utilizamos OpenAI para automações com inteligência artificial e integrações com ERPs, Stripe e gateways de pagamento nacionais.'
+              },
+              {
+                q: 'A Infinity atende clientes fora de Recife?',
+                a: 'Sim! Embora nossa sede seja em Recife-PE, atendemos clientes em todo o Brasil de forma 100% remota. Nossos sistemas são todos online e nosso suporte funciona 24/7 via WhatsApp através do Flash, nosso consultor com inteligência artificial.'
+              },
+            ].map((item, i) => (
+              <details key={i} style={{
+                borderRadius: '16px',
+                border: '1px solid var(--bg-tertiary)',
+                backgroundColor: 'var(--bg-secondary)',
+                overflow: 'hidden',
+              }}>
+                <summary style={{
+                  padding: '20px 24px',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontSize: '16px',
+                  color: 'var(--text-primary)',
+                  listStyle: 'none',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                  {item.q}
+                  <span style={{ color: 'var(--accent-primary)', fontSize: '20px', flexShrink: 0, marginLeft: '12px' }}>+</span>
+                </summary>
+                <div style={{ padding: '0 24px 20px', fontSize: '15px', lineHeight: 1.7, color: 'var(--text-secondary)' }}>
+                  {item.a}
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </main>
   );
