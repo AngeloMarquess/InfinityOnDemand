@@ -45,14 +45,14 @@ const services = [
 ];
 
 const modules = [
-  { icon: '👥', title: 'CRM', desc: 'Pipeline de vendas, leads e clientes' },
-  { icon: '💰', title: 'Financeiro', desc: 'Fluxo de caixa e contas a pagar/receber' },
-  { icon: '📋', title: 'Projetos', desc: 'Kanban, tarefas e acompanhamento' },
-  { icon: '🛒', title: 'E-commerce', desc: 'Loja virtual com checkout integrado' },
-  { icon: '🛵', title: 'Delivery', desc: 'Cardápio digital + gestão de pedidos' },
-  { icon: '📄', title: 'Contratos', desc: 'Geração e assinatura digital' },
-  { icon: '📊', title: 'Relatórios', desc: 'Dashboards e BI personalizados' },
-  { icon: '🤖', title: 'IA & Automação', desc: 'Chatbots, SDR e fluxos inteligentes' },
+  { icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#g1)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><defs><linearGradient id="g1" x1="0" y1="0" x2="24" y2="24"><stop stopColor="#00DF81"/><stop offset="1" stopColor="#00AAFF"/></linearGradient></defs><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, title: 'CRM', desc: 'Pipeline de vendas, leads e clientes' },
+  { icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#g2)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><defs><linearGradient id="g2" x1="0" y1="0" x2="24" y2="24"><stop stopColor="#00DF81"/><stop offset="1" stopColor="#00AAFF"/></linearGradient></defs><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M12 14h4"/><path d="M12 18h2"/></svg>, title: 'Financeiro', desc: 'Fluxo de caixa e contas a pagar/receber' },
+  { icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#g3)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><defs><linearGradient id="g3" x1="0" y1="0" x2="24" y2="24"><stop stopColor="#00DF81"/><stop offset="1" stopColor="#00AAFF"/></linearGradient></defs><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>, title: 'Projetos', desc: 'Kanban, tarefas e acompanhamento' },
+  { icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#g4)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><defs><linearGradient id="g4" x1="0" y1="0" x2="24" y2="24"><stop stopColor="#00DF81"/><stop offset="1" stopColor="#00AAFF"/></linearGradient></defs><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>, title: 'E-commerce', desc: 'Loja virtual com checkout integrado' },
+  { icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#g5)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><defs><linearGradient id="g5" x1="0" y1="0" x2="24" y2="24"><stop stopColor="#00DF81"/><stop offset="1" stopColor="#00AAFF"/></linearGradient></defs><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>, title: 'Delivery', desc: 'Cardápio digital + gestão de pedidos' },
+  { icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#g6)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><defs><linearGradient id="g6" x1="0" y1="0" x2="24" y2="24"><stop stopColor="#00DF81"/><stop offset="1" stopColor="#00AAFF"/></linearGradient></defs><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>, title: 'Contratos', desc: 'Geração e assinatura digital' },
+  { icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#g7)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><defs><linearGradient id="g7" x1="0" y1="0" x2="24" y2="24"><stop stopColor="#00DF81"/><stop offset="1" stopColor="#00AAFF"/></linearGradient></defs><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, title: 'Relatórios', desc: 'Dashboards e BI personalizados' },
+  { icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#g8)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><defs><linearGradient id="g8" x1="0" y1="0" x2="24" y2="24"><stop stopColor="#00DF81"/><stop offset="1" stopColor="#00AAFF"/></linearGradient></defs><path d="M12 2a4 4 0 0 1 4 4c0 1.95-2 4-4 4s-4-2.05-4-4a4 4 0 0 1 4-4z"/><path d="M20 21v-2a4 4 0 0 0-2.13-3.54"/><path d="M6.13 15.46A4 4 0 0 0 4 19v2"/><circle cx="12" cy="17" r="3"/><path d="M12 14v6"/><path d="M9 17h6"/></svg>, title: 'IA & Automação', desc: 'Chatbots, SDR e fluxos inteligentes' },
 ];
 
 const steps = [
@@ -118,9 +118,17 @@ export default function ConsultoriaPage() {
         <div className="cons-glow-2" />
         <div className="cons-hero-noise" />
 
-        {/* 3D Floating Cube */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/infinity-3d-cube.png" alt="" className="cons-hero-cube" />
+        {/* 3D Rotating Cube */}
+        <div className="cons-cube-wrapper">
+          <div className="cons-cube-scene">
+            <div className="cons-cube-face cons-cube-face--front" />
+            <div className="cons-cube-face cons-cube-face--back" />
+            <div className="cons-cube-face cons-cube-face--right" />
+            <div className="cons-cube-face cons-cube-face--left" />
+            <div className="cons-cube-face cons-cube-face--top" />
+            <div className="cons-cube-face cons-cube-face--bottom" />
+          </div>
+        </div>
 
         <div className="cons-container">
           <div style={{ maxWidth: '620px' }}>
