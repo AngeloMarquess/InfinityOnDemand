@@ -24,11 +24,26 @@ export default function FlashSDRTab() {
   const [manualMessage, setManualMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
+
+  // Auto-collapse sidebar on mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      if (window.innerWidth <= 768) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Load conversations list
   const loadConversations = useCallback(async () => {
@@ -67,6 +82,14 @@ export default function FlashSDRTab() {
     }, 10000);
     return () => clearInterval(interval);
   }, [loadConversations, loadChat, selectedPhone]);
+
+  const handleSelectConversation = (phone: string) => {
+    setSelectedPhone(phone);
+    // Auto-collapse on mobile when selecting a conversation
+    if (window.innerWidth <= 768) {
+      setSidebarOpen(false);
+    }
+  };
 
   const sendManualMessage = async () => {
     if (!manualMessage.trim() || !selectedPhone || sending) return;
@@ -122,71 +145,120 @@ export default function FlashSDRTab() {
       <style>{`
         .flash-sdr-container {
           display: flex;
-          gap: 16px;
+          gap: 0;
           height: calc(100vh - 200px);
           max-height: 800px;
+          position: relative;
+          overflow: hidden;
         }
         .flash-sdr-left {
           width: 320px;
-          flex-shrink: 0;
-          border-radius: 20px;
+          min-width: 320px;
+          border-radius: 20px 0 0 20px;
           border: 1px solid rgba(255,255,255,0.06);
           background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 100%);
           display: flex;
           flex-direction: column;
           overflow: hidden;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 2;
+        }
+        .flash-sdr-left.collapsed {
+          width: 0;
+          min-width: 0;
+          border: none;
+          opacity: 0;
+          pointer-events: none;
         }
         .flash-sdr-right {
           flex: 1;
-          border-radius: 20px;
+          min-width: 0;
+          border-radius: 0 20px 20px 0;
           border: 1px solid rgba(255,255,255,0.06);
           background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 100%);
           display: flex;
           flex-direction: column;
           overflow: hidden;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .flash-sdr-left.collapsed + .flash-sdr-right {
+          border-radius: 20px;
+        }
+        .flash-sdr-collapse-btn {
+          padding: 5px 10px;
+          border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.08);
+          background: transparent;
+          color: rgba(255,255,255,0.4);
+          font-size: 11px;
+          cursor: pointer;
+          font-family: inherit;
+          transition: all 0.2s;
+          white-space: nowrap;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .flash-sdr-collapse-btn:hover {
+          background: rgba(255,255,255,0.05);
+          color: rgba(255,255,255,0.7);
+        }
+        .flash-sdr-toggle-sidebar {
+          padding: 6px 12px;
+          border-radius: 8px;
+          border: 1px solid rgba(0,219,121,0.2);
+          background: rgba(0,219,121,0.06);
+          color: #00DB79;
+          font-size: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: inherit;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .flash-sdr-toggle-sidebar:hover {
+          background: rgba(0,219,121,0.12);
         }
         @media (max-width: 768px) {
           .flash-sdr-container {
-            flex-direction: column;
             height: calc(100vh - 160px);
             max-height: none;
-            gap: 0;
           }
           .flash-sdr-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
             width: 100%;
-            flex-shrink: 1;
+            min-width: 100%;
             border-radius: 16px;
-            min-height: 0;
-            flex: 1;
+            z-index: 10;
+          }
+          .flash-sdr-left.collapsed {
+            width: 0;
+            min-width: 0;
           }
           .flash-sdr-right {
+            width: 100%;
             border-radius: 16px;
-          }
-          .flash-sdr-left.has-selection {
-            display: none;
-          }
-          .flash-sdr-right.no-selection {
-            display: none;
-          }
-          .flash-sdr-right.has-selection {
-            flex: 1;
-            height: 100%;
           }
         }
       `}</style>
       <div className="flash-sdr-container">
 
         {/* Left Panel — Conversations List */}
-        <div className={`flash-sdr-left ${selectedPhone ? 'has-selection' : ''}`}>
+        <div className={`flash-sdr-left ${!sidebarOpen ? 'collapsed' : ''}`}>
           {/* Header */}
           <div style={{
-            padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.06)',
-            display: 'flex', alignItems: 'center', gap: '10px',
+            padding: '16px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+            display: 'flex', alignItems: 'center', gap: '8px',
           }}>
-            <img src="/flash-avatar.png" alt="Flash" style={{ width: '32px', height: '32px', borderRadius: '10px', objectFit: 'cover' }} />
-            <div>
-              <h3 style={{ fontSize: '16px', fontWeight: 700 }}>⚡ Flash SDR</h3>
-              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>
+            <img src="/flash-avatar.png" alt="Flash" style={{ width: '28px', height: '28px', borderRadius: '8px', objectFit: 'cover' }} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h3 style={{ fontSize: '14px', fontWeight: 700 }}>⚡ Flash SDR</h3>
+              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)' }}>
                 {conversations.length} conversa{conversations.length !== 1 ? 's' : ''}
               </span>
             </div>
@@ -203,13 +275,20 @@ export default function FlashSDRTab() {
                 }
               }}
               style={{
-                padding: '6px 12px', borderRadius: '8px',
+                padding: '4px 8px', borderRadius: '6px',
                 border: '1px solid rgba(0,219,121,0.3)', backgroundColor: 'rgba(0,219,121,0.05)',
-                color: '#00DB79', fontSize: '10px', fontWeight: 700, cursor: 'pointer',
-                marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px'
+                color: '#00DB79', fontSize: '9px', fontWeight: 700, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0,
               }}
             >
               📡 TESTAR
+            </button>
+            <button 
+              className="flash-sdr-collapse-btn"
+              onClick={() => setSidebarOpen(false)}
+              title="Recolher menu"
+            >
+              ‹ Recolher
             </button>
           </div>
 
@@ -231,9 +310,9 @@ export default function FlashSDRTab() {
               conversations.map(conv => (
                 <div
                   key={conv.phone}
-                  onClick={() => setSelectedPhone(conv.phone)}
+                  onClick={() => handleSelectConversation(conv.phone)}
                   style={{
-                    padding: '14px 20px', cursor: 'pointer',
+                    padding: '14px 16px', cursor: 'pointer',
                     borderBottom: '1px solid rgba(255,255,255,0.03)',
                     backgroundColor: selectedPhone === conv.phone ? 'rgba(0,219,121,0.06)' : 'transparent',
                     borderLeft: selectedPhone === conv.phone ? '3px solid #00DB79' : '3px solid transparent',
@@ -265,9 +344,18 @@ export default function FlashSDRTab() {
         </div>
 
         {/* Right Panel — Chat */}
-        <div className={`flash-sdr-right ${selectedPhone ? 'has-selection' : 'no-selection'}`}>
+        <div className="flash-sdr-right">
           {!selectedPhone ? (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px', padding: '20px' }}>
+              {!sidebarOpen && (
+                <button 
+                  className="flash-sdr-toggle-sidebar"
+                  onClick={() => setSidebarOpen(true)}
+                  style={{ marginBottom: '8px' }}
+                >
+                  ☰ Abrir conversas
+                </button>
+              )}
               <img src="/flash-avatar.png" alt="Flash" style={{
                 width: '80px', height: '80px', borderRadius: '24px', objectFit: 'cover',
                 border: '2px solid rgba(0,219,121,0.2)', boxShadow: '0 0 30px rgba(0,219,121,0.1)',
@@ -281,42 +369,50 @@ export default function FlashSDRTab() {
             <>
               {/* Chat Header */}
               <div style={{
-                padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+                display: 'flex', alignItems: 'center', gap: '8px',
               }}>
-                <div>
-                  <h4 style={{ fontSize: '15px', fontWeight: 700 }}>
+                {!sidebarOpen && (
+                  <button 
+                    className="flash-sdr-toggle-sidebar"
+                    onClick={() => setSidebarOpen(true)}
+                    style={{ padding: '6px 8px', fontSize: '14px', flexShrink: 0 }}
+                  >
+                    ☰
+                  </button>
+                )}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <h4 style={{ fontSize: '15px', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {conversations.find(c => c.phone === selectedPhone)?.name || selectedPhone}
                   </h4>
-                  <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
-                    +{selectedPhone} • {chatMessages.length} mensagens
+                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>
+                    +{selectedPhone} • {chatMessages.length} msg
                   </span>
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={() => setSelectedPhone(null)} style={{
-                    padding: '6px 12px', borderRadius: '8px',
-                    border: '1px solid rgba(255,255,255,0.08)', backgroundColor: 'transparent',
-                    color: 'rgba(255,255,255,0.4)', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit',
-                  }}>← Voltar</button>
-                </div>
+                <button onClick={() => { setSelectedPhone(null); if (window.innerWidth <= 768) setSidebarOpen(true); }} style={{
+                  padding: '6px 10px', borderRadius: '8px',
+                  border: '1px solid rgba(255,255,255,0.08)', backgroundColor: 'transparent',
+                  color: 'rgba(255,255,255,0.4)', fontSize: '11px', cursor: 'pointer', fontFamily: 'inherit',
+                  flexShrink: 0,
+                }}>✕ Fechar</button>
               </div>
 
               {/* Messages */}
-              <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {chatMessages.map((msg, i) => (
                   <div key={i} style={{
-                    display: 'flex', justifyContent: msg.role === 'lead' ? 'flex-start' : 'flex-end', gap: '8px',
+                    display: 'flex', justifyContent: msg.role === 'lead' ? 'flex-start' : 'flex-end', gap: '6px',
                   }}>
                     {msg.role === 'lead' && (
                       <div style={{
-                        width: '28px', height: '28px', borderRadius: '8px',
+                        width: '26px', height: '26px', borderRadius: '8px',
                         backgroundColor: 'rgba(255,255,255,0.08)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '14px', flexShrink: 0, marginTop: '2px',
+                        fontSize: '12px', flexShrink: 0, marginTop: '2px',
                       }}>👤</div>
                     )}
                     <div style={{
-                      maxWidth: '70%', padding: '10px 14px',
+                      maxWidth: '80%', padding: '10px 12px',
                       borderRadius: msg.role === 'lead' ? '14px 14px 14px 4px' : '14px 14px 4px 14px',
                       backgroundColor: msg.role === 'lead' ? 'rgba(255,255,255,0.05)' : 'rgba(0,219,121,0.1)',
                       border: msg.role === 'lead' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,219,121,0.15)',
@@ -331,7 +427,7 @@ export default function FlashSDRTab() {
                             onClick={() => alert(`ERRO META: Status ${ (msg as any).metadata?.meta_status}\n${JSON.stringify((msg as any).metadata?.meta_response, null, 2)}`)}
                             style={{ fontSize: '9px', color: '#EF4444', fontWeight: 700, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
                           >
-                            ⚠️ ERRO META (Ver Detalhes)
+                            ⚠️ ERRO
                           </button>
                         )}
                         <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.2)', flex: 1, textAlign: msg.role === 'lead' ? 'left' : 'right' }}>
@@ -341,7 +437,7 @@ export default function FlashSDRTab() {
                     </div>
                     {msg.role === 'flash' && (
                       <img src="/flash-avatar.png" alt="Flash" style={{
-                        width: '28px', height: '28px', borderRadius: '8px',
+                        width: '26px', height: '26px', borderRadius: '8px',
                         objectFit: 'cover', flexShrink: 0, marginTop: '2px',
                       }} />
                     )}
@@ -352,16 +448,16 @@ export default function FlashSDRTab() {
 
               {/* Manual Send */}
               <div style={{
-                padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.06)',
+                padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,0.06)',
                 display: 'flex', gap: '8px',
               }}>
                 <input
                   value={manualMessage}
                   onChange={e => setManualMessage(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') sendManualMessage(); }}
-                  placeholder="Enviar mensagem manual..."
+                  placeholder="Mensagem manual..."
                   style={{
-                    flex: 1, padding: '10px 14px', borderRadius: '10px',
+                    flex: 1, padding: '10px 12px', borderRadius: '10px',
                     border: '1px solid rgba(255,255,255,0.08)', backgroundColor: 'rgba(0,0,0,0.3)',
                     color: '#fff', fontSize: '13px', fontFamily: 'inherit', outline: 'none',
                   }}
@@ -370,13 +466,13 @@ export default function FlashSDRTab() {
                   onClick={sendManualMessage}
                   disabled={!manualMessage.trim() || sending}
                   style={{
-                    padding: '10px 18px', borderRadius: '10px', border: 'none',
+                    padding: '10px 14px', borderRadius: '10px', border: 'none',
                     backgroundColor: manualMessage.trim() ? 'rgba(0,219,121,0.15)' : 'rgba(255,255,255,0.03)',
                     color: manualMessage.trim() ? '#00DB79' : 'rgba(255,255,255,0.2)',
                     fontWeight: 600, fontSize: '13px', cursor: manualMessage.trim() ? 'pointer' : 'default',
                     fontFamily: 'inherit',
                   }}>
-                  Enviar
+                  ➤
                 </button>
               </div>
             </>
@@ -386,3 +482,4 @@ export default function FlashSDRTab() {
     </>
   );
 }
+
