@@ -112,36 +112,43 @@ export default function ConsultoriaPage() {
     <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
 
-      {/* Hero Section */}
+      {/* Hero Section — Resend-style */}
       <section className="cons-hero">
         <div className="cons-glow-1" />
         <div className="cons-glow-2" />
+        <div className="cons-hero-noise" />
+
+        {/* 3D Floating Cube */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/infinity-3d-cube.png" alt="" className="cons-hero-cube" />
+
         <div className="cons-container">
-          <div style={{ maxWidth: '720px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ maxWidth: '620px' }}>
             <div className="cons-badge cons-fade-in">
               ⚡ Consultoria & Sistemas Personalizados
             </div>
             <h1
               className="cons-fade-in"
               style={{
-                fontSize: 'clamp(36px, 5.5vw, 64px)',
+                fontSize: 'clamp(40px, 6vw, 72px)',
                 fontWeight: 800,
-                letterSpacing: '-2px',
-                lineHeight: 1.08,
+                letterSpacing: '-2.5px',
+                lineHeight: 1.05,
                 marginBottom: '28px',
               }}
             >
-              Transformamos sua operação com{' '}
-              <span className="text-gradient">tecnologia sob medida</span>
+              Tecnologia{' '}
+              <span className="text-gradient">sob medida</span>{' '}
+              para o seu negócio.
             </h1>
             <p
               className="cons-fade-in text-secondary"
-              style={{ fontSize: '20px', lineHeight: 1.7, marginBottom: '48px', maxWidth: '600px', margin: '0 auto 48px' }}
+              style={{ fontSize: '19px', lineHeight: 1.75, marginBottom: '44px', maxWidth: '520px' }}
             >
-              Da estratégia ao código. Consultoria de negócios + desenvolvimento de sistemas modulares para empresas que querem escalar com tecnologia de ponta.
+              Da estratégia ao código. Consultoria + desenvolvimento de sistemas modulares para empresas que querem escalar com tecnologia de ponta.
             </p>
-            <div className="cons-fade-in" style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a href="#contact" className="btn-primary" style={{ padding: '18px 40px', fontSize: '18px', gap: '8px' }}>
+            <div className="cons-fade-in" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <a href="#contact" className="btn-primary" style={{ padding: '18px 40px', fontSize: '17px', gap: '8px' }}>
                 Agendar Diagnóstico Gratuito
               </a>
               <a href="#servicos" className="btn-secondary">
@@ -149,21 +156,23 @@ export default function ConsultoriaPage() {
               </a>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Stats */}
-          <div className="cons-stats" style={{ marginTop: '80px' }}>
-            {[
-              { value: '99+', label: 'Projetos Entregues' },
-              { value: '210+', label: 'Sistemas em Produção' },
-              { value: '98%', label: 'Clientes Satisfeitos' },
-              { value: '24/7', label: 'Suporte & Monitoramento' },
-            ].map((s, i) => (
-              <div key={i} className="cons-stat">
-                <div className="cons-stat-value">{s.value}</div>
-                <div className="cons-stat-label">{s.label}</div>
-              </div>
-            ))}
-          </div>
+      {/* Stats Strip */}
+      <section style={{ padding: '48px 48px', backgroundColor: '#050510', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="cons-stats">
+          {[
+            { value: '99+', label: 'Projetos Entregues' },
+            { value: '210+', label: 'Sistemas em Produção' },
+            { value: '98%', label: 'Clientes Satisfeitos' },
+            { value: '24/7', label: 'Suporte & Monitoramento' },
+          ].map((s, i) => (
+            <div key={i} className="cons-stat">
+              <div className="cons-stat-value">{s.value}</div>
+              <div className="cons-stat-label">{s.label}</div>
+            </div>
+          ))}
         </div>
       </section>
 

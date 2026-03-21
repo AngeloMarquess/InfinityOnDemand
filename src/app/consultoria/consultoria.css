@@ -2,15 +2,87 @@
    CONSULTORIA PAGE — Infinity Brand Scoped CSS
    ============================================ */
 
-/* Hero */
+/* Hero — Resend-style dramatic background */
 .cons-hero {
-  min-height: 90vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   padding: 140px 0 100px;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, #0d1325 0%, var(--bg-primary) 100%);
+  background: #050510;
+}
+
+/* Dramatic sweeping gradient — fabric/aurora feel */
+.cons-hero::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 120%;
+  height: 140%;
+  background: conic-gradient(
+    from 220deg at 70% 40%,
+    transparent 0deg,
+    rgba(0, 219, 121, 0.08) 40deg,
+    rgba(0, 170, 255, 0.12) 80deg,
+    rgba(0, 219, 121, 0.06) 120deg,
+    transparent 180deg,
+    rgba(0, 170, 255, 0.04) 250deg,
+    rgba(0, 219, 121, 0.03) 300deg,
+    transparent 360deg
+  );
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(60px);
+}
+
+/* Secondary sweep layer for depth */
+.cons-hero::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: -10%;
+  width: 80%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 20% 50%,
+    rgba(0, 219, 121, 0.06) 0%,
+    rgba(0, 170, 255, 0.03) 30%,
+    transparent 70%
+  );
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+/* Noise/grain overlay for premium feel */
+.cons-hero-noise {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 3D Cube styling */
+.cons-hero-cube {
+  position: absolute;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(280px, 35vw, 500px);
+  z-index: 1;
+  opacity: 0.9;
+  animation: cons-cube-float 8s ease-in-out infinite;
+  filter: drop-shadow(0 40px 80px rgba(0, 219, 121, 0.15)) drop-shadow(0 0 60px rgba(0, 170, 255, 0.08));
+}
+
+@keyframes cons-cube-float {
+  0%, 100% { transform: translateY(-50%) rotate(0deg); }
+  25% { transform: translateY(calc(-50% - 12px)) rotate(1deg); }
+  75% { transform: translateY(calc(-50% + 8px)) rotate(-0.5deg); }
 }
 
 .cons-glow-1 {
@@ -18,7 +90,7 @@
   border-radius: 50%;
   filter: blur(150px);
   z-index: 0;
-  opacity: 0.12;
+  opacity: 0.15;
   background: var(--accent-primary);
   width: 700px;
   height: 700px;
@@ -308,8 +380,13 @@
 .cons-fade-in { animation: cons-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .cons-hero-cube { right: 2%; width: clamp(200px, 30vw, 350px); opacity: 0.5; }
+}
+
 @media (max-width: 768px) {
   .cons-hero { padding: 100px 0 60px; min-height: auto; }
+  .cons-hero-cube { display: none; }
   .cons-stats { gap: 24px; }
   .cons-stat-value { font-size: 36px; }
   .cons-input-row { flex-direction: column; }
