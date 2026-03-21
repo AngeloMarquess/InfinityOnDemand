@@ -259,6 +259,7 @@ const SectionTitle = ({ title, subtitle, icon }: { title: string; subtitle?: str
 
 export default function RelatoriosInfinity() {
   const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'evolucao' | 'agent' | 'config' | 'sdr'>('overview');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [carouselSlides, setCarouselSlides] = useState<Record<string, number>>({});
   const [scheduleStatus, setScheduleStatus] = useState<Record<string, { status: 'idle' | 'loading' | 'success' | 'error'; message?: string }>>({
     'seg': { status: 'idle' }, 'ter': { status: 'idle' }, 'qua': { status: 'idle' }, 'qui': { status: 'idle' }, 'sex': { status: 'idle' },
@@ -523,7 +524,7 @@ export default function RelatoriosInfinity() {
       {/* ── Header ── */}
       <header style={{
         borderBottom: '1px solid rgba(255,255,255,0.06)',
-        padding: '24px 48px',
+        padding: '16px 16px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -533,49 +534,68 @@ export default function RelatoriosInfinity() {
         backgroundColor: 'rgba(8,9,11,0.8)',
         zIndex: 100,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <img src="/infinity-logo.png" alt="Infinity OnDemand" style={{
-            width: '44px', height: '44px', borderRadius: '12px', objectFit: 'cover',
+            width: '36px', height: '36px', borderRadius: '10px', objectFit: 'cover',
           }} />
           <div>
-            <h1 style={{ fontSize: '20px', fontWeight: 700, letterSpacing: '-0.5px' }}>Infinity Analytics</h1>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>Relatório Instagram • Mar 2026</p>
+            <h1 style={{ fontSize: '16px', fontWeight: 700, letterSpacing: '-0.5px' }}>Infinity Analytics</h1>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>Relatório Instagram • Mar 2026</p>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '8px 16px', borderRadius: '10px', backgroundColor: 'rgba(0,219,121,0.1)', border: '1px solid rgba(0,219,121,0.2)', fontSize: '13px', color: '#00DB79', fontWeight: 600 }}>
-            Dados coletados: 18/Mar/2026
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ padding: '6px 10px', borderRadius: '8px', backgroundColor: 'rgba(0,219,121,0.1)', border: '1px solid rgba(0,219,121,0.2)', fontSize: '11px', color: '#00DB79', fontWeight: 600 }}>
+            18/Mar/2026
           </div>
-          <img
-            src="/infinity-logo.png"
-            alt="Profile"
-            style={{ width: '36px', height: '36px', borderRadius: '50%', border: '2px solid rgba(0,219,121,0.3)', objectFit: 'cover' }}
-          />
+          {/* Mobile menu toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            style={{
+              background: 'rgba(255,255,255,0.08)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '10px',
+              padding: '8px 10px',
+              cursor: 'pointer',
+              fontSize: '18px',
+              lineHeight: 1,
+              color: '#fff',
+              display: 'none',
+            }}
+            className="mobile-menu-btn"
+            aria-label="Menu"
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
         </div>
       </header>
 
       {/* ── Tab Navigation ── */}
-      <nav style={{
-        display: 'flex', gap: '4px', padding: '16px 48px',
+      <nav className="tab-nav" style={{
+        display: 'flex', gap: '4px', padding: '12px 16px',
         borderBottom: '1px solid rgba(255,255,255,0.04)',
         backgroundColor: 'rgba(8,9,11,0.6)',
         backdropFilter: 'blur(10px)',
-        position: 'sticky', top: '93px', zIndex: 99,
+        position: 'sticky', top: '69px', zIndex: 99,
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        scrollbarWidth: 'none',
       }}>
         {tabs.map(tab => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }}
             style={{
-              padding: '12px 24px',
-              borderRadius: '12px',
+              padding: '10px 16px',
+              borderRadius: '10px',
               border: 'none',
               cursor: 'pointer',
-              fontSize: '14px',
+              fontSize: '13px',
               fontWeight: 600,
               fontFamily: 'inherit',
               transition: 'all 0.2s',
-              display: 'flex', alignItems: 'center', gap: '8px',
+              display: 'flex', alignItems: 'center', gap: '6px',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
               color: activeTab === tab.id ? '#fff' : 'rgba(255,255,255,0.4)',
               backgroundColor: activeTab === tab.id ? 'rgba(0,219,121,0.15)' : 'transparent',
             }}
@@ -585,8 +605,67 @@ export default function RelatoriosInfinity() {
         ))}
       </nav>
 
+      {/* ── Mobile Dropdown Menu (visible only on small screens when toggled) ── */}
+      {mobileMenuOpen && (
+        <div className="mobile-dropdown" style={{
+          position: 'fixed',
+          top: '69px',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(8,9,11,0.95)',
+          backdropFilter: 'blur(20px)',
+          zIndex: 98,
+          padding: '16px',
+          overflowY: 'auto',
+          display: 'none',
+        }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }}
+                style={{
+                  padding: '16px 12px',
+                  borderRadius: '14px',
+                  border: activeTab === tab.id ? '1px solid rgba(0,219,121,0.3)' : '1px solid rgba(255,255,255,0.08)',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  fontFamily: 'inherit',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
+                  color: activeTab === tab.id ? '#fff' : 'rgba(255,255,255,0.5)',
+                  backgroundColor: activeTab === tab.id ? 'rgba(0,219,121,0.12)' : 'rgba(255,255,255,0.03)',
+                }}
+              >
+                <span style={{ fontSize: '22px' }}>{tab.icon}</span>
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Responsive CSS ── */}
+      <style>{`
+        .tab-nav::-webkit-scrollbar { display: none; }
+        @media (max-width: 768px) {
+          .mobile-menu-btn { display: flex !important; }
+          .tab-nav { display: none !important; }
+          .mobile-dropdown { display: block !important; }
+        }
+        @media (min-width: 769px) {
+          .mobile-dropdown { display: none !important; }
+          .mobile-menu-btn { display: none !important; }
+          header { padding: 24px 48px !important; }
+          .tab-nav { padding: 16px 48px !important; top: 93px !important; }
+          main { padding: 40px 48px !important; }
+          footer { padding: 24px 48px !important; }
+        }
+      `}</style>
+
       {/* ── Content ── */}
-      <main style={{ padding: '40px 48px', maxWidth: '1400px', margin: '0 auto' }}>
+      <main style={{ padding: '20px 16px', maxWidth: '1400px', margin: '0 auto' }}>
 
         {/* ═══════════ TAB: OVERVIEW ═══════════ */}
         {activeTab === 'overview' && (
@@ -596,12 +675,12 @@ export default function RelatoriosInfinity() {
               background: 'linear-gradient(135deg, rgba(0,219,121,0.08) 0%, rgba(74,144,226,0.08) 100%)',
               border: '1px solid rgba(0,219,121,0.15)',
               borderRadius: '24px',
-              padding: '40px',
+              padding: '24px',
               display: 'flex',
               flexWrap: 'wrap',
-              gap: '32px',
+              gap: '24px',
               alignItems: 'center',
-              marginBottom: '40px',
+              marginBottom: '32px',
             }}>
               <img
                 src={profileData.profilePicture}
@@ -629,7 +708,7 @@ export default function RelatoriosInfinity() {
             </div>
 
             {/* KPI Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '48px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
               <MetricCard icon="❤️" title="Taxa de Engajamento" value={`${profileData.engagementRate}%`} subtitle="Benchmark: 2-6% (abaixo)" trend="-80%" color="#EF4444" />
               <MetricCard icon="👍" title="Likes Médios/Post" value={profileData.avgLikes} subtitle={`Total: ${profileData.totalLikes} likes`} color="#8B5CF6" />
               <MetricCard icon="💬" title="Comentários Médios" value={profileData.avgComments} subtitle={`Total: ${profileData.totalComments} comentário`} trend="-97%" color="#F59E0B" />
@@ -641,12 +720,12 @@ export default function RelatoriosInfinity() {
               background: 'linear-gradient(135deg, #111318 0%, #0c0e12 100%)',
               border: '1px solid rgba(255,255,255,0.06)',
               borderRadius: '24px',
-              padding: '40px',
-              marginBottom: '48px',
+              padding: '24px',
+              marginBottom: '32px',
               textAlign: 'center',
             }}>
               <SectionTitle icon="🎯" title="Health Score da Conta" subtitle="Baseado em engajamento, consistência e crescimento" />
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '48px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
                 {/* Gauge visual */}
                 <div style={{ position: 'relative', width: '200px', height: '200px' }}>
                   <svg viewBox="0 0 200 200" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
@@ -739,7 +818,7 @@ export default function RelatoriosInfinity() {
 
             {/* Hour Analysis */}
             <SectionTitle icon="⏰" title="Melhor Horário" subtitle="Média de likes por faixa horária (UTC-3)" />
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '48px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px', marginBottom: '32px' }}>
               {hourAnalysis.map(h => {
                 const isBest = h.avg === Math.max(...hourAnalysis.map(x => x.avg));
                 return (
@@ -1557,8 +1636,8 @@ export default function RelatoriosInfinity() {
       </main>
 
       {/* ── Footer ── */}
-      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.04)', padding: '24px 48px', textAlign: 'center' }}>
-        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.2)' }}>
+      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.04)', padding: '16px', textAlign: 'center' }}>
+        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)' }}>
           Relatório gerado via Meta Graph API v21.0 • Infinity OnDemand Analytics • 18/Mar/2026
         </p>
       </footer>
