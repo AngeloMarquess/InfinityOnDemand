@@ -44,7 +44,7 @@ export default function Header() {
         <nav className="nav-desktop">
           <Link href="/sobre" style={{ padding: "8px 12px", borderRadius: "4px" }}>Sobre</Link>
           <Link href="#labs" style={{ padding: "8px 12px", borderRadius: "4px" }}>Labs</Link>
-          <Link href="#consulting" style={{ padding: "8px 12px", borderRadius: "4px" }}>Consultoria</Link>
+          <Link href="/consultoria" style={{ padding: "8px 12px", borderRadius: "4px" }}>Consultoria</Link>
           <Link href="/ecommerce" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>E-commerce</Link>
           <a href="https://crmm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>CRM</a>
           <Link href="/delivery" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>Delivery SaaS</Link>
@@ -129,7 +129,7 @@ export default function Header() {
           <Link href="/" onClick={closeMenu}>Início</Link>
           <Link href="/sobre" onClick={closeMenu}>Sobre nós</Link>
           <Link href="#labs" onClick={closeMenu}>Labs</Link>
-          <Link href="#consulting" onClick={closeMenu}>Consultoria</Link>
+          <Link href="/consultoria" onClick={closeMenu}>Consultoria</Link>
           <Link href="/ecommerce" onClick={closeMenu}>E-commerce</Link>
           <a href="https://crmm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" onClick={closeMenu}>
             CRM
