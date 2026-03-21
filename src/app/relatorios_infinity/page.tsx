@@ -258,6 +258,13 @@ const SectionTitle = ({ title, subtitle, icon }: { title: string; subtitle?: str
 /* ─────────── PAGE ─────────── */
 
 export default function RelatoriosInfinity() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+
   const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'evolucao' | 'agent' | 'config' | 'sdr'>('overview');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [carouselSlides, setCarouselSlides] = useState<Record<string, number>>({});
@@ -270,6 +277,197 @@ export default function RelatoriosInfinity() {
   const [creativeStatuses, setCreativeStatuses] = useState<Record<string, { status: string; postedAt: string | null }>>({});
   const [liveStoryCount, setLiveStoryCount] = useState(0);
   const [liveFollowers, setLiveFollowers] = useState(555);
+
+  // Check auth on mount
+  useEffect(() => {
+    const session = localStorage.getItem('analytics_session');
+    if (session) {
+      try {
+        const parsed = JSON.parse(session);
+        if (parsed.token && parsed.user?.role) {
+          setIsAuthenticated(true);
+        }
+      } catch {
+        localStorage.removeItem('analytics_session');
+      }
+    }
+    setAuthLoading(false);
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    setLoginError('');
+
+    try {
+      const res = await fetch('/api/auth/analytics-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem('analytics_session', JSON.stringify(data));
+        setIsAuthenticated(true);
+      } else {
+        setLoginError(data.error || 'Credenciais inválidas');
+      }
+    } catch {
+      setLoginError('Erro de conexão. Tente novamente.');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('analytics_session');
+    setIsAuthenticated(false);
+    setLoginEmail('');
+    setLoginPassword('');
+  };
+
+  // ─── Login Screen ───
+  if (authLoading) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: '#08090b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#00DB79', fontSize: '18px', fontFamily: "'Inter', sans-serif" }}>⏳ Carregando...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#08090b',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: "'Inter', sans-serif",
+        padding: '20px',
+      }}>
+        <div style={{
+          width: '100%',
+          maxWidth: '420px',
+          background: 'linear-gradient(135deg, #111318 0%, #0c0e12 100%)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: '24px',
+          padding: '48px 36px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          {/* Glow effect */}
+          <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '200px', height: '200px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,219,121,0.15), transparent)', filter: 'blur(40px)' }} />
+          <div style={{ position: 'absolute', bottom: '-40px', left: '-40px', width: '150px', height: '150px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,170,255,0.1), transparent)', filter: 'blur(30px)' }} />
+
+          {/* Logo */}
+          <div style={{ textAlign: 'center', marginBottom: '32px', position: 'relative' }}>
+            <div style={{ fontSize: '40px', marginBottom: '12px' }}>📊</div>
+            <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', marginBottom: '4px' }}>
+              Infinity <span style={{ background: 'linear-gradient(135deg, #00DB79, #00AAFF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Analytics</span>
+            </h1>
+            <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>Acesso restrito a administradores</p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleLogin} style={{ position: 'relative' }}>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '6px', fontWeight: 600 }}>Email</label>
+              <input
+                type="email"
+                value={loginEmail}
+                onChange={e => setLoginEmail(e.target.value)}
+                placeholder="admin@infinityondemand.com.br"
+                required
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  backgroundColor: 'rgba(255,255,255,0.04)',
+                  color: '#fff',
+                  fontSize: '15px',
+                  fontFamily: 'inherit',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={e => e.target.style.borderColor = 'rgba(0,219,121,0.4)'}
+                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+              />
+            </div>
+
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '6px', fontWeight: 600 }}>Senha</label>
+              <input
+                type="password"
+                value={loginPassword}
+                onChange={e => setLoginPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  backgroundColor: 'rgba(255,255,255,0.04)',
+                  color: '#fff',
+                  fontSize: '15px',
+                  fontFamily: 'inherit',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  boxSizing: 'border-box',
+                }}
+                onFocus={e => e.target.style.borderColor = 'rgba(0,219,121,0.4)'}
+                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+              />
+            </div>
+
+            {loginError && (
+              <div style={{
+                padding: '12px 16px',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(239,68,68,0.1)',
+                border: '1px solid rgba(239,68,68,0.2)',
+                color: '#EF4444',
+                fontSize: '13px',
+                marginBottom: '16px',
+                fontWeight: 500,
+              }}>
+                ⚠️ {loginError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loginLoading}
+              style={{
+                width: '100%',
+                padding: '14px',
+                borderRadius: '12px',
+                border: 'none',
+                background: loginLoading ? 'rgba(0,219,121,0.3)' : 'linear-gradient(135deg, #00DB79, #00AAFF)',
+                color: '#fff',
+                fontSize: '16px',
+                fontWeight: 700,
+                fontFamily: 'inherit',
+                cursor: loginLoading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s',
+                letterSpacing: '0.3px',
+              }}
+            >
+              {loginLoading ? '⏳ Entrando...' : '🔐 Entrar'}
+            </button>
+          </form>
+
+          <p style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.2)', marginTop: '24px' }}>
+            Infinity OnDemand © 2026
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Carregar imagens do Supabase Storage
   const loadImagesFromSupabase = useCallback(async () => {
@@ -547,6 +745,23 @@ export default function RelatoriosInfinity() {
           <div style={{ padding: '6px 10px', borderRadius: '8px', backgroundColor: 'rgba(0,219,121,0.1)', border: '1px solid rgba(0,219,121,0.2)', fontSize: '11px', color: '#00DB79', fontWeight: 600 }}>
             18/Mar/2026
           </div>
+          <button
+            onClick={handleLogout}
+            title="Sair"
+            style={{
+              background: 'rgba(239,68,68,0.1)',
+              border: '1px solid rgba(239,68,68,0.2)',
+              borderRadius: '8px',
+              padding: '6px 10px',
+              cursor: 'pointer',
+              fontSize: '11px',
+              color: '#EF4444',
+              fontWeight: 600,
+              fontFamily: 'inherit',
+            }}
+          >
+            Sair
+          </button>
           {/* Mobile menu toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

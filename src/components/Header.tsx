@@ -48,6 +48,7 @@ export default function Header() {
           <Link href="/ecommerce" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>E-commerce</Link>
           <a href="https://crmm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>CRM</a>
           <Link href="/delivery" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>Delivery SaaS</Link>
+          <Link href="/relatorios_infinity" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>Analytics</Link>
           <Link href="#contact" className="btn-primary" style={{ padding: "8px 16px", color: "#fff" }}>Contato</Link>
         </nav>
 
@@ -135,6 +136,7 @@ export default function Header() {
             CRM
           </a>
           <Link href="/delivery" onClick={closeMenu}>Delivery SaaS</Link>
+          <Link href="/relatorios_infinity" onClick={closeMenu}>Analytics</Link>
           <Link href="#contact" onClick={closeMenu}>Contato</Link>
         </nav>
       </div>
