@@ -235,6 +235,8 @@ export default function FlashSDRTab() {
             min-width: 100%;
             border-radius: 16px;
             z-index: 10;
+            background: #0a0b0e !important;
+            border: 1px solid rgba(255,255,255,0.08);
           }
           .flash-sdr-left.collapsed {
             width: 0;
