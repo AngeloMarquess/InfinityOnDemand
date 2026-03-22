@@ -5,6 +5,29 @@ import OpenAI from 'openai';
 const WHATSAPP_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
+// ─── CORS ───
+const ALLOWED_ORIGINS = [
+  'https://crm.infinityondemand.com.br',
+  'https://flash.infinityondemand.com.br',
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
+function corsHeaders(origin: string | null) {
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin || '') ? origin! : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+}
+
+// Preflight
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin');
+  return new NextResponse(null, { status: 204, headers: corsHeaders(origin) });
+}
+
 /**
  * Prospecting Send — Flash contacts leads via WhatsApp.
  * 
@@ -19,6 +42,8 @@ const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
  * 4. Move lead to "Primeiro Contato" stage
  */
 export async function POST(request: NextRequest) {
+  const origin = request.headers.get('origin');
+  const headers = corsHeaders(origin);
   try {
     const body = await request.json().catch(() => ({}));
     const { leadId } = body;
@@ -30,11 +55,11 @@ export async function POST(request: NextRequest) {
     const openaiKey = process.env.OPENAI_API_KEY;
 
     if (!supabaseUrl || !supabaseServiceKey || !crmOwnerId) {
-      return NextResponse.json({ error: 'Missing server configuration' }, { status: 500 });
+      return NextResponse.json({ error: 'Missing server configuration' }, { status: 500, headers });
     }
 
     if (!WHATSAPP_TOKEN || !PHONE_NUMBER_ID) {
-      return NextResponse.json({ error: 'WhatsApp API not configured' }, { status: 500 });
+      return NextResponse.json({ error: 'WhatsApp API not configured' }, { status: 500, headers });
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -50,7 +75,7 @@ export async function POST(request: NextRequest) {
     const primeiroContatoStage = stages.find(s => s.name === 'Primeiro Contato');
 
     if (!primeiroContatoStage) {
-      return NextResponse.json({ error: 'Pipeline stage "Primeiro Contato" not found' }, { status: 400 });
+      return NextResponse.json({ error: 'Pipeline stage "Primeiro Contato" not found' }, { status: 400, headers });
     }
 
     let leads;
@@ -65,16 +90,16 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (error || !data) {
-        return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Lead not found' }, { status: 404, headers });
       }
       if (!data.phone) {
-        return NextResponse.json({ error: 'Lead has no phone number' }, { status: 400 });
+        return NextResponse.json({ error: 'Lead has no phone number' }, { status: 400, headers });
       }
       leads = [data];
     } else {
       // ─── Batch mode (Apify leads in "Novo Lead") ───
       if (!novoLeadStage) {
-        return NextResponse.json({ error: 'Pipeline stage "Novo Lead" not found' }, { status: 400 });
+        return NextResponse.json({ error: 'Pipeline stage "Novo Lead" not found' }, { status: 400, headers });
       }
       const { data, error: fetchError } = await supabase
         .from('crm_contacts')
@@ -86,13 +111,13 @@ export async function POST(request: NextRequest) {
         .limit(limit);
 
       if (fetchError) {
-        return NextResponse.json({ error: `Failed to fetch leads: ${fetchError.message}` }, { status: 500 });
+        return NextResponse.json({ error: `Failed to fetch leads: ${fetchError.message}` }, { status: 500, headers });
       }
       leads = data || [];
     }
 
     if (leads.length === 0) {
-      return NextResponse.json({ message: 'No leads to contact', sent: 0 });
+      return NextResponse.json({ message: 'No leads to contact', sent: 0 }, { headers });
     }
 
     // Load business settings for Flash context
@@ -201,11 +226,11 @@ REGRAS:
       sent,
       failed,
       results,
-    });
+    }, { headers });
   } catch (error) {
     console.error('Prospecting send error:', error);
     const msg = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: msg }, { status: 500, headers });
   }
 }
 
