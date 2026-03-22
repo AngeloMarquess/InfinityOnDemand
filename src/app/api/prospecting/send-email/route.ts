@@ -1,7 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
+// Manual .env.local reader for vars that Next.js might not load
+function getEnvVar(name: string): string | undefined {
+  if (process.env[name]) return process.env[name];
+  try {
+    const envPath = join(process.cwd(), '.env.local');
+    const content = readFileSync(envPath, 'utf-8');
+    const match = content.match(new RegExp(`^${name}=(.+)$`, 'm'));
+    return match?.[1]?.trim() || undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 /**
  * Email Prospecting — Flash contacts leads via email (Resend).
@@ -22,8 +36,8 @@ export async function POST(request: NextRequest) {
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const crmOwnerId = process.env.CRM_OWNER_USER_ID;
     const openaiKey = process.env.OPENAI_API_KEY;
-    const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'angelo.marques@infinityondemand.com.br';
+    const RESEND_API_KEY = getEnvVar('RESEND_API_KEY');
+    const FROM_EMAIL = getEnvVar('RESEND_FROM_EMAIL') || 'angelo.marques@infinityondemand.com.br';
 
     if (!supabaseUrl || !supabaseServiceKey || !crmOwnerId) {
       return NextResponse.json({ error: 'Missing server configuration' }, { status: 500 });
