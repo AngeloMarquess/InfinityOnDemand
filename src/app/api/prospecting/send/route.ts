@@ -1,12 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import OpenAI from 'openai';
 
 const WHATSAPP_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
+// ─── Template Configuration ───
+// Categories that should use the delivery/restaurant template
+const FOOD_CATEGORIES = [
+  'restaurant', 'restaurante', 'pizza', 'pizzaria', 'burger', 'hamburgueria',
+  'delivery', 'comida', 'food', 'lanchonete', 'bar', 'churrascaria',
+  'padaria', 'cafeteria', 'sushi', 'açaí', 'sorveteria', 'doceria',
+  'pastelaria', 'marmitaria', 'espetaria',
+];
+
+function chooseTemplate(category: string): { name: string; language: string } {
+  const lower = (category || '').toLowerCase();
+  const isFood = FOOD_CATEGORIES.some(kw => lower.includes(kw));
+  
+  if (isFood) {
+    // flash_prospeccao is for restaurants/delivery — may still be under review
+    return { name: 'flash_prospeccao', language: 'pt_BR' };
+  }
+  // flash_consultoria is for all other businesses (sites, consulting, etc.)
+  return { name: 'flash_consultoria', language: 'en' };
+}
+
 /**
- * Prospecting Send — Flash contacts leads via WhatsApp.
+ * Prospecting Send — Flash contacts leads via WhatsApp using Message Templates.
  * 
  * POST body:
  *   { leadId: string }     — contact a single specific lead
@@ -14,8 +34,8 @@ const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
  * 
  * Flow:
  * 1. Fetch lead(s)
- * 2. Generate personalized message via GPT
- * 3. Send via WhatsApp API
+ * 2. Choose template based on lead category
+ * 3. Send via WhatsApp Template API
  * 4. Move lead to "Primeiro Contato" stage
  * 
  * CORS is handled globally by next.config.ts
@@ -29,7 +49,6 @@ export async function POST(request: NextRequest) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const crmOwnerId = process.env.CRM_OWNER_USER_ID;
-    const openaiKey = process.env.OPENAI_API_KEY;
 
     if (!supabaseUrl || !supabaseServiceKey || !crmOwnerId) {
       return NextResponse.json({ error: 'Missing server configuration' }, { status: 500 });
@@ -97,71 +116,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'No leads to contact', sent: 0 });
     }
 
-    // Load business settings for Flash context
-    const { data: settings } = await supabase
-      .from('agent_settings')
-      .select('*')
-      .eq('client_id', 'default')
-      .single();
-
-    const businessName = (settings?.business_name as string) || 'Infinity On Demand';
-    const businessDesc = (settings?.business_description as string) || 'Plataforma completa de delivery com cardápio digital, painel de pedidos e gestão financeira.';
-
     let sent = 0;
     let failed = 0;
-    const results: { name: string; phone: string; status: string; message?: string }[] = [];
+    const results: { name: string; phone: string; status: string; template?: string; message?: string }[] = [];
 
     for (const lead of leads) {
       try {
-        // Generate personalized message
-        let flashMessage: string;
+        // Extract category from notes
+        const categoryMatch = lead.notes?.match(/Categoria: (.+)/);
+        const category = categoryMatch?.[1] || '';
 
-        if (openaiKey) {
-          const openai = new OpenAI({ apiKey: openaiKey });
+        // Choose template based on category
+        const template = chooseTemplate(category);
 
-          const completion = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
-            messages: [
-              {
-                role: 'system',
-                content: `Você é o Flash ⚡, SDR da ${businessName}. ${businessDesc}
+        // Send via WhatsApp Template API
+        const sendRes = await sendWhatsAppTemplate(lead.phone, template.name, template.language, lead.name);
 
-Gere uma ÚNICA mensagem curta e personalizada de prospecção para o lead abaixo. 
-
-REGRAS:
-- Máximo 3 linhas
-- Mencione o nome do estabelecimento
-- Seja cordial e direto
-- Termine com uma pergunta aberta
-- Use no máximo 2 emojis
-- NÃO use negrito/itálico/markdown
-- Tom: profissional e consultivo
-- Fale de forma natural como um vendedor real`,
-              },
-              {
-                role: 'user',
-                content: `Lead: ${lead.name}\nCidade: ${lead.city || 'não informado'}\nCategoria: ${lead.notes?.match(/Categoria: (.+)/)?.[1] || 'restaurante'}\nNota Google: ${lead.notes?.match(/Nota: ([\d.]+)/)?.[1] || 'não informado'}`,
-              },
-            ],
-            temperature: 0.8,
-            max_tokens: 150,
-          });
-
-          flashMessage = completion.choices[0]?.message?.content || '';
-        } else {
-          // Fallback message without AI
-          flashMessage = `Olá! Sou o Flash da ${businessName}. Vi o ${lead.name} no Google Maps e achei que nossa plataforma de delivery pode ajudar vocês a vender mais! Posso te mostrar em 5 minutos como funciona?`;
-        }
-
-        if (!flashMessage) continue;
-
-        // Send via WhatsApp
-        const sendRes = await sendWhatsAppMessage(lead.phone, flashMessage);
+        const resData = await sendRes.json().catch(() => ({}));
 
         if (sendRes.ok) {
           // Move to "Primeiro Contato" stage
           const now = new Date().toLocaleDateString('pt-BR');
-          const updatedNotes = (lead.notes || '') + `\n\n💬 Flash prospectou em ${now}:\n"${flashMessage}"`;
+          const updatedNotes = (lead.notes || '') + `\n\n💬 Flash prospectou em ${now} (template: ${template.name})`;
 
           await supabase
             .from('crm_contacts')
@@ -171,22 +147,22 @@ REGRAS:
             })
             .eq('id', lead.id);
 
-          // Also save to whatsapp_conversations so webhook can track replies
+          // Save to whatsapp_conversations for tracking
           await supabase.from('whatsapp_conversations').insert({
             phone: lead.phone,
             name: lead.name,
             role: 'flash',
-            message: flashMessage,
+            message: `[Template: ${template.name}] Variável: ${lead.name}`,
             status: 'open',
-            metadata: { source: 'prospecting', lead_id: lead.id },
+            metadata: { source: 'prospecting', lead_id: lead.id, template: template.name },
           });
 
           sent++;
-          results.push({ name: lead.name, phone: lead.phone, status: 'sent', message: flashMessage });
+          results.push({ name: lead.name, phone: lead.phone, status: 'sent', template: template.name });
         } else {
-          const errData = await sendRes.json().catch(() => ({}));
+          const errMsg = resData?.error?.message || JSON.stringify(resData);
           failed++;
-          results.push({ name: lead.name, phone: lead.phone, status: 'failed', message: errData.error?.message || 'WhatsApp send failed' });
+          results.push({ name: lead.name, phone: lead.phone, status: 'failed', template: template.name, message: errMsg });
         }
 
         // Rate limiting: wait 2 seconds between messages
@@ -211,8 +187,13 @@ REGRAS:
   }
 }
 
-// ─── Send WhatsApp Message ───
-async function sendWhatsAppMessage(to: string, text: string) {
+// ─── Send WhatsApp Template Message ───
+async function sendWhatsAppTemplate(
+  to: string,
+  templateName: string,
+  language: string,
+  businessName: string
+) {
   // Format number
   let formattedTo = to.replace(/\D/g, '');
   if (formattedTo.startsWith('55')) {
@@ -235,8 +216,22 @@ async function sendWhatsAppMessage(to: string, text: string) {
       messaging_product: 'whatsapp',
       recipient_type: 'individual',
       to: formattedTo,
-      type: 'text',
-      text: { body: text },
+      type: 'template',
+      template: {
+        name: templateName,
+        language: { code: language },
+        components: [
+          {
+            type: 'body',
+            parameters: [
+              {
+                type: 'text',
+                text: businessName, // {{1}} = nome do estabelecimento
+              },
+            ],
+          },
+        ],
+      },
     }),
   });
 }
