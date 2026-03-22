@@ -6,12 +6,14 @@ const WHATSAPP_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
 /**
- * Prospecting Send — Flash contacts Apify leads via WhatsApp.
+ * Prospecting Send — Flash contacts leads via WhatsApp.
  * 
- * POST body: { limit?: number } — how many leads to contact (default 10, max 50)
+ * POST body:
+ *   { leadId: string }     — contact a single specific lead
+ *   { limit?: number }     — batch: contact N Apify leads in "Novo Lead" (default 10, max 50)
  * 
  * Flow:
- * 1. Fetch leads with origin='apify' in stage "Novo Lead"
+ * 1. Fetch lead(s)
  * 2. Generate personalized message via GPT
  * 3. Send via WhatsApp API
  * 4. Move lead to "Primeiro Contato" stage
@@ -19,6 +21,7 @@ const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
+    const { leadId } = body;
     const limit = Math.min(body.limit || 10, 50);
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -46,26 +49,50 @@ export async function POST(request: NextRequest) {
     const novoLeadStage = stages.find(s => s.name === 'Novo Lead');
     const primeiroContatoStage = stages.find(s => s.name === 'Primeiro Contato');
 
-    if (!novoLeadStage || !primeiroContatoStage) {
-      return NextResponse.json({ error: 'Pipeline stages "Novo Lead" and "Primeiro Contato" not found' }, { status: 400 });
+    if (!primeiroContatoStage) {
+      return NextResponse.json({ error: 'Pipeline stage "Primeiro Contato" not found' }, { status: 400 });
     }
 
-    // Fetch Apify leads in "Novo Lead" stage
-    const { data: leads, error: fetchError } = await supabase
-      .from('crm_contacts')
-      .select('*')
-      .eq('user_id', crmOwnerId)
-      .eq('origin', 'apify')
-      .eq('stage_id', novoLeadStage.id)
-      .order('created_at', { ascending: true })
-      .limit(limit);
+    let leads;
 
-    if (fetchError) {
-      return NextResponse.json({ error: `Failed to fetch leads: ${fetchError.message}` }, { status: 500 });
+    if (leadId) {
+      // ─── Single lead mode ───
+      const { data, error } = await supabase
+        .from('crm_contacts')
+        .select('*')
+        .eq('id', leadId)
+        .eq('user_id', crmOwnerId)
+        .single();
+
+      if (error || !data) {
+        return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
+      }
+      if (!data.phone) {
+        return NextResponse.json({ error: 'Lead has no phone number' }, { status: 400 });
+      }
+      leads = [data];
+    } else {
+      // ─── Batch mode (Apify leads in "Novo Lead") ───
+      if (!novoLeadStage) {
+        return NextResponse.json({ error: 'Pipeline stage "Novo Lead" not found' }, { status: 400 });
+      }
+      const { data, error: fetchError } = await supabase
+        .from('crm_contacts')
+        .select('*')
+        .eq('user_id', crmOwnerId)
+        .eq('origin', 'apify')
+        .eq('stage_id', novoLeadStage.id)
+        .order('created_at', { ascending: true })
+        .limit(limit);
+
+      if (fetchError) {
+        return NextResponse.json({ error: `Failed to fetch leads: ${fetchError.message}` }, { status: 500 });
+      }
+      leads = data || [];
     }
 
-    if (!leads || leads.length === 0) {
-      return NextResponse.json({ message: 'No Apify leads pending in "Novo Lead" stage', sent: 0 });
+    if (leads.length === 0) {
+      return NextResponse.json({ message: 'No leads to contact', sent: 0 });
     }
 
     // Load business settings for Flash context
