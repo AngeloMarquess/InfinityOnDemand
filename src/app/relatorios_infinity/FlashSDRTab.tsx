@@ -17,6 +17,15 @@ interface ChatMessage {
   created_at: string;
 }
 
+interface EmailLog {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  sentDate: string;
+  city: string;
+}
+
 export default function FlashSDRTab() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedPhone, setSelectedPhone] = useState<string | null>(null);
@@ -25,6 +34,9 @@ export default function FlashSDRTab() {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [activeChannel, setActiveChannel] = useState<'whatsapp' | 'email'>('whatsapp');
+  const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
+  const [emailLoading, setEmailLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -69,6 +81,23 @@ export default function FlashSDRTab() {
   }, []);
 
   useEffect(() => { loadConversations(); }, [loadConversations]);
+
+  // Load email logs
+  const loadEmailLogs = useCallback(async () => {
+    setEmailLoading(true);
+    try {
+      const res = await fetch('/api/prospecting/email-logs');
+      const data = await res.json();
+      if (data.emails) setEmailLogs(data.emails);
+    } catch {
+      console.warn('Could not load email logs');
+    }
+    setEmailLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (activeChannel === 'email') loadEmailLogs();
+  }, [activeChannel, loadEmailLogs]);
 
   useEffect(() => {
     if (selectedPhone) loadChat(selectedPhone);
@@ -294,53 +323,133 @@ export default function FlashSDRTab() {
             </button>
           </div>
 
+          {/* Channel Toggle */}
+          <div style={{
+            display: 'flex', gap: '0', borderBottom: '1px solid rgba(255,255,255,0.06)',
+          }}>
+            <button
+              onClick={() => setActiveChannel('whatsapp')}
+              style={{
+                flex: 1, padding: '10px', border: 'none', background: 'transparent',
+                color: activeChannel === 'whatsapp' ? '#00DB79' : 'rgba(255,255,255,0.3)',
+                fontWeight: activeChannel === 'whatsapp' ? 700 : 500,
+                fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit',
+                borderBottom: activeChannel === 'whatsapp' ? '2px solid #00DB79' : '2px solid transparent',
+                transition: 'all 0.2s',
+              }}
+            >
+              💬 WhatsApp
+            </button>
+            <button
+              onClick={() => setActiveChannel('email')}
+              style={{
+                flex: 1, padding: '10px', border: 'none', background: 'transparent',
+                color: activeChannel === 'email' ? '#3B82F6' : 'rgba(255,255,255,0.3)',
+                fontWeight: activeChannel === 'email' ? 700 : 500,
+                fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit',
+                borderBottom: activeChannel === 'email' ? '2px solid #3B82F6' : '2px solid transparent',
+                transition: 'all 0.2s',
+              }}
+            >
+              📧 Emails ({emailLogs.length})
+            </button>
+          </div>
+
           {/* Conversations */}
           <div style={{ flex: 1, overflowY: 'auto' }}>
-            {loading ? (
-              <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>
-                Carregando...
-              </div>
-            ) : conversations.length === 0 ? (
-              <div style={{ padding: '40px 20px', textAlign: 'center' }}>
-                <div style={{ fontSize: '40px', marginBottom: '12px' }}>📭</div>
-                <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>Nenhuma conversa ainda</p>
-                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)', marginTop: '8px' }}>
-                  Quando um lead enviar mensagem pelo WhatsApp, o Flash vai responder automaticamente e a conversa aparecerá aqui.
-                </p>
-              </div>
-            ) : (
-              conversations.map(conv => (
-                <div
-                  key={conv.phone}
-                  onClick={() => handleSelectConversation(conv.phone)}
-                  style={{
-                    padding: '14px 16px', cursor: 'pointer',
-                    borderBottom: '1px solid rgba(255,255,255,0.03)',
-                    backgroundColor: selectedPhone === conv.phone ? 'rgba(0,219,121,0.06)' : 'transparent',
-                    borderLeft: selectedPhone === conv.phone ? '3px solid #00DB79' : '3px solid transparent',
-                    transition: 'all 0.15s',
-                  }}
-                  onMouseOver={e => { if (selectedPhone !== conv.phone) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)'; }}
-                  onMouseOut={e => { if (selectedPhone !== conv.phone) e.currentTarget.style.backgroundColor = 'transparent'; }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#fff' }}>{conv.name}</span>
-                    <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)' }}>{timeAgo(conv.lastTime)}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <p style={{
-                      fontSize: '12px', color: 'rgba(255,255,255,0.4)',
-                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '180px',
-                    }}>{conv.lastMessage}</p>
-                    <span style={{
-                      fontSize: '10px', fontWeight: 600,
-                      color: statusColors[conv.status] || '#F59E0B',
-                    }}>
-                      {statusLabels[conv.status] || '🟡 Novo'}
-                    </span>
-                  </div>
+            {activeChannel === 'whatsapp' ? (
+              /* WhatsApp conversations list */
+              loading ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>
+                  Carregando...
                 </div>
-              ))
+              ) : conversations.length === 0 ? (
+                <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '40px', marginBottom: '12px' }}>📭</div>
+                  <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>Nenhuma conversa ainda</p>
+                  <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)', marginTop: '8px' }}>
+                    Quando um lead enviar mensagem pelo WhatsApp, o Flash vai responder automaticamente e a conversa aparecerá aqui.
+                  </p>
+                </div>
+              ) : (
+                conversations.map(conv => (
+                  <div
+                    key={conv.phone}
+                    onClick={() => handleSelectConversation(conv.phone)}
+                    style={{
+                      padding: '14px 16px', cursor: 'pointer',
+                      borderBottom: '1px solid rgba(255,255,255,0.03)',
+                      backgroundColor: selectedPhone === conv.phone ? 'rgba(0,219,121,0.06)' : 'transparent',
+                      borderLeft: selectedPhone === conv.phone ? '3px solid #00DB79' : '3px solid transparent',
+                      transition: 'all 0.15s',
+                    }}
+                    onMouseOver={e => { if (selectedPhone !== conv.phone) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)'; }}
+                    onMouseOut={e => { if (selectedPhone !== conv.phone) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#fff' }}>{conv.name}</span>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)' }}>{timeAgo(conv.lastTime)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <p style={{
+                        fontSize: '12px', color: 'rgba(255,255,255,0.4)',
+                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '180px',
+                      }}>{conv.lastMessage}</p>
+                      <span style={{
+                        fontSize: '10px', fontWeight: 600,
+                        color: statusColors[conv.status] || '#F59E0B',
+                      }}>
+                        {statusLabels[conv.status] || '🟡 Novo'}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )
+            ) : (
+              /* Email logs list */
+              emailLoading ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>
+                  Carregando emails...
+                </div>
+              ) : emailLogs.length === 0 ? (
+                <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '40px', marginBottom: '12px' }}>📭</div>
+                  <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>Nenhum email enviado</p>
+                  <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)', marginTop: '8px' }}>
+                    Use o botão 📧 Email Flash no CRM para prospectar leads por email.
+                  </p>
+                </div>
+              ) : (
+                emailLogs.map(log => (
+                  <div
+                    key={log.id}
+                    style={{
+                      padding: '14px 16px',
+                      borderBottom: '1px solid rgba(255,255,255,0.03)',
+                      borderLeft: '3px solid rgba(59,130,246,0.3)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#fff' }}>{log.name}</span>
+                      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)' }}>{log.sentDate}</span>
+                    </div>
+                    <p style={{ fontSize: '12px', color: '#3B82F6', marginBottom: '2px' }}>
+                      📧 {log.email}
+                    </p>
+                    <p style={{
+                      fontSize: '11px', color: 'rgba(255,255,255,0.4)',
+                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                    }}>
+                      Assunto: {log.subject}
+                    </p>
+                    {log.city && (
+                      <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.2)' }}>
+                        📍 {log.city}
+                      </span>
+                    )}
+                  </div>
+                ))
+              )
             )}
           </div>
         </div>
