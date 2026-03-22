@@ -43,17 +43,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing server configuration' }, { status: 500 });
     }
     if (!RESEND_API_KEY) {
-      return NextResponse.json({ 
-        error: 'Resend API not configured',
-        debug: {
-          hasResendKey: !!process.env.RESEND_API_KEY,
-          hasResendFrom: !!process.env.RESEND_FROM_EMAIL,
-          hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-          hasOpenAI: !!process.env.OPENAI_API_KEY,
-          envKeys: Object.keys(process.env).filter(k => k.includes('RESEND') || k.includes('resend')),
-          cwd: process.cwd(),
-        }
-      }, { status: 500 });
+      return NextResponse.json({ error: 'Resend API not configured' }, { status: 500 });
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
