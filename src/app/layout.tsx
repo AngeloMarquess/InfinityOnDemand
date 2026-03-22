@@ -86,13 +86,15 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
-        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18032348244" />
+        <script async src="https://www.googletagmanager.com/gtag/js?id=GT-TWQR3KMR" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
+              gtag('config', 'G-W306D1L96Q');
+              gtag('config', 'GT-TWQR3KMR');
               gtag('config', 'AW-18032348244');
             `,
           }}
