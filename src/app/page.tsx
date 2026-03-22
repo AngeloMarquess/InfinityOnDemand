@@ -309,15 +309,11 @@ export default function Home() {
 
           <div style={{ flex: "1 1 400px", display: "flex", justifyContent: "center", order: 2 }}>
             <div style={{ width: "100%", maxWidth: "500px", aspectRatio: "1/1", backgroundColor: "var(--bg-secondary)", borderRadius: "24px", boxShadow: "var(--shadow-md)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--bg-tertiary)", position: "relative", overflow: "hidden" }}>
-               {/* E-commerce Video Presentation (Online Placeholder) */}
-               {/* E-commerce Video Presentation (Online Placeholder) */}
-               <video 
-                  autoPlay={true}
-                  loop={true}
-                  muted={true}
-                  playsInline={true}
-                  src="https://www.w3schools.com/html/mov_bbb.mp4"
-                  style={{ width: "100%", height: "100%", objectFit: "cover", zIndex: 1, backgroundColor: "var(--bg-secondary)" }}
+               {/* E-commerce Visual Showcase */}
+               <img 
+                  src="/ecommerce_showcase.png"
+                  alt="E-commerce Dashboard - Infinity On Demand"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", zIndex: 1 }}
                />
             </div>
           </div>
