@@ -3,6 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 const locales = ['pt', 'es'];
 const defaultLocale = 'pt';
 
+// Routes that exist outside [locale]/ — must NOT be rewritten
+const nonLocalizedRoutes = [
+  '/relatorios_infinity',
+  '/admin',
+  '/instagram-carousel',
+  '/teste-whatsapp',
+];
+
 function getLocaleFromPath(pathname: string): string | null {
   const segments = pathname.split('/');
   const potentialLocale = segments[1];
@@ -22,6 +30,11 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/favicon') ||
     pathname.includes('.') // static files like .png, .css, .js, .xml, etc.
   ) {
+    return NextResponse.next();
+  }
+
+  // Skip non-localized routes (admin panels, dashboards, etc.)
+  if (nonLocalizedRoutes.some(route => pathname.startsWith(route))) {
     return NextResponse.next();
   }
 
