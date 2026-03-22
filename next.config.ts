@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
-            value: 'https://crm.infinityondemand.com.br',
+            value: 'https://crmm.infinityondemand.com.br',
           },
           {
             key: 'Access-Control-Allow-Methods',
