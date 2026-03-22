@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'angelo.marques@infinityondemand.com.br';
 
 /**
  * Email Prospecting — Flash contacts leads via email (Resend).
@@ -24,6 +22,8 @@ export async function POST(request: NextRequest) {
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const crmOwnerId = process.env.CRM_OWNER_USER_ID;
     const openaiKey = process.env.OPENAI_API_KEY;
+    const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'angelo.marques@infinityondemand.com.br';
 
     if (!supabaseUrl || !supabaseServiceKey || !crmOwnerId) {
       return NextResponse.json({ error: 'Missing server configuration' }, { status: 500 });
