@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
-const WHATSAPP_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
-const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
-
+// Manual .env.local reader for vars that Next.js might not load in production
+function getEnvVar(name: string): string | undefined {
+  if (process.env[name]) return process.env[name];
+  try {
+    const envPath = join(process.cwd(), '.env.local');
+    const content = readFileSync(envPath, 'utf-8');
+    const match = content.match(new RegExp(`^${name}=(.+)$`, 'm'));
+    return match?.[1]?.trim() || undefined;
+  } catch {
+    return undefined;
+  }
+}
 // ─── Template Configuration ───
 // Categories that should use the delivery/restaurant template
 const FOOD_CATEGORIES = [
@@ -22,7 +33,7 @@ function chooseTemplate(category: string): { name: string; language: string } {
     return { name: 'flash_prospeccao', language: 'pt_BR' };
   }
   // flash_consultoria is for all other businesses (sites, consulting, etc.)
-  return { name: 'flash_consultoria', language: 'en' };
+  return { name: 'flash_consultoria', language: 'pt_BR' };
 }
 
 /**
@@ -53,6 +64,9 @@ export async function POST(request: NextRequest) {
     if (!supabaseUrl || !supabaseServiceKey || !crmOwnerId) {
       return NextResponse.json({ error: 'Missing server configuration' }, { status: 500 });
     }
+
+    const WHATSAPP_TOKEN = getEnvVar('WHATSAPP_ACCESS_TOKEN');
+    const PHONE_NUMBER_ID = getEnvVar('WHATSAPP_PHONE_NUMBER_ID');
 
     if (!WHATSAPP_TOKEN || !PHONE_NUMBER_ID) {
       return NextResponse.json({ error: 'WhatsApp API not configured' }, { status: 500 });
@@ -204,6 +218,8 @@ async function sendWhatsAppTemplate(
     }
   }
 
+  const WHATSAPP_TOKEN = getEnvVar('WHATSAPP_ACCESS_TOKEN');
+  const PHONE_NUMBER_ID = getEnvVar('WHATSAPP_PHONE_NUMBER_ID');
   const url = `https://graph.facebook.com/v21.0/${PHONE_NUMBER_ID}/messages`;
 
   return fetch(url, {
