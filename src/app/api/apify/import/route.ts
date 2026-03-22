@@ -17,6 +17,9 @@ interface ApifyGoogleMapsItem {
   categories?: string[];
   url?: string;
   address?: string;
+  emails?: string[];
+  instagrams?: string[];
+  facebooks?: string[];
   // Alternate field names from different scrapers
   Place_name?: string;
   Phone?: string;
@@ -138,6 +141,8 @@ export async function POST(request: NextRequest) {
       const website = item.website || '';
       const categories = item.categoryName || (item.categories || []).join(', ') || '';
       const googleUrl = item.url || '';
+      const email = (item.emails && item.emails.length > 0) ? item.emails[0] : null;
+      const instagram = (item.instagrams && item.instagrams.length > 0) ? item.instagrams[0] : null;
 
       const notes = [
         `📍 Lead capturado via Apify (Google Maps) em ${new Date().toLocaleDateString('pt-BR')}.`,
@@ -145,6 +150,8 @@ export async function POST(request: NextRequest) {
         categories ? `📂 Categoria: ${categories}` : '',
         street ? `📍 Endereço: ${street}` : '',
         website ? `🌐 Site: ${website}` : '',
+        email ? `📧 Email: ${email}` : '',
+        instagram ? `📸 Instagram: ${instagram}` : '',
         googleUrl ? `🗺 Maps: ${googleUrl}` : '',
       ].filter(Boolean).join('\n');
 
@@ -152,6 +159,7 @@ export async function POST(request: NextRequest) {
         user_id: crmOwnerId,
         name: placeName,
         phone: formattedPhone,
+        email: email,
         company: placeName,
         city: city,
         state: state,
