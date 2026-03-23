@@ -177,13 +177,38 @@ export async function POST(request: NextRequest) {
             role: 'flash',
             message: `[Template: ${template.name}] Variável: ${lead.name}`,
             status: 'open',
-            metadata: { source: 'prospecting', lead_id: lead.id, template: template.name },
+            metadata: {
+              source: 'prospecting',
+              lead_id: lead.id,
+              template: template.name,
+              meta_ok: true,
+              meta_status: sendRes.status,
+              meta_response: resData,
+            },
           });
 
           sent++;
           results.push({ name: lead.name, phone: lead.phone, status: 'sent', template: template.name });
         } else {
           const errMsg = resData?.error?.message || JSON.stringify(resData);
+          
+          // Save failed message to conversations so it shows in chat
+          await supabase.from('whatsapp_conversations').insert({
+            phone: lead.phone,
+            name: lead.name,
+            role: 'flash',
+            message: `[Template: ${template.name}] Variável: ${lead.name}`,
+            status: 'open',
+            metadata: {
+              source: 'prospecting',
+              lead_id: lead.id,
+              template: template.name,
+              meta_ok: false,
+              meta_status: sendRes.status,
+              meta_response: resData,
+            },
+          });
+
           failed++;
           results.push({ name: lead.name, phone: lead.phone, status: 'failed', template: template.name, message: errMsg });
         }
