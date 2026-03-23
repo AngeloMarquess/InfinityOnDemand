@@ -25,16 +25,16 @@ const FOOD_CATEGORIES = [
   'pastelaria', 'marmitaria', 'espetaria',
 ];
 
-function chooseTemplate(category: string): { name: string; language: string } {
+function chooseTemplate(category: string): { name: string; language: string; hasVariable: boolean } {
   const lower = (category || '').toLowerCase();
   const isFood = FOOD_CATEGORIES.some(kw => lower.includes(kw));
   
   if (isFood) {
-    // flash_prospeccao is for restaurants/delivery — may still be under review
-    return { name: 'flash_prospeccao', language: 'pt_BR' };
+    // flash_prospeccao is for restaurants/delivery — has {{1}} variable for business name
+    return { name: 'flash_prospeccao', language: 'pt_BR', hasVariable: true };
   }
-  // flash is for all other businesses (sites, consulting, etc.)
-  return { name: 'flash', language: 'pt_BR' };
+  // flash is for all other businesses (sites, consulting, etc.) — no variables
+  return { name: 'flash', language: 'pt_BR', hasVariable: false };
 }
 
 /**
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
         const template = chooseTemplate(category);
 
         // Send via WhatsApp Template API
-        const sendRes = await sendWhatsAppTemplate(lead.phone, template.name, template.language, lead.name);
+        const sendRes = await sendWhatsAppTemplate(lead.phone, template.name, template.language, lead.name, template.hasVariable);
 
         const resData = await sendRes.json().catch(() => ({}));
 
@@ -240,7 +240,8 @@ async function sendWhatsAppTemplate(
   to: string,
   templateName: string,
   language: string,
-  businessName: string
+  businessName: string,
+  hasVariable: boolean = true
 ) {
   // Format number
   let formattedTo = to.replace(/\D/g, '');
@@ -256,6 +257,26 @@ async function sendWhatsAppTemplate(
   const PHONE_NUMBER_ID = getEnvVar('WHATSAPP_PHONE_NUMBER_ID');
   const url = `https://graph.facebook.com/v21.0/${PHONE_NUMBER_ID}/messages`;
 
+  const templatePayload: Record<string, unknown> = {
+    name: templateName,
+    language: { code: language },
+  };
+
+  // Only add body components if the template has variables
+  if (hasVariable) {
+    templatePayload.components = [
+      {
+        type: 'body',
+        parameters: [
+          {
+            type: 'text',
+            text: businessName, // {{1}} = nome do estabelecimento
+          },
+        ],
+      },
+    ];
+  }
+
   return fetch(url, {
     method: 'POST',
     headers: {
@@ -267,21 +288,7 @@ async function sendWhatsAppTemplate(
       recipient_type: 'individual',
       to: formattedTo,
       type: 'template',
-      template: {
-        name: templateName,
-        language: { code: language },
-        components: [
-          {
-            type: 'body',
-            parameters: [
-              {
-                type: 'text',
-                text: businessName, // {{1}} = nome do estabelecimento
-              },
-            ],
-          },
-        ],
-      },
+      template: templatePayload,
     }),
   });
 }
