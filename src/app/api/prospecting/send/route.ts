@@ -33,8 +33,8 @@ function chooseTemplate(category: string): { name: string; language: string } {
     // flash_prospeccao is for restaurants/delivery — may still be under review
     return { name: 'flash_prospeccao', language: 'pt_BR' };
   }
-  // flash_consultoria is for all other businesses (sites, consulting, etc.)
-  return { name: 'flash_consultoria', language: 'pt_BR' };
+  // flash is for all other businesses (sites, consulting, etc.)
+  return { name: 'flash', language: 'pt_BR' };
 }
 
 /**
