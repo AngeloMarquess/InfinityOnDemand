@@ -31,6 +31,12 @@ export default function Home() {
         body: JSON.stringify({ nome: formNome, email: formEmail, whatsapp: formWhatsapp, message: formMessage, origin: 'site' }),
       });
       if (!res.ok) throw new Error('Failed');
+      // Google Ads conversion tracking
+      if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-18032348244/csqqCMKlY4cENSYv5ZD'
+        });
+      }
       setFormSuccess(true);
       setFormNome('');
       setFormEmail('');
