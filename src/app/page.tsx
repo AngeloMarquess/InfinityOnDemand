@@ -483,6 +483,7 @@ export default function Home() {
               { name: "Patty Garden", logo: "/clientes/patty-garden.webp" },
               { name: "Conexem", logo: "/clientes/conexem.png" },
               { name: "Dom Black", logo: "/clientes/dom-black.svg", darkBg: true },
+              { name: "Innoveda", logo: "/clientes/innoveda.webp" },
               { name: "Moov Contábil", logo: "/clientes/moov-contabil.png" },
               { name: "Larissa Paz Mendes", logo: "/clientes/larissa-paz.png" },
               { name: "Eduarda Jatobá", logo: "/clientes/eduarda-jatoba.png" },
@@ -502,6 +503,7 @@ export default function Home() {
               { name: "Patty Garden", logo: "/clientes/patty-garden.webp" },
               { name: "Conexem", logo: "/clientes/conexem.png" },
               { name: "Dom Black", logo: "/clientes/dom-black.svg", darkBg: true },
+              { name: "Innoveda", logo: "/clientes/innoveda.webp" },
             ].map((client: { name: string; logo: string; darkBg?: boolean }, i) => (
               <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", flexShrink: 0 }}>
                 <div style={{
