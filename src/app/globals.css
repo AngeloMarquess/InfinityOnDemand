@@ -172,6 +172,20 @@ button {
 .bar-3 { animation: bar-grow-3 1.4s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
 .bar-4 { animation: bar-grow-4 1.6s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
 
+/* --- Clients Carousel --- */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.clients-carousel-track {
+  animation: scroll-left 25s linear infinite;
+}
+
+.clients-carousel-track:hover {
+  animation-play-state: paused;
+}
+
 /* ===================== */
 /* MOBILE HAMBURGER MENU */
 /* ===================== */
