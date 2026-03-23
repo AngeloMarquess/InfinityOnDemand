@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
         // CORS for API routes (CRM access)
         source: '/api/:path*',
         headers: [
-          { key: 'Access-Control-Allow-Origin', value: 'https://crmm.infinityondemand.com.br' },
+          { key: 'Access-Control-Allow-Origin', value: 'https://crm.infinityondemand.com.br' },
           { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
           { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
         ],

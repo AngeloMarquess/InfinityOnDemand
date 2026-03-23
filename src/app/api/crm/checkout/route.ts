@@ -10,7 +10,7 @@ function getServiceSupabase() {
 
 function corsHeaders() {
   return {
-    'Access-Control-Allow-Origin': 'https://crmm.infinityondemand.com.br',
+    'Access-Control-Allow-Origin': 'https://crm.infinityondemand.com.br',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
@@ -116,7 +116,7 @@ export async function POST(request: Request) {
     }
 
     // Create Checkout Session
-    const crmDomain = 'https://crmm.infinityondemand.com.br';
+    const crmDomain = 'https://crm.infinityondemand.com.br';
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',

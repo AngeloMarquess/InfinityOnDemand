@@ -59,7 +59,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
           <Link href={`${prefix}/#labs`} style={{ padding: "8px 12px", borderRadius: "4px" }}>{t.labs}</Link>
           <Link href={`${prefix}/consultoria`} style={{ padding: "8px 12px", borderRadius: "4px" }}>{t.consultoria}</Link>
           <Link href={`${prefix}/ecommerce`} style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.ecommerce}</Link>
-          <a href="https://crmm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.crm}</a>
+          <a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.crm}</a>
           <Link href={`${prefix}/delivery`} style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.delivery}</Link>
           <Link href="/relatorios_infinity" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.analytics}</Link>
           
@@ -153,7 +153,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
           <Link href={`${prefix}/#labs`} onClick={closeMenu}>{t.labs}</Link>
           <Link href={`${prefix}/consultoria`} onClick={closeMenu}>{t.consultoria}</Link>
           <Link href={`${prefix}/ecommerce`} onClick={closeMenu}>{t.ecommerce}</Link>
-          <a href="https://crmm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" onClick={closeMenu}>
+          <a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" onClick={closeMenu}>
             {t.crm}
           </a>
           <Link href={`${prefix}/delivery`} onClick={closeMenu}>{t.delivery}</Link>

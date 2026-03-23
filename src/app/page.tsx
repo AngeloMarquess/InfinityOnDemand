@@ -184,7 +184,7 @@ export default function Home() {
             <p style={{ fontSize: "18px", color: "var(--text-secondary)", marginBottom: "32px", lineHeight: 1.6 }}>
               Acelere suas vendas e gerencie seu relacionamento com o cliente através do nosso CRM inteligente, criado dentro do <b>Infinity Labs</b> com foco em alta conversão e análise de dados.
             </p>
-            <a href="https://crmm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: "16px 32px", fontSize: "18px", display: "inline-flex" }}>
+            <a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: "16px 32px", fontSize: "18px", display: "inline-flex" }}>
               Acessar Plataforma CRM
             </a>
           </div>

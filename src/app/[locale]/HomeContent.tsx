@@ -175,7 +175,7 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
             <p style={{ fontSize: "18px", color: "var(--text-secondary)", marginBottom: "32px", lineHeight: 1.6 }}>
               {t.crmDesc}
             </p>
-            <a href="https://crmm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: "16px 32px", fontSize: "18px", display: "inline-flex" }}>
+            <a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: "16px 32px", fontSize: "18px", display: "inline-flex" }}>
               {t.crmBtn}
             </a>
           </div>
