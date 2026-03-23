@@ -175,5 +175,28 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, message: 'Conta desbloqueada' });
   }
 
+  if (action === 'delete_user') {
+    // Delete from CRM tables first (in case cascade doesn't cover everything)
+    await supabase.from('crm_subscription_history').delete().eq('user_id', user_id);
+    await supabase.from('crm_tasks').delete().eq('user_id', user_id);
+    await supabase.from('crm_financial_records').delete().eq('user_id', user_id);
+    await supabase.from('crm_calendar_events').delete().eq('user_id', user_id);
+    await supabase.from('crm_briefings').delete().eq('user_id', user_id);
+    await supabase.from('crm_proposals').delete().eq('user_id', user_id);
+    await supabase.from('crm_contacts').delete().eq('user_id', user_id);
+    await supabase.from('crm_services').delete().eq('user_id', user_id);
+    await supabase.from('crm_service_categories').delete().eq('user_id', user_id);
+    await supabase.from('crm_stages').delete().eq('user_id', user_id);
+    await supabase.from('crm_profiles').delete().eq('id', user_id);
+
+    // Delete from Supabase Auth
+    const { error: authError } = await supabase.auth.admin.deleteUser(user_id);
+    if (authError) {
+      return NextResponse.json({ success: false, error: `Erro ao excluir do auth: ${authError.message}` }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, message: 'Usuário excluído completamente' });
+  }
+
   return NextResponse.json({ error: 'Ação inválida.' }, { status: 400 });
 }

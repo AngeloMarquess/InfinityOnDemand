@@ -245,6 +245,17 @@ export default function AdminCRMPage() {
                             🔓 Desbloquear
                           </button>
                         )}
+                        <button
+                          onClick={() => { if (confirm(`⚠️ EXCLUIR ${client.full_name || client.email} PERMANENTEMENTE?\n\nIsso vai apagar:\n- Conta de login\n- Todos os leads\n- Propostas\n- Tarefas\n- Dados financeiros\n\nEssa ação NÃO pode ser desfeita!`)) handleAction(client.id, 'delete_user'); }}
+                          disabled={actionLoading === client.id}
+                          style={{
+                            padding: '6px 10px', borderRadius: '8px', fontSize: '12px',
+                            background: 'rgba(127,29,29,0.2)', color: '#f87171',
+                            border: '1px solid rgba(248,113,113,0.3)', cursor: 'pointer'
+                          }}
+                        >
+                          🗑️ Excluir
+                        </button>
                       </div>
                     </td>
                   </tr>
