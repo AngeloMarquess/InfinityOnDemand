@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { validateApiKey, rateLimit } from '@/lib/api-security';
 
 // Manual .env.local reader for vars that Next.js might not load in production
 function getEnvVar(name: string): string | undefined {
@@ -49,9 +50,17 @@ function chooseTemplate(category: string): { name: string; language: string } {
  * 3. Send via WhatsApp Template API
  * 4. Move lead to "Primeiro Contato" stage
  * 
- * CORS is handled globally by next.config.ts
+ * Requires: Authorization: Bearer <FLASH_API_SECRET>
  */
 export async function POST(request: NextRequest) {
+  // Auth check
+  const auth = validateApiKey(request);
+  if (!auth.valid) return auth.error!;
+
+  // Rate limit: 5 WhatsApp sends per minute
+  const rl = rateLimit(request, { maxRequests: 5, windowMs: 60_000, keyPrefix: 'whatsapp-send' });
+  if (!rl.allowed) return rl.error!;
+
   try {
     const body = await request.json().catch(() => ({}));
     const { leadId } = body;

@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { validateApiKey, rateLimit } from '@/lib/api-security';
 
 /**
  * GET /api/prospecting/email-logs
- * Returns a list of leads that were contacted by Flash Email,
- * based on notes containing "Flash prospectou por email".
+ * Returns a list of leads that were contacted by Flash Email.
+ * Requires: Authorization: Bearer <FLASH_API_SECRET>
  */
 export async function GET(request: NextRequest) {
+  const auth = validateApiKey(request);
+  if (!auth.valid) return auth.error!;
+
+  const rl = rateLimit(request, { maxRequests: 30, windowMs: 60_000, keyPrefix: 'email-logs' });
+  if (!rl.allowed) return rl.error!;
+
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;

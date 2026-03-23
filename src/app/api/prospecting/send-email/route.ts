@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { validateApiKey, rateLimit } from '@/lib/api-security';
 
 // Manual .env.local reader for vars that Next.js might not load
 function getEnvVar(name: string): string | undefined {
@@ -24,9 +25,17 @@ function getEnvVar(name: string): string | undefined {
  *   { leadId: string }     — email a single specific lead
  *   { limit?: number }     — batch: email N leads with email addresses (default 10, max 50)
  * 
- * CORS is handled globally by next.config.ts
+ * Requires: Authorization: Bearer <FLASH_API_SECRET>
  */
 export async function POST(request: NextRequest) {
+  // Auth check
+  const auth = validateApiKey(request);
+  if (!auth.valid) return auth.error!;
+
+  // Rate limit: 5 email sends per minute
+  const limit_check = rateLimit(request, { maxRequests: 5, windowMs: 60_000, keyPrefix: 'email-send' });
+  if (!limit_check.allowed) return limit_check.error!;
+
   try {
     const body = await request.json().catch(() => ({}));
     const { leadId } = body;
