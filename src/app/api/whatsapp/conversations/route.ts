@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     // Get messages for a specific phone number
     const { data, error } = await supabase
       .from('whatsapp_conversations')
-      .select('role, message, created_at')
+      .select('role, message, created_at, metadata')
       .eq('phone', phone)
       .order('created_at', { ascending: true })
       .limit(100);
