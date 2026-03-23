@@ -390,6 +390,91 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
         </div>
       </section>
 
+      {/* Clients Carousel Section */}
+      <section style={{ backgroundColor: "var(--bg-secondary)", padding: "80px 0", borderTop: "1px solid var(--bg-tertiary)", overflow: "hidden" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", paddingLeft: "clamp(16px, 4vw, 48px)", paddingRight: "clamp(16px, 4vw, 48px)" }}>
+          <h2 style={{ fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 700, letterSpacing: "-0.5px", textAlign: "center", marginBottom: "16px", color: "var(--text-primary)" }}>
+            Nossos <span className="text-gradient">Clientes</span>
+          </h2>
+          <p className="text-secondary" style={{ textAlign: "center", fontSize: "17px", marginBottom: "60px", maxWidth: "500px", margin: "0 auto 60px" }}>
+            Empresas que confiam na Infinity OnDemand para escalar seus negócios.
+          </p>
+        </div>
+
+        {/* Carousel Track */}
+        <div style={{ position: "relative", width: "100%", overflow: "hidden", maskImage: "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)", WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)" }}>
+          <div className="clients-carousel-track" style={{ display: "flex", gap: "48px", width: "max-content" }}>
+            {[
+              { name: "Moov Contábil", logo: "/clientes/moov-contabil.png" },
+              { name: "Larissa Paz Mendes", logo: "/clientes/larissa-paz.png" },
+              { name: "Eduarda Jatobá", logo: "/clientes/eduarda-jatoba.png" },
+              { name: "MedClin Exames", logo: "/clientes/medclin.png" },
+              { name: "Moreira Advocacia", logo: "/clientes/moreira-advocacia.webp", darkBg: true },
+              { name: "Ecalê", logo: "/clientes/ecale.webp" },
+              { name: "Pizzaria Farinha", logo: "/clientes/pizzaria-farinha.png" },
+              { name: "Tutti Sabores", logo: "/clientes/tutti-sabores.webp" },
+              { name: "Sportsystem", logo: "/clientes/sportsystem.webp" },
+              { name: "Joyce Fenolia Joias", logo: "/clientes/joyce-fenolia.webp" },
+              { name: "Josy Oliveira", logo: "/clientes/josy-oliveira.webp" },
+              { name: "Flor do Atlântico", logo: "/clientes/flor-do-atlantico.png" },
+              { name: "Patty Garden", logo: "/clientes/patty-garden.webp" },
+              { name: "Conexem", logo: "/clientes/conexem.png" },
+              { name: "Dom Black", logo: "/clientes/dom-black.svg", darkBg: true },
+              { name: "Innoveda", logo: "/clientes/innoveda.webp" },
+              { name: "Moov Contábil", logo: "/clientes/moov-contabil.png" },
+              { name: "Larissa Paz Mendes", logo: "/clientes/larissa-paz.png" },
+              { name: "Eduarda Jatobá", logo: "/clientes/eduarda-jatoba.png" },
+              { name: "MedClin Exames", logo: "/clientes/medclin.png" },
+              { name: "Moreira Advocacia", logo: "/clientes/moreira-advocacia.webp", darkBg: true },
+              { name: "Ecalê", logo: "/clientes/ecale.webp" },
+              { name: "Pizzaria Farinha", logo: "/clientes/pizzaria-farinha.png" },
+              { name: "Tutti Sabores", logo: "/clientes/tutti-sabores.webp" },
+              { name: "Sportsystem", logo: "/clientes/sportsystem.webp" },
+              { name: "Joyce Fenolia Joias", logo: "/clientes/joyce-fenolia.webp" },
+              { name: "Josy Oliveira", logo: "/clientes/josy-oliveira.webp" },
+              { name: "Flor do Atlântico", logo: "/clientes/flor-do-atlantico.png" },
+              { name: "Patty Garden", logo: "/clientes/patty-garden.webp" },
+              { name: "Conexem", logo: "/clientes/conexem.png" },
+              { name: "Dom Black", logo: "/clientes/dom-black.svg", darkBg: true },
+              { name: "Innoveda", logo: "/clientes/innoveda.webp" },
+            ].map((client: { name: string; logo: string; darkBg?: boolean }, i) => (
+              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", flexShrink: 0 }}>
+                <div style={{
+                  width: "110px",
+                  height: "110px",
+                  borderRadius: "50%",
+                  backgroundColor: client.darkBg ? "#1a1a2e" : "rgba(255,255,255,0.95)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "20px",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                  cursor: "pointer"
+                }}
+                  onMouseOver={(e) => { e.currentTarget.style.transform = "scale(1.1)"; e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,223,129,0.2)"; }}
+                  onMouseOut={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.15)"; }}
+                >
+                  <img
+                    src={client.logo}
+                    alt={client.name}
+                    style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "50%" }}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = "none";
+                      target.parentElement!.innerHTML = `<span style="font-size:14px;font-weight:700;color:#0B0F19;text-align:center;line-height:1.2">${client.name}</span>`;
+                    }}
+                  />
+                </div>
+                <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-secondary)", textAlign: "center", maxWidth: "120px" }}>
+                  {client.name}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Blog Section */}
       <section className="section-padding" style={{ backgroundColor: "var(--bg-primary)", borderTop: "1px solid var(--bg-tertiary)" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
