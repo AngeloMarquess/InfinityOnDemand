@@ -553,7 +553,7 @@ export default function Home() {
               </h2>
               <p className="text-secondary" style={{ fontSize: "17px", marginTop: "8px" }}>Artigos, guias e novidades sobre tecnologia, e-commerce e inovação.</p>
             </div>
-            <a href="#" style={{ padding: "12px 28px", border: "1px solid var(--bg-tertiary)", borderRadius: "10px", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", transition: "all 0.3s ease", textDecoration: "none" }}
+            <a href="/blog" style={{ padding: "12px 28px", border: "1px solid var(--bg-tertiary)", borderRadius: "10px", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", transition: "all 0.3s ease", textDecoration: "none" }}
               onMouseOver={(e) => { e.currentTarget.style.borderColor = "var(--accent-primary)"; e.currentTarget.style.color = "var(--accent-primary)"; }}
               onMouseOut={(e) => { e.currentTarget.style.borderColor = "var(--bg-tertiary)"; e.currentTarget.style.color = "var(--text-primary)"; }}
             >
@@ -564,7 +564,7 @@ export default function Home() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: "32px" }}>
 
             {/* Blog Post 1 - Featured Large */}
-            <a href="#" style={{ textDecoration: "none", color: "inherit", borderRadius: "20px", overflow: "hidden", backgroundColor: "var(--bg-secondary)", border: "1px solid var(--bg-tertiary)", transition: "transform 0.3s ease, box-shadow 0.3s ease", display: "flex", flexDirection: "column" }}
+            <a href="/blog/agentes-ia-revolucionando-ecommerce-2026" style={{ textDecoration: "none", color: "inherit", borderRadius: "20px", overflow: "hidden", backgroundColor: "var(--bg-secondary)", border: "1px solid var(--bg-tertiary)", transition: "transform 0.3s ease, box-shadow 0.3s ease", display: "flex", flexDirection: "column" }}
               onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 16px 48px rgba(0,223,129,0.1)"; }}
               onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
             >
@@ -583,7 +583,7 @@ export default function Home() {
             </a>
 
             {/* Blog Post 2 */}
-            <a href="#" style={{ textDecoration: "none", color: "inherit", borderRadius: "20px", overflow: "hidden", backgroundColor: "var(--bg-secondary)", border: "1px solid var(--bg-tertiary)", transition: "transform 0.3s ease, box-shadow 0.3s ease", display: "flex", flexDirection: "column" }}
+            <a href="/blog/5-estrategias-performance-triplicam-vendas" style={{ textDecoration: "none", color: "inherit", borderRadius: "20px", overflow: "hidden", backgroundColor: "var(--bg-secondary)", border: "1px solid var(--bg-tertiary)", transition: "transform 0.3s ease, box-shadow 0.3s ease", display: "flex", flexDirection: "column" }}
               onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 16px 48px rgba(0,170,255,0.1)"; }}
               onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
             >
@@ -602,7 +602,7 @@ export default function Home() {
             </a>
 
             {/* Blog Post 3 */}
-            <a href="#" style={{ textDecoration: "none", color: "inherit", borderRadius: "20px", overflow: "hidden", backgroundColor: "var(--bg-secondary)", border: "1px solid var(--bg-tertiary)", transition: "transform 0.3s ease, box-shadow 0.3s ease", display: "flex", flexDirection: "column" }}
+            <a href="/blog/futuro-delivery-tecnologia-restaurantes" style={{ textDecoration: "none", color: "inherit", borderRadius: "20px", overflow: "hidden", backgroundColor: "var(--bg-secondary)", border: "1px solid var(--bg-tertiary)", transition: "transform 0.3s ease, box-shadow 0.3s ease", display: "flex", flexDirection: "column" }}
               onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 16px 48px rgba(0,223,129,0.1)"; }}
               onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
             >
