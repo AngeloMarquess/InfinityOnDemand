@@ -38,6 +38,7 @@ export default function BlogEditorPage() {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Image,
