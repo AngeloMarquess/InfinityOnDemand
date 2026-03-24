@@ -101,7 +101,7 @@ Retorne um JSON com: { "title", "slug", "excerpt" (2 frases), "content" (HTML), 
         quality: 'hd',
       });
 
-      const imageUrl = response.data[0]?.url;
+      const imageUrl = response.data?.[0]?.url || null;
       return NextResponse.json({ image_url: imageUrl }, { headers: cors() });
     }
 
