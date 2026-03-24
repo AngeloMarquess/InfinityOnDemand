@@ -195,14 +195,8 @@ export default function Home() {
             </a>
           </div>
           <div style={{ flex: "1 1 400px", display: "flex", justifyContent: "center" }}>
-            <div style={{ width: "100%", maxWidth: "500px", aspectRatio: "4/3", backgroundColor: "var(--bg-secondary)", borderRadius: "16px", boxShadow: "var(--shadow-lg)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--bg-tertiary)", overflow: "hidden", position: "relative" }}>
-               {/* Decorative Dashboard mock */}
-               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "40px", backgroundColor: "var(--bg-secondary)", borderBottom: "1px solid var(--bg-tertiary)", display: "flex", alignItems: "center", padding: "0 16px", gap: "8px" }}>
-                  <div style={{width: 12, height: 12, borderRadius: 6, backgroundColor: "#ff5f56"}}></div>
-                  <div style={{width: 12, height: 12, borderRadius: 6, backgroundColor: "#ffbd2e"}}></div>
-                  <div style={{width: 12, height: 12, borderRadius: 6, backgroundColor: "#27c93f"}}></div>
-               </div>
-               <span style={{ fontSize: "64px", marginTop: "40px" }}>📈</span>
+            <div style={{ width: "100%", maxWidth: "500px", aspectRatio: "4/3", borderRadius: "16px", boxShadow: "var(--shadow-lg)", overflow: "hidden", border: "1px solid var(--bg-tertiary)" }}>
+               <img src="/crm_dashboard.png" alt="Infinity CRM Dashboard" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
           </div>
         </div>
