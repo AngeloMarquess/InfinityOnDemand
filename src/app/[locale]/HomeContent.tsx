@@ -421,6 +421,9 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
               { name: "Conexem", logo: "/clientes/conexem.png" },
               { name: "Dom Black", logo: "/clientes/dom-black.svg", darkBg: true },
               { name: "Innoveda", logo: "/clientes/innoveda.webp", darkBg: true },
+              { name: "Manto Arretado", logo: "/clientes/manto-arretado.png" },
+              { name: "Pura Salud", logo: "/clientes/pura-salud.png" },
+              { name: "Juju Jouet", logo: "/clientes/juju-jouet.png" },
               { name: "Moov Contábil", logo: "/clientes/moov-contabil.png" },
               { name: "Larissa Paz Mendes", logo: "/clientes/larissa-paz.png" },
               { name: "Eduarda Jatobá", logo: "/clientes/eduarda-jatoba.png" },
@@ -437,6 +440,9 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
               { name: "Conexem", logo: "/clientes/conexem.png" },
               { name: "Dom Black", logo: "/clientes/dom-black.svg", darkBg: true },
               { name: "Innoveda", logo: "/clientes/innoveda.webp", darkBg: true },
+              { name: "Manto Arretado", logo: "/clientes/manto-arretado.png" },
+              { name: "Pura Salud", logo: "/clientes/pura-salud.png" },
+              { name: "Juju Jouet", logo: "/clientes/juju-jouet.png" },
             ].map((client: { name: string; logo: string; darkBg?: boolean }, i) => (
               <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", flexShrink: 0 }}>
                 <div style={{
