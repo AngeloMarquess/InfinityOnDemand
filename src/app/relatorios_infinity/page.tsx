@@ -423,7 +423,7 @@ export default function RelatoriosInfinity() {
       const result = await res.json();
       if (result.posts && Array.isArray(result.posts)) {
         const newStatus: Record<string, { status: 'idle' | 'loading' | 'success' | 'error'; message?: string }> = {
-          seg: { status: 'idle' }, ter: { status: 'idle' }, qua: { status: 'idle' }, qui: { status: 'idle' }, sex: { status: 'idle' },
+          ter: { status: 'idle' }, qua: { status: 'idle' }, qui: { status: 'idle' }, sex: { status: 'idle' }, sab: { status: 'idle' }, dom: { status: 'idle' }, seg: { status: 'idle' },
         };
         for (const post of result.posts) {
           if (post.day_key && newStatus[post.day_key]) {
@@ -532,31 +532,49 @@ export default function RelatoriosInfinity() {
     return `${baseUrl}${localPath}`;
   };
 
-  const feedScheduleData: Record<string, { type: 'IMAGE' | 'CAROUSEL'; images: string[]; caption: string }> = {
-    seg: {
-      type: 'CAROUSEL',
-      images: ['/campaign/post-segunda.png', '/campaign/carousel-seg-slide2.png', '/campaign/carousel-seg-slide3.png', '/campaign/carousel-seg-slide4.png', '/campaign/carousel-seg-slide5.png'],
-      caption: campaignCalendar[0].caption,
-    },
+  // Semana 2: 24 a 30 de Março (Terça a Segunda)
+  const feedScheduleData: Record<string, { type: 'IMAGE' | 'CAROUSEL'; images: string[]; caption: string; date: Date }> = {
     ter: {
-      type: 'CAROUSEL',
-      images: ['/campaign/post-terca.png', '/campaign/carousel-ter-slide2.png', '/campaign/carousel-ter-slide3.png', '/campaign/carousel-ter-slide4.png'],
-      caption: campaignCalendar[1].caption,
+      type: 'IMAGE',
+      images: ['/campaign/post-s2-terca.png'],
+      caption: campaignCalendar[5].caption,
+      date: new Date(2026, 2, 24, 10, 0, 0),
     },
     qua: {
-      type: 'CAROUSEL',
-      images: ['/campaign/post-quarta.png', '/campaign/carousel-qua-slide2.png', '/campaign/carousel-qua-slide3.png', '/campaign/carousel-qua-slide4.png', '/campaign/carousel-qua-slide5.png', '/campaign/carousel-qua-slide6.png', '/campaign/carousel-qua-slide7.png', '/campaign/carousel-qua-slide8.png'],
-      caption: campaignCalendar[2].caption,
+      type: 'IMAGE',
+      images: ['/campaign/post-s2-quarta.png'],
+      caption: campaignCalendar[6].caption,
+      date: new Date(2026, 2, 25, 10, 0, 0),
     },
     qui: {
       type: 'IMAGE',
-      images: ['/campaign/post-quinta.png'],
-      caption: campaignCalendar[3].caption,
+      images: ['/campaign/post-s2-quinta.png'],
+      caption: campaignCalendar[7].caption,
+      date: new Date(2026, 2, 26, 10, 0, 0),
     },
     sex: {
       type: 'IMAGE',
-      images: ['/campaign/post-sexta.png'],
-      caption: campaignCalendar[4].caption,
+      images: ['/campaign/post-s2-sexta.png'],
+      caption: campaignCalendar[8].caption,
+      date: new Date(2026, 2, 27, 10, 0, 0),
+    },
+    sab: {
+      type: 'IMAGE',
+      images: ['/campaign/post-s2-sabado.png'],
+      caption: campaignCalendar[9].caption,
+      date: new Date(2026, 2, 28, 10, 0, 0),
+    },
+    dom: {
+      type: 'IMAGE',
+      images: ['/campaign/post-s2-domingo.png'],
+      caption: campaignCalendar[10].caption,
+      date: new Date(2026, 2, 29, 10, 0, 0),
+    },
+    seg: {
+      type: 'IMAGE',
+      images: ['/campaign/post-s2-segunda.png'],
+      caption: campaignCalendar[11].caption,
+      date: new Date(2026, 2, 30, 10, 0, 0),
     },
   };
 
@@ -567,8 +585,8 @@ export default function RelatoriosInfinity() {
     setScheduleStatus(prev => ({ ...prev, [dayKey]: { status: 'loading', message: 'Enviando para Instagram...' } }));
 
     try {
-      // Calculate scheduled time: 10:00 AM on the day
-      const postDate = new Date(2026, 2, 23 + dayIndex, 10, 0, 0);
+      // Calculate scheduled time from feedScheduleData
+      const postDate = data.date;
       const scheduledTime = Math.floor(postDate.getTime() / 1000);
       const now = Math.floor(Date.now() / 1000);
       const isFuture = scheduledTime > now + 600;
@@ -621,7 +639,7 @@ export default function RelatoriosInfinity() {
   };
 
   const scheduleAllPosts = async () => {
-    const dayKeys = ['seg', 'ter', 'qua', 'qui', 'sex'];
+    const dayKeys = ['ter', 'qua', 'qui', 'sex', 'sab', 'dom', 'seg'];
     for (let i = 0; i < dayKeys.length; i++) {
       if (scheduleStatus[dayKeys[i]]?.status !== 'success') {
         await schedulePost(dayKeys[i], i);
@@ -1461,54 +1479,66 @@ export default function RelatoriosInfinity() {
 
         {/* ═══════════ TAB: AGENDA ═══════════ */}
         {activeTab === 'agenda' && (() => {
-          const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
-          const dayThemes = ['Provocação', 'Educação', 'Autoridade', 'Educação', 'Oferta'];
-          const dayColors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#4ECDC4', '#FF6B6B'];
-          const dayEmojis = ['🔴', '🔵', '🟡', '🔵', '🔴'];
-          // Start date: next Monday from March 24, 2026
-          const startDate = new Date(2026, 2, 23); // March 23, 2026 (Monday)
+          const days = ['Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo', 'Segunda'];
+          const dayThemes = ['Provocação', 'Educação', 'Autoridade', 'Oferta', 'Educação', 'Provocação', 'Autoridade'];
+          const dayColors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#00DB79', '#4ECDC4', '#FF6B6B', '#FFD93D'];
+          const dayEmojis = ['🔴', '🔵', '🟡', '🟢', '🔵', '🔴', '🟡'];
+          // Start date: March 24, 2026 (Tuesday)
+          const startDate = new Date(2026, 2, 24);
           const schedule: { time: string; type: string; color: string; items: { label: string; format: string; image?: string }[] }[] = [
             { time: '08:00', type: 'Story', color: '#A855F7', items: [
-              { label: 'Bom Dia + Bastidor', format: 'Story' },
-              { label: 'Terça de dados!', format: 'Story' },
-              { label: 'Quarta de resultado!', format: 'Story' },
-              { label: 'Quinta de aprendizado!', format: 'Story' },
-              { label: 'SEXTOU! Oferta especial', format: 'Story' },
+              { label: 'Bom Dia + Provocação', format: 'Story' },
+              { label: 'Quarta de automação!', format: 'Story' },
+              { label: 'Resultado do dia!', format: 'Story' },
+              { label: 'SEXTOU! Oferta!', format: 'Story' },
+              { label: 'Sábado de aprendizado', format: 'Story' },
+              { label: 'Domingo reflexão', format: 'Story' },
+              { label: 'Segunda de resultados!', format: 'Story' },
             ]},
             { time: '10:00', type: 'Feed', color: '#00DB79', items: [
-              { label: '5 Sinais — Carrossel 5 slides', format: 'Carrossel', image: '/campaign/post-segunda.png' },
-              { label: '3 Métricas — Carrossel 4 slides', format: 'Carrossel', image: '/campaign/post-terca.png' },
-              { label: 'Case Dom Black — Carrossel 8 slides', format: 'Carrossel', image: '/campaign/post-quarta.png' },
-              { label: 'Erro nº1 Pizzaria — Imagem', format: 'Imagem', image: '/campaign/post-quinta.png' },
-              { label: '20 seg Delivery — Reel', format: 'Reel', image: '/campaign/post-sexta.png' },
+              { label: 'Delivery sem sistema?', format: 'Imagem', image: '/campaign/post-s2-terca.png' },
+              { label: '4 Automações — 4 slides', format: 'Carrossel', image: '/campaign/post-s2-quarta.png' },
+              { label: 'Antes vs Depois — 6 slides', format: 'Carrossel', image: '/campaign/post-s2-quinta.png' },
+              { label: 'Setup grátis — Reel', format: 'Reel', image: '/campaign/post-s2-sexta.png' },
+              { label: 'Cardápio vs WhatsApp', format: 'Imagem', image: '/campaign/post-s2-sabado.png' },
+              { label: 'Taxa iFood — Polêmica', format: 'Imagem', image: '/campaign/post-s2-domingo.png' },
+              { label: '3 Resultados reais — 5 slides', format: 'Carrossel', image: '/campaign/post-s2-segunda.png' },
             ]},
             { time: '12:00', type: 'Story', color: '#A855F7', items: [
-              { label: 'Enquete: Dificuldade do delivery', format: 'Enquete' },
-              { label: 'Enquete: Ticket médio', format: 'Enquete' },
-              { label: 'Enquete: Sistema próprio?', format: 'Enquete' },
-              { label: 'Enquete: Erros no delivery', format: 'Quiz' },
-              { label: 'Enquete: Comissão iFood', format: 'Enquete' },
+              { label: 'Enquete: Usa sistema?', format: 'Enquete' },
+              { label: 'Enquete: Tempo perdido?', format: 'Enquete' },
+              { label: 'Enquete: Kanban usado?', format: 'Enquete' },
+              { label: 'Countdown: Oferta!', format: 'Urgência' },
+              { label: 'Enquete: WhatsApp ou app?', format: 'Enquete' },
+              { label: 'Poll: Comissão iFood', format: 'Poll' },
+              { label: 'Enquete: Quer ser case?', format: 'Enquete' },
             ]},
             { time: '15:00', type: 'Story', color: '#A855F7', items: [
-              { label: 'Dica: Taxa por CEP +15%', format: 'Dica' },
-              { label: 'Dica: Calcular ticket médio', format: 'Dica' },
-              { label: 'Bastidor: Screenshot Kanban', format: 'Screenshot' },
-              { label: 'Dica: Despacho às cegas', format: 'Dica' },
-              { label: 'Countdown: Oferta 24h', format: 'Urgência' },
+              { label: 'Dica: Importância do sistema', format: 'Dica' },
+              { label: 'Dica: Apps que economizam', format: 'Dica' },
+              { label: 'Bastidor: Screenshot real', format: 'Screenshot' },
+              { label: 'Countdown: Expira domingo!', format: 'Urgência' },
+              { label: 'Dica: Cardápio digital', format: 'Dica' },
+              { label: 'Dica: Calcular economia', format: 'Dica' },
+              { label: 'Bastidor: Clientes satisfeitos', format: 'Screenshot' },
             ]},
             { time: '18:00', type: 'Story', color: '#A855F7', items: [
-              { label: 'Repost do carrossel', format: 'Repost' },
-              { label: 'Repost: 3 métricas', format: 'Repost' },
-              { label: 'Repost: Case Dom Black', format: 'Repost' },
-              { label: 'Repost: Erro nº1', format: 'Repost' },
-              { label: 'Repost: Oferta final', format: 'Repost' },
+              { label: 'Repost: Provocação', format: 'Repost' },
+              { label: 'Repost: Automações', format: 'Repost' },
+              { label: 'Repost: Antes vs Depois', format: 'Repost' },
+              { label: 'Repost: Oferta', format: 'Repost' },
+              { label: 'Repost: Comparativo', format: 'Repost' },
+              { label: 'Repost: Taxa iFood', format: 'Repost' },
+              { label: 'Repost: 3 resultados', format: 'Repost' },
             ]},
             { time: '21:00', type: 'Story', color: '#A855F7', items: [
               { label: 'Bastidor noturno', format: 'Bastidor' },
-              { label: 'Bastidor: Métricas', format: 'Bastidor' },
-              { label: 'Bastidor: Onboarding', format: 'Bastidor' },
-              { label: 'Bastidor: App entregador', format: 'Bastidor' },
-              { label: 'Bastidor: Fim de semana', format: 'Bastidor' },
+              { label: 'Bastidor: Dev noturno', format: 'Bastidor' },
+              { label: 'Bastidor: Dashboard', format: 'Bastidor' },
+              { label: 'Bastidor: Oferta rolando', format: 'Bastidor' },
+              { label: 'Bastidor: Sábado dev', format: 'Bastidor' },
+              { label: 'Bastidor: Preparar semana', format: 'Bastidor' },
+              { label: 'Bastidor: Retrospectiva', format: 'Bastidor' },
             ]},
           ];
           return (
@@ -1518,13 +1548,13 @@ export default function RelatoriosInfinity() {
               {/* Week selector */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px', padding: '16px 24px', background: 'linear-gradient(135deg, #111318 0%, #0c0e12 100%)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>Semana:</span>
-                <span style={{ fontSize: '16px', fontWeight: 700, color: '#00DB79' }}>23 — 27 de Março, 2026</span>
-                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', marginLeft: 'auto' }}>Semana 1 de 4 • Fase: Provocação + Educação</span>
+                <span style={{ fontSize: '16px', fontWeight: 700, color: '#00DB79' }}>24 — 30 de Março, 2026</span>
+                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', marginLeft: 'auto' }}>Semana 2 de 4 • Fase: Aceleração</span>
               </div>
 
               {/* Calendar Grid */}
               <div style={{ overflowX: 'auto' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', gap: '2px', minWidth: '900px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '80px repeat(7, 1fr)', gap: '2px', minWidth: '1100px' }}>
                   {/* Header row */}
                   <div style={{ padding: '16px 8px', textAlign: 'center' }} />
                   {days.map((day, di) => {
@@ -1637,10 +1667,10 @@ export default function RelatoriosInfinity() {
               {/* Summary stats */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginTop: '24px' }}>
                 {[
-                  { icon: '📸', value: '5', label: 'Posts no Feed', sub: '2 carrosséis + 1 imagem + 2 reels' },
-                  { icon: '📱', value: '25', label: 'Stories/semana', sub: '5 por dia × 5 dias' },
+                  { icon: '📸', value: '7', label: 'Posts no Feed', sub: '4 imagens + 3 carrosséis' },
+                  { icon: '📱', value: '42', label: 'Stories/semana', sub: '6 por dia × 7 dias' },
                   { icon: '💰', value: '2', label: 'Anúncios ativos', sub: 'Topo de funil + Retargeting' },
-                  { icon: '⏰', value: '30', label: 'Publicações/semana', sub: 'Feed + Stories + Extras' },
+                  { icon: '⏰', value: '49', label: 'Publicações/semana', sub: 'Feed + Stories + Extras' },
                 ].map((s, i) => (
                   <div key={i} style={{
                     padding: '20px',
@@ -1728,8 +1758,8 @@ export default function RelatoriosInfinity() {
                   </button>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px' }}>
-                  {['seg', 'ter', 'qua', 'qui', 'sex'].map((dayKey, di) => {
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '12px' }}>
+                  {['ter', 'qua', 'qui', 'sex', 'sab', 'dom', 'seg'].map((dayKey, di) => {
                     const st = scheduleStatus[dayKey] || { status: 'idle' };
                     const data = feedScheduleData[dayKey];
                     return (
@@ -1747,7 +1777,7 @@ export default function RelatoriosInfinity() {
                         textAlign: 'center',
                       }}>
                         <div style={{ fontSize: '13px', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>
-                          {['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'][di]}
+                          {['Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo', 'Segunda'][di]}
                         </div>
                         <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>
                           {data?.type} • {data?.images.length} img{data && data.images.length > 1 ? 's' : ''}
