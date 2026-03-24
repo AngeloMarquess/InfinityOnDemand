@@ -39,8 +39,26 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
     fetch(`${baseUrl}/api/blog/posts?slug=${slug}`)
       .then(r => r.json())
       .then(data => {
-        if (data.error) setPost(null);
-        else setPost(data);
+        if (data.error) { setPost(null); }
+        else {
+          // Fix corrupted content: if content is JSON string, extract only HTML
+          if (data.content && typeof data.content === 'string') {
+            const trimmed = data.content.trim();
+            if (trimmed.startsWith('{') || trimmed.startsWith('"')) {
+              try {
+                const parsed = JSON.parse(trimmed.startsWith('"') ? trimmed : trimmed);
+                if (typeof parsed === 'object' && parsed.content) {
+                  data.content = parsed.content;
+                  if (parsed.title && !data.title) data.title = parsed.title;
+                  if (parsed.excerpt && !data.excerpt) data.excerpt = parsed.excerpt;
+                }
+              } catch {
+                // Not valid JSON, keep as-is
+              }
+            }
+          }
+          setPost(data);
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -117,9 +135,9 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
       )}
 
       {/* Article */}
-      <article style={{ maxWidth: '800px', width: '100%', margin: '0 auto', padding: `${post.cover_url ? '0' : '120px'} clamp(16px, 4vw, 48px) 60px` }}>
+      <article style={{ maxWidth: '800px', width: '100%', margin: '0 auto', padding: `${post.cover_url ? '0' : '120px'} clamp(16px, 4vw, 48px) 60px`, position: 'relative', zIndex: 2 }}>
         {/* Breadcrumb */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px', marginTop: post.cover_url ? '-60px' : '0', position: 'relative', zIndex: 2 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px', marginTop: post.cover_url ? '-40px' : '0' }}>
           <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Home</a>
           <span>›</span>
           <a href="/blog" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Blog</a>
