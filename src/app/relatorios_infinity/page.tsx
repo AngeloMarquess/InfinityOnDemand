@@ -146,6 +146,77 @@ const campaignCalendar = [
     storyCTA: 'Poll: "Você paga quanto de taxa pro iFood por mês? 💸"',
     caption: `Isso aqui é o que seus clientes veem\nquando pedem pela sua plataforma própria.\n\nSem iFood. Sem taxa abusiva.\n100% seu.\n\n→ Cardápio responsivo como app nativo\n→ Carrinho sem interromper navegação\n→ Rastreio ao vivo do pedido\n→ Cálculo automático de taxa por CEP\n\nIsso não é futuro. É hoje.\nE custa menos do que você paga de taxa pro iFood.\n\nDM com "DEMO" → demonstração gratuita.\n\n#delivery #foodtech #saas #plataformapropria\n#infinityondemand #ecommerce #restaurante`,
   },
+  // ── Semana 2: 24 a 30 de Março ──
+  {
+    day: 'Terça 24',
+    pillar: 'Provocação',
+    pillarColor: '#EF4444',
+    format: 'Imagem estática (design forte)',
+    title: 'Seu delivery SOBREVIVE sem sistema?',
+    image: '/campaign/post-s2-terca.png',
+    storyCTA: 'Enquete: "Você usa algum sistema no delivery? SIM / NÃO"',
+    caption: `Pergunta sincera:\n\nSeu delivery sobrevive sem sistema?\n\nPapel, WhatsApp, anotação mental...\nIsso não é gestão. Isso é sobrevivência.\n\n❌ Pedido errado porque anotou no guardanapo\n❌ Motoboy saiu sem saber o endereço\n❌ Fim do mês e você não sabe se lucrou\n\nSe você vive assim, tá funcionando\napenas por sorte. E sorte acaba.\n\nUm sistema de delivery não é luxo.\nÉ o mínimo pra quem quer crescer.\n\nComente "SISTEMA" e eu te mostro como\ntransformar o caos em controle. ⬇️\n\n#delivery #gestaodelivery #foodtech\n#empreendedorismo #infinityondemand #restaurante`,
+  },
+  {
+    day: 'Quarta 25',
+    pillar: 'Educação',
+    pillarColor: '#4a90e2',
+    format: 'Carrossel (4 slides)',
+    title: '4 automações que salvam 2 HORAS por dia no seu delivery',
+    image: '/campaign/post-s2-quarta.png',
+    storyCTA: 'Caixa de perguntas: "Qual tarefa mais consome seu tempo no delivery?"',
+    caption: `Você tá perdendo 2 horas por dia\nem tarefas que um sistema faz sozinho.\n\nSlide 2: 🤖 Cálculo automático de taxa por CEP\n→ Chega de calcular na mão. O sistema calcula\nbaseado na distância real.\n\nSlide 3: 📋 Painel Kanban de pedidos\n→ Todos os pedidos em tempo real,\nsem precisar perguntar "e o pedido 47?"\n\nSlide 4: 🛵 App do entregador com rota\n→ Motoboy recebe a rota otimizada direto no celular.\n Sem ligação, sem WhatsApp.\n\n⏰ 2 horas economizadas = 60h/mês.\n\nSalve esse post e comece a automatizar. 📌\n\n#automacao #delivery #foodtech #produtividade\n#infinityondemand #gestaodelivery #tecnologia`,
+  },
+  {
+    day: 'Quinta 26',
+    pillar: 'Autoridade',
+    pillarColor: '#F59E0B',
+    format: 'Carrossel premium (6 slides)',
+    title: 'ANTES vs DEPOIS — Dashboard real de um cliente Infinity',
+    image: '/campaign/post-s2-quinta.png',
+    storyCTA: 'Before/After: "Arraste para ver a transformação 👉"',
+    caption: `Isso não é mockup. É real.\n\nUm dos nossos clientes operava assim:\n\n❌ ANTES:\n→ Caderninho com pedidos\n→ WhatsApp lotado sem organização\n→ Zero visão financeira\n→ Motoboy perguntando endereço pelo rádio\n\n✅ DEPOIS:\n→ Kanban em tempo real\n→ Cada pedido rastreado do início ao fim\n→ Dashboard com ticket médio, faturamento, recompra\n→ App do entregador com rota automática\n\nResultado? Menos caos, mais lucro.\nE o dono finalmente dorme tranquilo.\n\nQuer ver essa transformação no SEU delivery?\nLink na bio → Demonstração gratuita.\n\n#casesdesucesso #delivery #dashboard #saas\n#infinityondemand #tecnologia #gestao`,
+  },
+  {
+    day: 'Sexta 27',
+    pillar: 'Oferta',
+    pillarColor: '#00DB79',
+    format: 'Reel (15-20 seg)',
+    title: 'ÚLTIMA SEMANA: Setup grátis + Demonstração',
+    image: '/campaign/post-s2-sexta.png',
+    storyCTA: 'Countdown: "Oferta expira domingo! ⏰"',
+    caption: `🚨 ÚLTIMA SEMANA da oferta.\n\nSetup COMPLETO do sistema — GRÁTIS.\n\nO que você ganha:\n✅ Cardápio digital personalizado\n✅ Painel de pedidos Kanban\n✅ App do entregador\n✅ Rastreio em tempo real pro cliente\n✅ Dashboard financeiro\n\nTudo configurado pela nossa equipe.\nSem dor de cabeça. Sem custo de setup.\n\nDepois de domingo, volta ao valor normal.\n\nMande "OFERTA" no DM → e agende sua demo. 🚀\n\n#oferta #delivery #foodtech #saas\n#infinityondemand #setupgratis #restaurante`,
+  },
+  {
+    day: 'Sábado 28',
+    pillar: 'Educação',
+    pillarColor: '#4a90e2',
+    format: 'Imagem estática (design comparativo)',
+    title: 'Cardápio Digital vs WhatsApp: qual converte mais?',
+    image: '/campaign/post-s2-sabado.png',
+    storyCTA: 'Enquete: "Seu cliente pede mais pelo WhatsApp ou cardápio digital?"',
+    caption: `WhatsApp:\n❌ Cliente espera resposta\n❌ Você digita preço um por um\n❌ Erro de pedido = prejuízo\n❌ Zero dados para analisar depois\n\nCardápio Digital:\n✅ Cliente escolhe sozinho\n✅ Preço e foto atualizados\n✅ Pedido entra direto no sistema\n✅ Dados de vendas em tempo real\n\nO WhatsApp foi feito pra conversar.\nNão pra receber 200 pedidos por noite.\n\nSe você ainda recebe pedido por texto,\nestá deixando dinheiro na mesa.\n\nComente "CARDÁPIO" → te envio uma demo. ⬇️\n\n#delivery #cardapiodigital #whatsapp #foodtech\n#infinityondemand #comparativo #gestao`,
+  },
+  {
+    day: 'Domingo 29',
+    pillar: 'Provocação',
+    pillarColor: '#EF4444',
+    format: 'Imagem estática (polêmica)',
+    title: 'Quanto você PAGA de taxa pro iFood por mês? 💸',
+    image: '/campaign/post-s2-domingo.png',
+    storyCTA: 'Poll: "Quanto paga de comissão? 💸 Até R$500 / R$500-1k / R$1k-2k / +R$2k"',
+    caption: `Vamos fazer uma conta rápida?\n\n📊 Faturamento no iFood: R$ 15.000/mês\n💸 Comissão média (27%): R$ 4.050/mês\n📅 Em 12 meses: R$ 48.600/ano\n\nQuase CINQUENTA MIL REAIS por ano\nsó em comissão.\n\nCom uma plataforma própria:\n→ Zero comissão por pedido\n→ Cardápio no SEU domínio\n→ Seus dados, seu cliente\n→ Custo fixo de R$ 197/mês\n\nDiferença? R$ 3.853/mês NO SEU BOLSO.\n\nDM com "CONTA" → mostro os números\npara o SEU caso específico. 📊\n\n#ifood #comissao #delivery #plataformapropria\n#foodtech #infinityondemand #economia`,
+  },
+  {
+    day: 'Segunda 30',
+    pillar: 'Autoridade',
+    pillarColor: '#F59E0B',
+    format: 'Carrossel premium (5 slides)',
+    title: '3 clientes, 3 resultados REAIS',
+    image: '/campaign/post-s2-segunda.png',
+    storyCTA: 'Caixa de perguntas: "Quer ser o próximo case? Mande sua dúvida 🙋‍♂️"',
+    caption: `Não é promessa. São RESULTADOS.\n\n🏆 Cliente 1 — Pizzaria\nAntes: 80 pedidos/dia no caos\nDepois: Kanban + app entregador = operação 2x mais rápida\n\n🏆 Cliente 2 — Hamburgueria\nAntes: Comissão de R$ 3.200/mês no iFood\nDepois: Plataforma própria = R$ 3.000/mês economizados\n\n🏆 Cliente 3 — Restaurante\nAntes: Sem dados, sem controle\nDepois: Dashboard com métricas = decisões inteligentes\n\nCada real investido em tecnologia\nvolta multiplicado.\n\nQuer ser o case número 4?\nLink na bio → Demonstração gratuita.\n\nSalve este post para consultar depois. 📌\n\n#resultados #casesdesucesso #delivery #saas\n#infinityondemand #clientes #provasocial`,
+  },
 ];
 
 const creatives: { category: string; items: { title: string; image: string; images?: string[]; caption: string }[] }[] = [
@@ -1121,7 +1192,7 @@ export default function RelatoriosInfinity() {
         {/* ═══════════ TAB: CAMPAIGN ═══════════ */}
         {activeTab === 'campaign' && (
           <>
-            <SectionTitle icon="🚀" title="Campanha: Operação Reativação" subtitle="Calendário editorial Semana 1 — De 0.66% para 3%+ em 30 dias" />
+            <SectionTitle icon="🚀" title="Campanha: Operação Reativação" subtitle="Calendário editorial Semanas 1 e 2 — De 0.66% para 3%+ em 30 dias" />
 
             {/* Strategy Pillars */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '40px' }}>
