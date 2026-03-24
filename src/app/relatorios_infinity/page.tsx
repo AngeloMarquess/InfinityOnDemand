@@ -1707,8 +1707,7 @@ export default function RelatoriosInfinity() {
                         : 'As imagens precisam estar em URLs públicas para a API do Instagram'}
                     </p>
                   </div>
-                  {uploadStatus !== 'done' && (
-                    <button
+                  <button
                       onClick={uploadImagesToSupabase}
                       disabled={uploadStatus === 'loading'}
                       style={{
@@ -1721,12 +1720,11 @@ export default function RelatoriosInfinity() {
                         fontSize: '13px',
                         cursor: uploadStatus === 'loading' ? 'default' : 'pointer',
                         transition: 'all 0.2s',
-                        whiteSpace: 'nowrap',
+                        whiteSpace: 'nowrap' as const,
                       }}
                     >
-                      {uploadStatus === 'loading' ? '⏳ Enviando...' : '☁️ Upload para Nuvem'}
+                      {uploadStatus === 'loading' ? '⏳ Enviando...' : uploadStatus === 'done' ? '🔄 Atualizar Imagens' : '☁️ Upload para Nuvem'}
                     </button>
-                  )}
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
