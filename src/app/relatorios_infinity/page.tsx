@@ -432,7 +432,7 @@ export default function RelatoriosInfinity() {
       const result = await res.json();
       if (result.posts && Array.isArray(result.posts)) {
         const newStatus: Record<string, { status: 'idle' | 'loading' | 'success' | 'error'; message?: string }> = {
-          ter: { status: 'idle' }, qua: { status: 'idle' }, qui: { status: 'idle' }, sex: { status: 'idle' }, sab: { status: 'idle' }, dom: { status: 'idle' }, seg: { status: 'idle' },
+          's2-ter': { status: 'idle' }, 's2-qua': { status: 'idle' }, 's2-qui': { status: 'idle' }, 's2-sex': { status: 'idle' }, 's2-sab': { status: 'idle' }, 's2-dom': { status: 'idle' }, 's2-seg': { status: 'idle' },
         };
         for (const post of result.posts) {
           if (post.day_key && newStatus[post.day_key]) {
@@ -543,43 +543,43 @@ export default function RelatoriosInfinity() {
 
   // Semana 2: 24 a 30 de Março (Terça a Segunda)
   const feedScheduleData: Record<string, { type: 'IMAGE' | 'CAROUSEL'; images: string[]; caption: string; date: Date }> = {
-    ter: {
+    's2-ter': {
       type: 'IMAGE',
       images: ['/campaign/post-s2-terca.png'],
       caption: campaignCalendar[5].caption,
       date: new Date(2026, 2, 24, 10, 0, 0),
     },
-    qua: {
+    's2-qua': {
       type: 'IMAGE',
       images: ['/campaign/post-s2-quarta.png'],
       caption: campaignCalendar[6].caption,
       date: new Date(2026, 2, 25, 10, 0, 0),
     },
-    qui: {
+    's2-qui': {
       type: 'IMAGE',
       images: ['/campaign/post-s2-quinta.png'],
       caption: campaignCalendar[7].caption,
       date: new Date(2026, 2, 26, 10, 0, 0),
     },
-    sex: {
+    's2-sex': {
       type: 'IMAGE',
       images: ['/campaign/post-s2-sexta.png'],
       caption: campaignCalendar[8].caption,
       date: new Date(2026, 2, 27, 10, 0, 0),
     },
-    sab: {
+    's2-sab': {
       type: 'IMAGE',
       images: ['/campaign/post-s2-sabado.png'],
       caption: campaignCalendar[9].caption,
       date: new Date(2026, 2, 28, 10, 0, 0),
     },
-    dom: {
+    's2-dom': {
       type: 'IMAGE',
       images: ['/campaign/post-s2-domingo.png'],
       caption: campaignCalendar[10].caption,
       date: new Date(2026, 2, 29, 10, 0, 0),
     },
-    seg: {
+    's2-seg': {
       type: 'IMAGE',
       images: ['/campaign/post-s2-segunda.png'],
       caption: campaignCalendar[11].caption,
@@ -648,7 +648,7 @@ export default function RelatoriosInfinity() {
   };
 
   const scheduleAllPosts = async () => {
-    const dayKeys = ['ter', 'qua', 'qui', 'sex', 'sab', 'dom', 'seg'];
+    const dayKeys = ['s2-ter', 's2-qua', 's2-qui', 's2-sex', 's2-sab', 's2-dom', 's2-seg'];
     for (let i = 0; i < dayKeys.length; i++) {
       if (scheduleStatus[dayKeys[i]]?.status !== 'success') {
         await schedulePost(dayKeys[i], i);
@@ -1766,7 +1766,7 @@ export default function RelatoriosInfinity() {
                 </div>
 
                 {(() => {
-                  const allDays = ['ter', 'qua', 'qui', 'sex', 'sab', 'dom', 'seg'] as const;
+                  const allDays = ['s2-ter', 's2-qua', 's2-qui', 's2-sex', 's2-sab', 's2-dom', 's2-seg'] as const;
                   const dayLabels = ['Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo', 'Segunda'];
                   const dayDates = ['24/03', '25/03', '26/03', '27/03', '28/03', '29/03', '30/03'];
                   const pending = allDays.map((k, i) => ({ key: k, idx: i })).filter(d => scheduleStatus[d.key]?.status !== 'success');
