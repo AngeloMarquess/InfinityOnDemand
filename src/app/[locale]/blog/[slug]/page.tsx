@@ -1,8 +1,33 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, useMemo, use } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+
+const postDict: Record<string, Record<string, string>> = {
+  pt: {
+    home: 'Home', blog: 'Blog', readTime: 'min de leitura', views: 'views',
+    share: 'Compartilhar:', comments: '💬 Comentários',
+    commentName: 'Seu nome *', commentEmail: 'Email (opcional)',
+    commentText: 'Escreva seu comentário...', commentBtn: 'Enviar Comentário',
+    commentSuccess: 'Comentário enviado! Será publicado após aprovação.',
+    ctaTitle: 'Pronto para', ctaAccent: 'escalar', ctaQ: '?',
+    ctaDesc: 'Fale com nossos consultores e descubra como podemos transformar seu negócio.',
+    ctaBtn: 'Falar com especialista →',
+    notFound: 'Post não encontrado', back: '← Voltar ao Blog', loading: 'Carregando...',
+  },
+  es: {
+    home: 'Inicio', blog: 'Blog', readTime: 'min de lectura', views: 'vistas',
+    share: 'Compartir:', comments: '💬 Comentarios',
+    commentName: 'Tu nombre *', commentEmail: 'Email (opcional)',
+    commentText: 'Escribe tu comentario...', commentBtn: 'Enviar Comentario',
+    commentSuccess: '¡Comentario enviado! Será publicado tras aprobación.',
+    ctaTitle: '¿Listo para', ctaAccent: 'escalar', ctaQ: '?',
+    ctaDesc: 'Habla con nuestros consultores y descubre cómo podemos transformar tu negocio.',
+    ctaBtn: 'Hablar con especialista →',
+    notFound: 'Artículo no encontrado', back: '← Volver al Blog', loading: 'Cargando...',
+  },
+};
 
 interface Post {
   id: string;
@@ -32,7 +57,16 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
   const [commentSent, setCommentSent] = useState(false);
   const [comments, setComments] = useState<Array<{ id: string; author_name: string; content: string; created_at: string }>>([]);
 
+  const locale = useMemo(() => {
+    if (typeof window === 'undefined') return 'pt';
+    const path = window.location.pathname;
+    if (path.startsWith('/es')) return 'es';
+    return 'pt';
+  }, []);
+
+  const t = postDict[locale] || postDict.pt;
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const dateLocale = locale === 'es' ? 'es-ES' : 'pt-BR';
 
   useEffect(() => {
     if (!slug) return;
@@ -63,12 +97,9 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
       })
       .catch(() => setLoading(false));
 
-    // Load approved comments
-    fetch(`${baseUrl}/api/blog/comments?post_id=placeholder`)
-      .catch(() => {});
+    fetch(`${baseUrl}/api/blog/comments?post_id=placeholder`).catch(() => {});
   }, [slug, baseUrl]);
 
-  // Load comments after post is loaded
   useEffect(() => {
     if (!post) return;
     fetch(`${baseUrl}/api/blog/comments?post_id=${post.id}`)
@@ -80,7 +111,6 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
   const handleComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!post || !commentName || !commentText) return;
-
     await fetch(`${baseUrl}/api/blog/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -94,15 +124,14 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
 
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const shareText = post?.title || '';
-
-  const formatDate = (d: string) => new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const formatDate = (d: string) => new Date(d).toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' });
 
   if (loading) {
     return (
       <main style={{ minHeight: '100vh', backgroundColor: 'var(--bg-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
           <div className="animate-float" style={{ fontSize: '48px' }}>📝</div>
-          <p>Carregando...</p>
+          <p>{t.loading}</p>
         </div>
       </main>
     );
@@ -113,8 +142,8 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
       <main style={{ minHeight: '100vh', backgroundColor: 'var(--bg-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '64px', marginBottom: '16px' }}>📭</div>
-          <h1 style={{ fontSize: '32px', marginBottom: '16px' }}>Post não encontrado</h1>
-          <a href="/blog" className="btn-primary" style={{ display: 'inline-block', padding: '14px 28px' }}>← Voltar ao Blog</a>
+          <h1 style={{ fontSize: '32px', marginBottom: '16px' }}>{t.notFound}</h1>
+          <a href="/blog" className="btn-primary" style={{ display: 'inline-block', padding: '14px 28px' }}>{t.back}</a>
         </div>
       </main>
     );
@@ -124,7 +153,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
 
   return (
     <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-primary)' }}>
-      <Header dict={{}} locale="pt" />
+      <Header dict={{}} locale={locale} />
 
       {/* Cover */}
       {post.cover_url && (
@@ -138,9 +167,9 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
       <article style={{ maxWidth: '800px', width: '100%', margin: '0 auto', padding: `${post.cover_url ? '0' : '120px'} clamp(16px, 4vw, 48px) 60px`, position: 'relative', zIndex: 2 }}>
         {/* Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px', marginTop: post.cover_url ? '-40px' : '0' }}>
-          <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Home</a>
+          <a href="/" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>{t.home}</a>
           <span>›</span>
-          <a href="/blog" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Blog</a>
+          <a href="/blog" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>{t.blog}</a>
           <span>›</span>
           <span style={{ color: 'var(--text-primary)' }}>{post.title}</span>
         </div>
@@ -166,9 +195,9 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
           <span>•</span>
           <span>{formatDate(post.published_at)}</span>
           <span>•</span>
-          <span>{post.reading_time || 5} min de leitura</span>
+          <span>{post.reading_time || 5} {t.readTime}</span>
           <span>•</span>
-          <span>{post.views || 0} views</span>
+          <span>{post.views || 0} {t.views}</span>
         </div>
 
         {/* Content */}
@@ -191,7 +220,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
 
         {/* Share */}
         <div style={{ display: 'flex', gap: '12px', marginTop: '32px', alignItems: 'center' }}>
-          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>Compartilhar:</span>
+          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>{t.share}</span>
           <a href={`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`} target="_blank" rel="noopener noreferrer" style={{ width: 40, height: 40, borderRadius: '10px', backgroundColor: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none', fontSize: '18px' }}>💬</a>
           <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" style={{ width: 40, height: 40, borderRadius: '10px', backgroundColor: '#0077b5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none', fontSize: '18px' }}>in</a>
           <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" style={{ width: 40, height: 40, borderRadius: '10px', backgroundColor: '#1DA1F2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', textDecoration: 'none', fontSize: '18px' }}>𝕏</a>
@@ -200,7 +229,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
         {/* Comments */}
         <div style={{ marginTop: '64px', paddingTop: '40px', borderTop: '1px solid var(--bg-tertiary)' }}>
           <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '32px' }}>
-            💬 Comentários {comments.length > 0 && <span style={{ fontSize: '16px', color: 'var(--text-secondary)' }}>({comments.length})</span>}
+            {t.comments} {comments.length > 0 && <span style={{ fontSize: '16px', color: 'var(--text-secondary)' }}>({comments.length})</span>}
           </h2>
 
           {comments.map(c => (
@@ -216,17 +245,17 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
           {commentSent ? (
             <div style={{ textAlign: 'center', padding: '32px', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', border: '1px solid var(--bg-tertiary)' }}>
               <div style={{ fontSize: '32px', marginBottom: '8px' }}>✅</div>
-              <p style={{ color: 'var(--accent-primary)', fontWeight: 600 }}>Comentário enviado! Será publicado após aprovação.</p>
+              <p style={{ color: 'var(--accent-primary)', fontWeight: 600 }}>{t.commentSuccess}</p>
             </div>
           ) : (
             <form onSubmit={handleComment} style={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'var(--bg-secondary)', borderRadius: '16px', padding: '24px', border: '1px solid var(--bg-tertiary)' }}>
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                <input type="text" value={commentName} onChange={e => setCommentName(e.target.value)} placeholder="Seu nome *" required style={{ ...inputCss, flex: '1 1 200px' }} />
-                <input type="email" value={commentEmail} onChange={e => setCommentEmail(e.target.value)} placeholder="Email (opcional)" style={{ ...inputCss, flex: '1 1 200px' }} />
+                <input type="text" value={commentName} onChange={e => setCommentName(e.target.value)} placeholder={t.commentName} required style={{ ...inputCss, flex: '1 1 200px' }} />
+                <input type="email" value={commentEmail} onChange={e => setCommentEmail(e.target.value)} placeholder={t.commentEmail} style={{ ...inputCss, flex: '1 1 200px' }} />
               </div>
-              <textarea value={commentText} onChange={e => setCommentText(e.target.value)} placeholder="Escreva seu comentário..." required rows={4} style={{ ...inputCss, resize: 'vertical' }} />
+              <textarea value={commentText} onChange={e => setCommentText(e.target.value)} placeholder={t.commentText} required rows={4} style={{ ...inputCss, resize: 'vertical' }} />
               <button type="submit" className="btn-primary" style={{ padding: '14px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '15px', fontWeight: 600, alignSelf: 'flex-start' }}>
-                Enviar Comentário
+                {t.commentBtn}
               </button>
             </form>
           )}
@@ -235,12 +264,12 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
 
       {/* CTA */}
       <section style={{ padding: '60px clamp(16px, 4vw, 48px)', backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--bg-tertiary)', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '16px' }}>Pronto para <span className="text-gradient">escalar</span>?</h2>
-        <p className="text-secondary" style={{ marginBottom: '24px' }}>Fale com nossos consultores e descubra como podemos transformar seu negócio.</p>
-        <a href="/#contact" className="btn-primary" style={{ display: 'inline-block', padding: '16px 32px', fontSize: '16px' }}>Falar com especialista →</a>
+        <h2 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '16px' }}>{t.ctaTitle} <span className="text-gradient">{t.ctaAccent}</span>{t.ctaQ}</h2>
+        <p className="text-secondary" style={{ marginBottom: '24px' }}>{t.ctaDesc}</p>
+        <a href="/#contact" className="btn-primary" style={{ display: 'inline-block', padding: '16px 32px', fontSize: '16px' }}>{t.ctaBtn}</a>
       </section>
 
-      <Footer dict={{}} locale="pt" />
+      <Footer dict={{}} locale={locale} />
 
       <style>{`
         .blog-post-content h2 { font-size: 28px; font-weight: 700; margin: 40px 0 16px; color: #fff; letter-spacing: -0.5px; }
