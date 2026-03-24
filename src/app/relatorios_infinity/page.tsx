@@ -247,6 +247,15 @@ const creatives: { category: string; items: { title: string; image: string; imag
     { title: 'Quinta — Educação', image: '/campaign/post-quinta.png', caption: campaignCalendar[3].caption },
     { title: 'Sexta — Oferta', image: '/campaign/post-sexta.png', caption: campaignCalendar[4].caption },
   ]},
+  { category: 'Feed — Semana 2 (24-30 Mar)', items: [
+    { title: 'Terça 24 — Provocação', image: '/campaign/post-s2-terca.png', caption: campaignCalendar[5].caption },
+    { title: 'Quarta 25 — Educação (Carrossel 4 slides)', image: '/campaign/post-s2-quarta.png', caption: campaignCalendar[6].caption },
+    { title: 'Quinta 26 — Autoridade ⭐ (Carrossel 6 slides)', image: '/campaign/post-s2-quinta.png', caption: campaignCalendar[7].caption },
+    { title: 'Sexta 27 — Oferta (Reel)', image: '/campaign/post-s2-sexta.png', caption: campaignCalendar[8].caption },
+    { title: 'Sábado 28 — Educação', image: '/campaign/post-s2-sabado.png', caption: campaignCalendar[9].caption },
+    { title: 'Domingo 29 — Provocação', image: '/campaign/post-s2-domingo.png', caption: campaignCalendar[10].caption },
+    { title: 'Segunda 30 — Autoridade (Carrossel 5 slides)', image: '/campaign/post-s2-segunda.png', caption: campaignCalendar[11].caption },
+  ]},
   { category: 'Stories — Segunda (Provocação)', items: [
     { title: '☀️ 8h — Bom Dia', image: '/campaign/story-8h-bomdia.png', caption: 'Story matinal motivacional.\nFormato: Foto real do setup + texto overlay\n\nTexto: "Bom dia! Mais um dia construindo o futuro do delivery 🚀"\n\nSticker: Localização + Horário\nObjetivo: Humanizar a marca' },
     { title: '🗳️ 12h — Enquete Provocação', image: '/campaign/story-12h-enquete.png', caption: 'Story interativo com enquete.\n\nTexto: "Qual a MAIOR dificuldade do seu delivery?"\n\nOpções:\n📄 Comandas de papel\n📱 WhatsApp travando\n🛵 Organizar motoboys\n💰 Controle financeiro\n\nSticker: Enquete (4 opções)\nObjetivo: Coletar dados + gerar interação' },
