@@ -36,7 +36,10 @@ export default function BlogPage() {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
   useEffect(() => {
-    fetch(`${baseUrl}/api/blog/categories`).then(r => r.json()).then(setCategories).catch(() => {});
+    fetch(`${baseUrl}/api/blog/categories`)
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setCategories(data); })
+      .catch(() => {});
   }, [baseUrl]);
 
   useEffect(() => {
@@ -48,11 +51,11 @@ export default function BlogPage() {
     fetch(`${baseUrl}/api/blog/posts?${params}`)
       .then(r => r.json())
       .then(data => {
-        setPosts(data.posts || []);
+        setPosts(Array.isArray(data.posts) ? data.posts : []);
         setTotalPages(data.totalPages || 1);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => { setPosts([]); setLoading(false); });
   }, [page, activeCategory, search, baseUrl]);
 
   const handleSubscribe = async (e: React.FormEvent) => {

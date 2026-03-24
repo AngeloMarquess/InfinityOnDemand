@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 function getSupabase() {
-  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Missing Supabase env vars');
+  return createClient(url, key);
 }
 
 function cors() {
@@ -19,6 +22,7 @@ export async function OPTIONS() {
 
 // GET /api/blog/posts — List posts (public: only published, admin: all)
 export async function GET(request: Request) {
+  try {
   const { searchParams } = new URL(request.url);
   const admin = searchParams.get('admin') === 'true';
   const category = searchParams.get('category');
@@ -74,7 +78,8 @@ export async function GET(request: Request) {
   const { data, error, count } = await query;
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500, headers: cors() });
+    console.error('Posts list error:', error);
+    return NextResponse.json({ posts: [], total: 0, page: 1, totalPages: 0 }, { headers: cors() });
   }
 
   return NextResponse.json({
@@ -83,6 +88,10 @@ export async function GET(request: Request) {
     page,
     totalPages: Math.ceil((count || 0) / limit),
   }, { headers: cors() });
+  } catch (err) {
+    console.error('Posts GET catch:', err);
+    return NextResponse.json({ posts: [], total: 0, page: 1, totalPages: 0 }, { headers: cors() });
+  }
 }
 
 // POST /api/blog/posts — Create post
