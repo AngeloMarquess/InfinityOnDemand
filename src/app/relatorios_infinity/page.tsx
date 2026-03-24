@@ -1756,85 +1756,121 @@ export default function RelatoriosInfinity() {
                   </button>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '12px' }}>
-                  {['ter', 'qua', 'qui', 'sex', 'sab', 'dom', 'seg'].map((dayKey, di) => {
-                    const st = scheduleStatus[dayKey] || { status: 'idle' };
-                    const data = feedScheduleData[dayKey];
-                    return (
-                      <div key={dayKey} style={{
-                        padding: '16px',
-                        borderRadius: '12px',
-                        background: st.status === 'success' ? 'rgba(0,219,121,0.08)'
-                          : st.status === 'error' ? 'rgba(255,107,107,0.08)'
-                          : 'rgba(255,255,255,0.03)',
-                        border: `1px solid ${
-                          st.status === 'success' ? 'rgba(0,219,121,0.2)'
-                          : st.status === 'error' ? 'rgba(255,107,107,0.2)'
-                          : 'rgba(255,255,255,0.06)'
-                        }`,
-                        textAlign: 'center',
-                      }}>
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>
-                          {['Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo', 'Segunda'][di]}
-                        </div>
-                        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>
-                          {data?.type} • {data?.images.length} img{data && data.images.length > 1 ? 's' : ''}
-                        </div>
-                        <div style={{ fontSize: '11px', marginBottom: '10px', color: 'rgba(255,255,255,0.3)' }}>10:00</div>
-                        {st.status === 'idle' && (
-                          <button
-                            onClick={() => schedulePost(dayKey, di)}
-                            style={{
-                              width: '100%',
-                              padding: '8px',
-                              borderRadius: '8px',
-                              border: '1px solid rgba(0,219,121,0.3)',
-                              background: 'rgba(0,219,121,0.1)',
-                              color: '#00DB79',
-                              fontWeight: 600,
-                              fontSize: '12px',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s',
-                            }}
-                            onMouseOver={e => { e.currentTarget.style.background = 'rgba(0,219,121,0.2)'; }}
-                            onMouseOut={e => { e.currentTarget.style.background = 'rgba(0,219,121,0.1)'; }}
-                          >
-                            🚀 Agendar
-                          </button>
-                        )}
-                        {st.status === 'loading' && (
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: '#FFD93D', fontSize: '12px' }}>
-                            <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⏳</span> Enviando...
+                {(() => {
+                  const allDays = ['ter', 'qua', 'qui', 'sex', 'sab', 'dom', 'seg'] as const;
+                  const dayLabels = ['Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo', 'Segunda'];
+                  const dayDates = ['24/03', '25/03', '26/03', '27/03', '28/03', '29/03', '30/03'];
+                  const pending = allDays.map((k, i) => ({ key: k, idx: i })).filter(d => scheduleStatus[d.key]?.status !== 'success');
+                  const scheduled = allDays.map((k, i) => ({ key: k, idx: i })).filter(d => scheduleStatus[d.key]?.status === 'success');
+
+                  return (
+                    <>
+                      {/* ── Próximos posts (pendentes) ── */}
+                      {pending.length > 0 && (
+                        <>
+                          <div style={{ fontSize: '13px', fontWeight: 700, color: '#fff', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#FFD93D', display: 'inline-block' }} />
+                            Próximos — {pending.length} post{pending.length > 1 ? 's' : ''} pendente{pending.length > 1 ? 's' : ''}
                           </div>
-                        )}
-                        {st.status === 'success' && (
-                          <div style={{ color: '#00DB79', fontSize: '12px', fontWeight: 600 }}>✅ Agendado!</div>
-                        )}
-                        {st.status === 'error' && (
-                          <div>
-                            <div style={{ color: '#FF6B6B', fontSize: '11px', marginBottom: '6px' }}>❌ {st.message?.substring(0, 50)}</div>
-                            <button
-                              onClick={() => {
-                                setScheduleStatus(prev => ({ ...prev, [dayKey]: { status: 'idle' } }));
-                              }}
-                              style={{
-                                padding: '4px 12px',
-                                borderRadius: '6px',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                background: 'rgba(255,255,255,0.05)',
-                                color: 'rgba(255,255,255,0.5)',
-                                fontSize: '11px',
-                                cursor: 'pointer',
-                              }}
-                            >
-                              Tentar novamente
-                            </button>
+                          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(pending.length, 4)}, 1fr)`, gap: '12px', marginBottom: '20px' }}>
+                            {pending.map(({ key: dayKey, idx: di }) => {
+                              const st = scheduleStatus[dayKey] || { status: 'idle' };
+                              const data = feedScheduleData[dayKey];
+                              return (
+                                <div key={dayKey} style={{
+                                  padding: '20px',
+                                  borderRadius: '16px',
+                                  background: st.status === 'error' ? 'rgba(255,107,107,0.08)' : 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
+                                  border: `1px solid ${st.status === 'error' ? 'rgba(255,107,107,0.2)' : 'rgba(255,255,255,0.08)'}`,
+                                  textAlign: 'center',
+                                }}>
+                                  <div style={{ fontSize: '15px', fontWeight: 700, color: '#fff', marginBottom: '2px' }}>
+                                    {dayLabels[di]}
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginBottom: '10px' }}>{dayDates[di]}</div>
+                                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '6px' }}>
+                                    {data?.type} • {data?.images.length} img{data && data.images.length > 1 ? 's' : ''}
+                                  </div>
+                                  <div style={{ fontSize: '11px', marginBottom: '14px', color: 'rgba(255,255,255,0.3)' }}>⏰ 10:00</div>
+                                  {st.status === 'idle' && (
+                                    <button
+                                      onClick={() => schedulePost(dayKey, di)}
+                                      style={{
+                                        width: '100%', padding: '10px', borderRadius: '10px',
+                                        border: '1px solid rgba(0,219,121,0.3)',
+                                        background: 'linear-gradient(135deg, rgba(0,219,121,0.15), rgba(0,219,121,0.08))',
+                                        color: '#00DB79', fontWeight: 700, fontSize: '13px',
+                                        cursor: 'pointer', transition: 'all 0.2s',
+                                      }}
+                                      onMouseOver={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0,219,121,0.25), rgba(0,219,121,0.15))'; }}
+                                      onMouseOut={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(0,219,121,0.15), rgba(0,219,121,0.08))'; }}
+                                    >
+                                      🚀 Agendar
+                                    </button>
+                                  )}
+                                  {st.status === 'loading' && (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: '#FFD93D', fontSize: '12px' }}>
+                                      <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⏳</span> Enviando...
+                                    </div>
+                                  )}
+                                  {st.status === 'error' && (
+                                    <div>
+                                      <div style={{ color: '#FF6B6B', fontSize: '11px', marginBottom: '6px' }}>❌ {st.message?.substring(0, 50)}</div>
+                                      <button
+                                        onClick={() => setScheduleStatus(prev => ({ ...prev, [dayKey]: { status: 'idle' } }))}
+                                        style={{ padding: '6px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)', fontSize: '11px', cursor: 'pointer' }}
+                                      >
+                                        Tentar novamente
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                        </>
+                      )}
+
+                      {/* ── Posts já agendados (arquivo) ── */}
+                      {scheduled.length > 0 && (
+                        <div style={{
+                          padding: '16px 20px',
+                          borderRadius: '12px',
+                          background: 'rgba(0,219,121,0.04)',
+                          border: '1px solid rgba(0,219,121,0.1)',
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ fontSize: '16px' }}>✅</span>
+                              <span style={{ fontSize: '13px', fontWeight: 700, color: '#00DB79' }}>
+                                Já agendados — {scheduled.length} post{scheduled.length > 1 ? 's' : ''}
+                              </span>
+                            </div>
+                            {pending.length === 0 && (
+                              <span style={{ fontSize: '11px', color: 'rgba(0,219,121,0.6)', padding: '4px 10px', borderRadius: '6px', background: 'rgba(0,219,121,0.1)' }}>
+                                🎉 Semana completa!
+                              </span>
+                            )}
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            {scheduled.map(({ key: dayKey, idx: di }) => (
+                              <div key={dayKey} style={{
+                                display: 'flex', alignItems: 'center', gap: '6px',
+                                padding: '8px 14px', borderRadius: '8px',
+                                background: 'rgba(0,219,121,0.08)',
+                                border: '1px solid rgba(0,219,121,0.15)',
+                              }}>
+                                <span style={{ fontSize: '12px' }}>✅</span>
+                                <span style={{ fontSize: '12px', fontWeight: 600, color: '#00DB79' }}>{dayLabels[di]}</span>
+                                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)' }}>{dayDates[di]}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
 
                 <div style={{ marginTop: '16px', padding: '12px 16px', borderRadius: '8px', background: 'rgba(255,216,61,0.06)', border: '1px solid rgba(255,216,61,0.1)' }}>
                   <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
