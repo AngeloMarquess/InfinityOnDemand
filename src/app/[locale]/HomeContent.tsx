@@ -492,7 +492,7 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
               </h2>
               <p className="text-secondary" style={{ fontSize: "17px", marginTop: "8px" }}>{t.blogSubtitle}</p>
             </div>
-            <a href="#" style={{ padding: "12px 28px", border: "1px solid var(--bg-tertiary)", borderRadius: "10px", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", transition: "all 0.3s ease", textDecoration: "none" }}
+            <a href="/blog" style={{ padding: "12px 28px", border: "1px solid var(--bg-tertiary)", borderRadius: "10px", color: "var(--text-primary)", fontWeight: 600, fontSize: "14px", transition: "all 0.3s ease", textDecoration: "none" }}
               onMouseOver={(e) => { e.currentTarget.style.borderColor = "var(--accent-primary)"; e.currentTarget.style.color = "var(--accent-primary)"; }}
               onMouseOut={(e) => { e.currentTarget.style.borderColor = "var(--bg-tertiary)"; e.currentTarget.style.color = "var(--text-primary)"; }}
             >
@@ -502,11 +502,11 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: "32px" }}>
             {[
-              { cat: t.blogPost1Cat, catColor: "rgba(0,223,129,0.9)", catText: "#000", date: t.blogPost1Date, title: t.blogPost1Title, desc: t.blogPost1Desc, img: "/blog_ai.png", linkColor: "var(--accent-primary)" },
-              { cat: t.blogPost2Cat, catColor: "rgba(0,170,255,0.9)", catText: "#fff", date: t.blogPost2Date, title: t.blogPost2Title, desc: t.blogPost2Desc, img: "/blog_ecommerce.png", linkColor: "var(--accent-secondary)" },
-              { cat: t.blogPost3Cat, catColor: "rgba(255,200,50,0.9)", catText: "#000", date: t.blogPost3Date, title: t.blogPost3Title, desc: t.blogPost3Desc, img: "/blog_delivery.png", linkColor: "#FFC832" },
+              { cat: t.blogPost1Cat, catColor: "rgba(0,223,129,0.9)", catText: "#000", date: t.blogPost1Date, title: t.blogPost1Title, desc: t.blogPost1Desc, img: "/blog_ai.png", linkColor: "var(--accent-primary)", slug: "agentes-ia-revolucionando-ecommerce-2026" },
+              { cat: t.blogPost2Cat, catColor: "rgba(0,170,255,0.9)", catText: "#fff", date: t.blogPost2Date, title: t.blogPost2Title, desc: t.blogPost2Desc, img: "/blog_ecommerce.png", linkColor: "var(--accent-secondary)", slug: "5-estrategias-performance-triplicam-vendas" },
+              { cat: t.blogPost3Cat, catColor: "rgba(255,200,50,0.9)", catText: "#000", date: t.blogPost3Date, title: t.blogPost3Title, desc: t.blogPost3Desc, img: "/blog_delivery.png", linkColor: "#FFC832", slug: "futuro-delivery-tecnologia-restaurantes" },
             ].map((post, idx) => (
-              <a key={idx} href="#" style={{ textDecoration: "none", color: "inherit", borderRadius: "20px", overflow: "hidden", backgroundColor: "var(--bg-secondary)", border: "1px solid var(--bg-tertiary)", transition: "transform 0.3s ease, box-shadow 0.3s ease", display: "flex", flexDirection: "column" }}
+              <a key={idx} href={`/blog/${post.slug}`} style={{ textDecoration: "none", color: "inherit", borderRadius: "20px", overflow: "hidden", backgroundColor: "var(--bg-secondary)", border: "1px solid var(--bg-tertiary)", transition: "transform 0.3s ease, box-shadow 0.3s ease", display: "flex", flexDirection: "column" }}
                 onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = "0 16px 48px rgba(0,223,129,0.1)"; }}
                 onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
               >
