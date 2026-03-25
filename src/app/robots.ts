@@ -8,10 +8,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: [
           '/api/',
-          '/admin/',
-          '/relatorios_infinity/',
-          '/teste-whatsapp/',
-          '/instagram-carousel/',
+          '/_next/',
         ],
       },
     ],
