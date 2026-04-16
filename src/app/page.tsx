@@ -133,6 +133,38 @@ export default function Home() {
 
       </section>
 
+      {/* Tech Logos Carousel */}
+      <section style={{ backgroundColor: "var(--bg-secondary)", padding: "32px 0", borderBottom: "1px solid var(--bg-tertiary)", overflow: "hidden", position: "relative" }}>
+        <div style={{ position: "absolute", top: 0, left: 0, width: "15vw", height: "100%", background: "linear-gradient(to right, var(--bg-secondary) 10%, transparent)", zIndex: 2, pointerEvents: "none" }}></div>
+        <div style={{ position: "absolute", top: 0, right: 0, width: "15vw", height: "100%", background: "linear-gradient(to left, var(--bg-secondary) 10%, transparent)", zIndex: 2, pointerEvents: "none" }}></div>
+        
+        <div style={{ position: "relative", width: "100%", overflow: "hidden" }}>
+          <div className="clients-carousel-track" style={{ display: "flex", gap: "60px", width: "max-content", alignItems: "center" }}>
+            {[
+              "✦ INFINITY ONDEMAND", "✦ SUPABASE", "✦ REACT NATIVE", "✦ NEXT.JS", "✦ META ADS", 
+              "✦ VERCEL", "✦ GOOGLE ADS", "✦ TIKTOK ADS", "✦ NODE.JS", "✦ INFINITY DELIVERY OS",
+              "✦ INFINITY ONDEMAND", "✦ SUPABASE", "✦ REACT NATIVE", "✦ NEXT.JS", "✦ META ADS", 
+              "✦ VERCEL", "✦ GOOGLE ADS", "✦ TIKTOK ADS", "✦ NODE.JS", "✦ INFINITY DELIVERY OS",
+              "✦ INFINITY ONDEMAND", "✦ SUPABASE", "✦ REACT NATIVE", "✦ NEXT.JS", "✦ META ADS", 
+              "✦ VERCEL", "✦ GOOGLE ADS", "✦ TIKTOK ADS", "✦ NODE.JS", "✦ INFINITY DELIVERY OS",
+            ].map((text, i) => (
+              <div key={i} style={{ 
+                fontFamily: "var(--font-display, 'Inter', sans-serif)", 
+                fontSize: "18px", 
+                fontWeight: 700, 
+                letterSpacing: "2px", 
+                color: "var(--text-secondary)", 
+                whiteSpace: "nowrap",
+                display: "flex",
+                alignItems: "center"
+              }}>
+                {text}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Labs Showcase Section */}
       <section id="labs" className="section-padding" style={{ backgroundColor: "var(--bg-primary)" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
