@@ -359,6 +359,7 @@ export default function RelatoriosInfinity() {
   const [liveStoryCount, setLiveStoryCount] = useState(0);
   const [liveFollowers, setLiveFollowers] = useState(900);
   const [liveProfile, setLiveProfile] = useState<any>(null);
+  const [liveAnalytics, setLiveAnalytics] = useState<any>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
@@ -474,12 +475,18 @@ export default function RelatoriosInfinity() {
     try {
       const res = await fetch('/api/instagram/analytics');
       const data = await res.json();
+      if (data.error) {
+        console.warn('Instagram API error:', data.error);
+        return;
+      }
       if (data.stories) setLiveStoryCount(data.stories.length);
       if (data.profile?.followers_count) setLiveFollowers(data.profile.followers_count);
       if (data.profile) {
         setLiveProfile(data.profile);
         setLastUpdated(data.lastUpdated || new Date().toISOString());
       }
+      // Store full analytics data
+      setLiveAnalytics(data);
     } catch {
       console.warn('Could not load live Instagram data');
     }
@@ -932,24 +939,24 @@ export default function RelatoriosInfinity() {
               marginBottom: '32px',
             }}>
               <img
-                src={profileData.profilePicture}
+                src={liveProfile?.profile_picture_url || profileData.profilePicture}
                 alt="Profile"
                 style={{ width: '90px', height: '90px', borderRadius: '50%', border: '3px solid rgba(0,219,121,0.4)', objectFit: 'cover' }}
                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
               <div style={{ flex: '1 1 300px' }}>
-                <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '4px' }}>{profileData.username}</h2>
-                <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', marginBottom: '12px' }}>{profileData.name}</p>
+                <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '4px' }}>@{liveProfile?.username || profileData.username.replace('@', '')}</h2>
+                <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', marginBottom: '12px' }}>{liveProfile?.name || profileData.name}</p>
                 <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.35)', whiteSpace: 'pre-line', lineHeight: 1.5 }}>{profileData.bio}</p>
               </div>
               <div style={{ display: 'flex', gap: '32px' }}>
                 {[
-                  { label: 'Seguidores', value: profileData.followers },
-                  { label: 'Seguindo', value: profileData.following },
-                  { label: 'Posts', value: profileData.posts },
+                  { label: 'Seguidores', value: liveProfile?.followers_count ?? profileData.followers },
+                  { label: 'Seguindo', value: liveProfile?.follows_count ?? profileData.following },
+                  { label: 'Posts', value: liveProfile?.media_count ?? profileData.posts },
                 ].map(s => (
                   <div key={s.label} style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '28px', fontWeight: 700, color: '#fff' }}>{s.value}</div>
+                    <div style={{ fontSize: '28px', fontWeight: 700, color: '#fff' }}>{typeof s.value === 'number' ? s.value.toLocaleString('pt-BR') : s.value}</div>
                     <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
                   </div>
                 ))}
@@ -958,10 +965,10 @@ export default function RelatoriosInfinity() {
 
             {/* KPI Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
-              <MetricCard icon="❤️" title="Taxa de Engajamento" value={`${profileData.engagementRate}%`} subtitle="Benchmark: 2-6% (abaixo)" trend="-80%" color="#EF4444" />
-              <MetricCard icon="👍" title="Likes Médios/Post" value={profileData.avgLikes} subtitle={`Total: ${profileData.totalLikes} likes`} color="#8B5CF6" />
-              <MetricCard icon="💬" title="Comentários Médios" value={profileData.avgComments} subtitle={`Total: ${profileData.totalComments} comentário`} trend="-97%" color="#F59E0B" />
-              <MetricCard icon="📐" title="Ratio Seguidor/Seguindo" value="1.05" subtitle="Ideal: > 2.0" color="#06B6D4" />
+              <MetricCard icon="❤️" title="Taxa de Engajamento" value={`${liveProfile?.engagementRate ?? profileData.engagementRate}%`} subtitle="Benchmark: 2-6%" color="#EF4444" />
+              <MetricCard icon="👍" title="Likes Médios/Post" value={liveProfile?.totalPosts ? (liveProfile.totalLikes / liveProfile.totalPosts).toFixed(1) : profileData.avgLikes} subtitle={`Total: ${liveProfile?.totalLikes ?? profileData.totalLikes} likes`} color="#8B5CF6" />
+              <MetricCard icon="💬" title="Comentários Médios" value={liveProfile?.totalPosts ? (liveProfile.totalComments / liveProfile.totalPosts).toFixed(2) : profileData.avgComments} subtitle={`Total: ${liveProfile?.totalComments ?? profileData.totalComments} comentários`} color="#F59E0B" />
+              <MetricCard icon="📐" title="Ratio Seguidor/Seguindo" value={liveProfile ? (liveProfile.followers_count / (liveProfile.follows_count || 1)).toFixed(2) : '1.05'} subtitle="Ideal: > 2.0" color="#06B6D4" />
             </div>
 
             {/* Engagement Gauge */}
