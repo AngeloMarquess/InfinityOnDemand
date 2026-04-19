@@ -14,7 +14,7 @@ const profileData = {
   username: '@infinityondemand',
   name: 'Infinity on Demand | Presença Digital com IA',
   bio: '🚀 Performance real com IA para escalar pequenos negócios\n📈 +30 empresas atendidas com tráfego estratégico\n📲 Agende sua Consultoria Gratuita',
-  followers: 555,
+  followers: 900,
   following: 527,
   posts: 70,
   engagementRate: 0.66,
@@ -89,7 +89,7 @@ const recommendations = [
 ];
 
 const goals = [
-  { metric: 'Seguidores', current: '555', target: '750-800', icon: '👥' },
+  { metric: 'Seguidores', current: '900', target: '1.200+', icon: '👥' },
   { metric: 'Taxa de Engajamento', current: '0.66%', target: '2.5%+', icon: '📈' },
   { metric: 'Comentários/post', current: '0.03', target: '2-3', icon: '💬' },
   { metric: 'Stories/dia', current: '0', target: '2-3', icon: '📱' },
@@ -357,7 +357,7 @@ export default function RelatoriosInfinity() {
   const [uploadMessage, setUploadMessage] = useState('');
   const [creativeStatuses, setCreativeStatuses] = useState<Record<string, { status: string; postedAt: string | null }>>({});
   const [liveStoryCount, setLiveStoryCount] = useState(0);
-  const [liveFollowers, setLiveFollowers] = useState(555);
+  const [liveFollowers, setLiveFollowers] = useState(900);
   const [liveProfile, setLiveProfile] = useState<any>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
