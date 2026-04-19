@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { briefingCategories } from '@/config/briefingQuestions';
-import { CheckCircle, ArrowLeft, Send } from 'lucide-react';
+import { CheckCircle, ArrowLeft, Send, Upload, X, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 
 export default function BriefingFormPage() {
@@ -23,6 +23,47 @@ export default function BriefingFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [filePreviews, setFilePreviews] = useState<Record<string, { file: File; preview: string }[]>>({});
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState<string | null>(null);
+
+  const handleFileSelect = (id: string, files: FileList | null, maxFiles: number = 5) => {
+    if (!files) return;
+    const existing = filePreviews[id] || [];
+    const remaining = maxFiles - existing.length;
+    const newFiles = Array.from(files).slice(0, remaining);
+    const newPreviews = newFiles.map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setFilePreviews(prev => ({ ...prev, [id]: [...existing, ...newPreviews] }));
+  };
+
+  const removeFile = (id: string, index: number) => {
+    setFilePreviews(prev => {
+      const arr = [...(prev[id] || [])];
+      URL.revokeObjectURL(arr[index].preview);
+      arr.splice(index, 1);
+      return { ...prev, [id]: arr };
+    });
+  };
+
+  const uploadFiles = async (id: string): Promise<string[]> => {
+    const items = filePreviews[id];
+    if (!items || items.length === 0) return [];
+    setUploadingField(id);
+    try {
+      const fd = new FormData();
+      items.forEach(item => fd.append('files', item.file));
+      const res = await fetch('/api/Briefing/upload', { method: 'POST', body: fd });
+      if (res.ok) {
+        const data = await res.json();
+        return data.urls || [];
+      }
+    } catch (e) { console.error('Upload error:', e); }
+    finally { setUploadingField(null); }
+    return [];
+  };
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -76,11 +117,22 @@ export default function BriefingFormPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      // Upload all files first
+      const fileAnswers: Record<string, string[]> = {};
+      for (const fieldId of Object.keys(filePreviews)) {
+        if (filePreviews[fieldId].length > 0) {
+          const urls = await uploadFiles(fieldId);
+          fileAnswers[fieldId] = urls;
+        }
+      }
+
       const { company_name, contact_name, contact_phone, ...answers } = formData;
+      const allAnswers = { ...answers, ...fileAnswers };
+
       const res = await fetch('/api/Briefing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ briefing_type: type, company_name, contact_name, contact_phone, answers }),
+        body: JSON.stringify({ briefing_type: type, company_name, contact_name, contact_phone, answers: allAnswers }),
       });
       if (res.ok) {
         setIsSuccess(true);
@@ -353,6 +405,80 @@ export default function BriefingFormPage() {
                           </label>
                         );
                       })}
+                    </div>
+                  )}
+
+                  {q.type === 'file' && (
+                    <div>
+                      <div
+                        onDragOver={(e) => { e.preventDefault(); setDragOver(q.id); }}
+                        onDragLeave={() => setDragOver(null)}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setDragOver(null);
+                          handleFileSelect(q.id, e.dataTransfer.files, q.maxFiles || 5);
+                        }}
+                        onClick={() => {
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = q.accept || 'image/*';
+                          input.multiple = (q.maxFiles || 5) > 1;
+                          input.onchange = (ev) => handleFileSelect(q.id, (ev.target as HTMLInputElement).files, q.maxFiles || 5);
+                          input.click();
+                        }}
+                        style={{
+                          border: dragOver === q.id ? '2px dashed #00DB79' : '2px dashed #d1d5db',
+                          borderRadius: '16px',
+                          padding: '32px 20px',
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                          background: dragOver === q.id ? 'rgba(0,219,121,0.06)' : '#fafafa',
+                          transition: 'all 0.2s ease',
+                        }}
+                      >
+                        <Upload size={28} color={dragOver === q.id ? '#00DB79' : '#9ca3af'} style={{ margin: '0 auto 8px' }} />
+                        <p style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500' }}>
+                          Clique ou arraste as imagens aqui
+                        </p>
+                        <p style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>
+                          Máx. {q.maxFiles || 5} imagens · PNG, JPG ou WEBP · até 10MB
+                        </p>
+                      </div>
+
+                      {/* Previews */}
+                      {(filePreviews[q.id] || []).length > 0 && (
+                        <div style={{
+                          display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
+                          gap: '12px', marginTop: '16px',
+                        }}>
+                          {(filePreviews[q.id] || []).map((item, idx) => (
+                            <div key={idx} style={{
+                              position: 'relative', borderRadius: '12px', overflow: 'hidden',
+                              border: '2px solid #e5e7eb', background: '#f9fafb',
+                              aspectRatio: '1',
+                            }}>
+                              <img src={item.preview} alt="Preview" style={{
+                                width: '100%', height: '100%', objectFit: 'cover',
+                              }} />
+                              <button type="button" onClick={(e) => { e.stopPropagation(); removeFile(q.id, idx); }} style={{
+                                position: 'absolute', top: '4px', right: '4px',
+                                width: '24px', height: '24px', borderRadius: '50%',
+                                background: 'rgba(0,0,0,0.6)', border: 'none',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                cursor: 'pointer',
+                              }}>
+                                <X size={14} color="#fff" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {uploadingField === q.id && (
+                        <p style={{ fontSize: '13px', color: '#00DB79', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <ImageIcon size={14} /> Fazendo upload das imagens...
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
