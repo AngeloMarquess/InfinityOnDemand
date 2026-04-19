@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSupabase } from '@/lib/supabase';
-const supabase = getServerSupabase();
 
 // GET — List all creative statuses
 export async function GET() {
   try {
+    const supabase = getServerSupabase();
     const { data, error } = await supabase
       .from('creative_posts')
       .select('*')
@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
     }
 
     const now = new Date().toISOString();
+    const supabase = getServerSupabase();
 
     const { error } = await supabase
       .from('creative_posts')

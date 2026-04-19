@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSupabase } from '@/lib/supabase';
-const supabase = getServerSupabase();
 import OpenAI from 'openai';
 
 const WHATSAPP_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN || process.env.META_USER_ACCESS_TOKEN;
@@ -26,6 +25,7 @@ export async function GET(request: NextRequest) {
 // ─── POST: Receive Messages ───
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getServerSupabase();
     const body = await request.json();
 
     // Extract message data from WhatsApp webhook payload

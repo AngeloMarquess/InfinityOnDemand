@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSupabase } from '@/lib/supabase';
-const supabase = getServerSupabase();
 import { validateApiKey, rateLimit } from '@/lib/api-security';
 
 // GET — List conversations or messages for a specific phone
@@ -11,6 +10,7 @@ export async function GET(request: NextRequest) {
   const rl = rateLimit(request, { maxRequests: 30, windowMs: 60_000, keyPrefix: 'wa-conv-read' });
   if (!rl.allowed) return rl.error!;
 
+  const supabase = getServerSupabase();
   const phone = request.nextUrl.searchParams.get('phone');
 
   if (phone) {
@@ -78,6 +78,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const { phone, message, role = 'flash' } = await request.json();
+    const supabase = getServerSupabase();
 
     const { error } = await supabase.from('whatsapp_conversations').insert({
       phone,

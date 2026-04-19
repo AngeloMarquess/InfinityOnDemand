@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSupabase } from '@/lib/supabase';
-const supabase = getServerSupabase();
 
 // GET — Load settings for a client
 export async function GET(request: NextRequest) {
   const clientId = request.nextUrl.searchParams.get('clientId') || 'default';
 
   try {
+    const supabase = getServerSupabase();
     const { data, error } = await supabase
       .from('agent_settings')
       .select('*')
@@ -71,6 +71,7 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString(),
     };
 
+    const supabase = getServerSupabase();
     const { error } = await supabase
       .from('agent_settings')
       .upsert(settingsData, { onConflict: 'client_id' });

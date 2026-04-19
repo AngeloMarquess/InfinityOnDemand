@@ -46,13 +46,10 @@ export default function BriefingPage() {
 
       {/* Logo / Brand */}
       <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div style={{
-          width: '40px', height: '40px', borderRadius: '12px',
-          background: 'linear-gradient(135deg, #00DF81, #00AAFF)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '20px', fontWeight: '800', color: '#fff',
-        }}>∞</div>
-        <span style={{ color: '#fff', fontWeight: '700', fontSize: '18px', letterSpacing: '-0.5px' }}>Infinity</span>
+        <img src="/infinity-logo.png" alt="Infinity Logo" style={{
+          width: '44px', height: '44px', borderRadius: '12px', objectFit: 'contain',
+        }} />
+        <span style={{ color: '#fff', fontWeight: '700', fontSize: '18px', letterSpacing: '-0.5px' }}>Infinity On Demand</span>
       </div>
 
       {/* Main Card Container */}

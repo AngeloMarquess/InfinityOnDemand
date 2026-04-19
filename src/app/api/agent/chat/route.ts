@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server';
 import { getServerSupabase } from '@/lib/supabase';
-const supabase = getServerSupabase();
 import OpenAI from 'openai';
 
 export const runtime = 'nodejs';
@@ -39,6 +38,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { messages, clientId = 'default' } = body;
+    const supabase = getServerSupabase();
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: 'messages array is required' }), {
