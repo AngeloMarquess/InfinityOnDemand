@@ -1,24 +1,32 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
-// Client público (pode ser usado no front-end) — lazy para não crashar no build
+// Client público (pode ser usado no front-end) — lazy init
 let _supabase: SupabaseClient | null = null;
+export function getSupabase(): SupabaseClient {
+  if (!_supabase) {
+    _supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+    );
+  }
+  return _supabase;
+}
+
+// Backward compat - proxy to lazy getter
 export const supabase = new Proxy({} as SupabaseClient, {
   get(_target, prop) {
-    if (!_supabase) {
-      _supabase = createClient(supabaseUrl, supabaseAnonKey);
-    }
-    return (_supabase as any)[prop];
+    return (getSupabase() as any)[prop];
   }
 });
 
 // Server client (só em API routes — tem acesso total)
+// Lê env vars no momento da chamada, nunca no nível do módulo
 export function getServerSupabase() {
-  if (!supabaseServiceKey) {
-    throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set');
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  if (!url || !key) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY or SUPABASE_URL is not set');
   }
-  return createClient(supabaseUrl, supabaseServiceKey);
+  return createClient(url, key);
 }

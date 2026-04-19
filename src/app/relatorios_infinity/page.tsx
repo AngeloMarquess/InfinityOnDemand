@@ -7,6 +7,7 @@ import AnalyticsLiveTab from './AnalyticsLiveTab';
 import ConfiguracoesTab from './ConfiguracoesTab';
 import AgentTab from './AgentTab';
 import FlashSDRTab from './FlashSDRTab';
+import BriefingTab from './BriefingTab';
 
 /* ─────────── DATA ─────────── */
 const profileData = {
@@ -345,7 +346,7 @@ export default function RelatoriosInfinity() {
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'evolucao' | 'agent' | 'config' | 'sdr'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'evolucao' | 'briefing' | 'agent' | 'config' | 'sdr'>('overview');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [carouselSlides, setCarouselSlides] = useState<Record<string, number>>({});
   const [scheduleStatus, setScheduleStatus] = useState<Record<string, { status: 'idle' | 'loading' | 'success' | 'error'; message?: string }>>({
@@ -667,6 +668,7 @@ export default function RelatoriosInfinity() {
     { id: 'agenda' as const, label: 'Agenda', icon: '📅' },
     { id: 'campanhas_ads' as const, label: 'Campanhas', icon: '💰' },
     { id: 'evolucao' as const, label: 'Evolução', icon: '📈' },
+    { id: 'briefing' as const, label: 'Briefings', icon: '📋' },
     { id: 'agent' as const, label: 'Flash IA', icon: '⚡' },
     { id: 'sdr' as const, label: 'Flash SDR', icon: '💬' },
     { id: 'config' as const, label: 'Configurações', icon: '⚙️' },
@@ -1894,6 +1896,9 @@ export default function RelatoriosInfinity() {
 
         {activeTab === 'campanhas_ads' && <CampanhasTab />}
         {activeTab === 'evolucao' && <EvolucaoTab />}
+
+        {/* ═══════════ TAB: BRIEFINGS ═══════════ */}
+        {activeTab === 'briefing' && <BriefingTab />}
 
         {/* ═══════════ TAB: AGENTE IA ═══════════ */}
         {activeTab === 'agent' && <AgentTab />}

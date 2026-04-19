@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server';
-import { getServerSupabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
 export async function POST(req: Request) {
   try {
-    const supabase = getServerSupabase();
+    // Use service role if available, otherwise use anon key
+    // The RLS policy "Allow public insert" handles the security
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+    
+    // Service role keys are JWTs (start with eyJ and are 150+ chars)
+    const isRealServiceKey = serviceKey.startsWith('eyJ') && serviceKey.length > 100;
+    const key = isRealServiceKey ? serviceKey : anonKey;
+    
+    const supabase = createClient(url, key);
     const data = await req.json();
 
     const { briefing_type, company_name, contact_name, contact_phone, answers } = data;
@@ -27,12 +37,6 @@ export async function POST(req: Request) {
 
     if (error) {
       console.error('Supabase Insert Error:', error);
-      // If table doesn't exist, provide a clear hint
-      if (error.message?.includes('relation') || error.code === '42P01') {
-        return NextResponse.json({ 
-          error: 'Tabela infinity_briefing_submissions não existe. Execute o briefing_schema.sql no Supabase.' 
-        }, { status: 500 });
-      }
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
