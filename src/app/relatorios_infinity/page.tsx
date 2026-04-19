@@ -358,6 +358,9 @@ export default function RelatoriosInfinity() {
   const [creativeStatuses, setCreativeStatuses] = useState<Record<string, { status: string; postedAt: string | null }>>({});
   const [liveStoryCount, setLiveStoryCount] = useState(0);
   const [liveFollowers, setLiveFollowers] = useState(555);
+  const [liveProfile, setLiveProfile] = useState<any>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
   // Check auth on mount
   useEffect(() => {
@@ -473,6 +476,10 @@ export default function RelatoriosInfinity() {
       const data = await res.json();
       if (data.stories) setLiveStoryCount(data.stories.length);
       if (data.profile?.followers_count) setLiveFollowers(data.profile.followers_count);
+      if (data.profile) {
+        setLiveProfile(data.profile);
+        setLastUpdated(data.lastUpdated || new Date().toISOString());
+      }
     } catch {
       console.warn('Could not load live Instagram data');
     }
@@ -754,9 +761,24 @@ export default function RelatoriosInfinity() {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ padding: '6px 10px', borderRadius: '8px', backgroundColor: 'rgba(0,219,121,0.1)', border: '1px solid rgba(0,219,121,0.2)', fontSize: '11px', color: '#00DB79', fontWeight: 600 }}>
-            18/Mar/2026
-          </div>
+          <input 
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            style={{ 
+              padding: '4px 8px', 
+              borderRadius: '8px', 
+              backgroundColor: 'rgba(0,219,121,0.1)',
+              border: '1px solid rgba(0,219,121,0.2)',
+              fontSize: '12px',
+              color: '#00DB79',
+              fontWeight: 600,
+              fontFamily: 'inherit',
+              outline: 'none',
+              cursor: 'pointer',
+              colorScheme: 'dark'
+            }}
+          />
           <button
             onClick={handleLogout}
             title="Sair"

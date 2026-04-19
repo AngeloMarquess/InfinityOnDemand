@@ -102,8 +102,19 @@ export default function BriefingFormPage() {
     );
   }
 
+  const formatPhone = (value: string): string => {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 2) return digits.length ? `(${digits}` : '';
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  };
+
   const handleChange = (id: string, value: any) => {
     setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handlePhoneChange = (value: string) => {
+    setFormData(prev => ({ ...prev, contact_phone: formatPhone(value) }));
   };
 
   const handleCheckboxChange = (id: string, option: string, checked: boolean) => {
@@ -301,10 +312,11 @@ export default function BriefingFormPage() {
               </div>
               <div>
                 <label style={labelStyle}>WhatsApp <span style={{ color: '#ef4444' }}>*</span></label>
-                <input required type="text" placeholder="(00) 00000-0000"
+                <input required type="tel" placeholder="(00) 00000-0000"
+                  maxLength={15}
                   style={inputStyle('contact_phone')}
                   value={formData.contact_phone}
-                  onChange={e => handleChange('contact_phone', e.target.value)}
+                  onChange={e => handlePhoneChange(e.target.value)}
                   onFocus={() => setFocusedField('contact_phone')}
                   onBlur={() => setFocusedField(null)}
                 />
