@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getServerSupabase } from '@/lib/supabase';
+const supabase = getServerSupabase();
 import { validateApiKey, rateLimit } from '@/lib/api-security';
 
 // GET — List conversations or messages for a specific phone

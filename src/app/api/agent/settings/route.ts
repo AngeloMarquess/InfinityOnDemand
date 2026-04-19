@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getServerSupabase } from '@/lib/supabase';
+const supabase = getServerSupabase();
 
 // GET — Load settings for a client
 export async function GET(request: NextRequest) {

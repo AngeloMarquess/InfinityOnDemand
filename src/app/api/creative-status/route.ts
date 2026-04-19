@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getServerSupabase } from '@/lib/supabase';
+const supabase = getServerSupabase();
 
 // GET — List all creative statuses
 export async function GET() {

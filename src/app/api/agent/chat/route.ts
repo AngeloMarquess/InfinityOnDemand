@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getServerSupabase } from '@/lib/supabase';
+const supabase = getServerSupabase();
 import OpenAI from 'openai';
 
 export const runtime = 'nodejs';
