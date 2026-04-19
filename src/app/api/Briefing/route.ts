@@ -1,14 +1,9 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize supersonic database client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { getServerSupabase } from '@/lib/supabase';
 
 export async function POST(req: Request) {
   try {
+    const supabase = getServerSupabase();
     const data = await req.json();
 
     const { briefing_type, company_name, contact_name, contact_phone, answers } = data;
@@ -32,6 +27,12 @@ export async function POST(req: Request) {
 
     if (error) {
       console.error('Supabase Insert Error:', error);
+      // If table doesn't exist, provide a clear hint
+      if (error.message?.includes('relation') || error.code === '42P01') {
+        return NextResponse.json({ 
+          error: 'Tabela infinity_briefing_submissions não existe. Execute o briefing_schema.sql no Supabase.' 
+        }, { status: 500 });
+      }
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
