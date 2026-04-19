@@ -178,7 +178,7 @@ export default function BriefingsDashboardClient({ initialData }: { initialData:
                   {Object.entries(selectedBriefing.answers).map(([key, value]) => {
                     const questionDef = briefingCategories[selectedBriefing.briefing_type]?.questions.find(q => q.id === key);
                     const label = questionDef ? questionDef.label : key;
-                    const displayValue = Array.isArray(value) ? value.join(', ') : value;
+                    const displayValue = Array.isArray(value) ? (value as string[]).join(', ') : (typeof value === 'string' ? value : JSON.stringify(value));
 
                     return (
                       <div key={key}>
