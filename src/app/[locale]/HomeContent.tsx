@@ -50,77 +50,54 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Header dict={dict} locale={locale} />
 
-      {/* Hero Section */}
-      <section className="bg-secondary section-padding" style={{ flex: 1, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", overflow: "hidden", minHeight: "80vh" }}>
+      {/* Hero Section - Editorial Style */}
+      <section className="hero-editorial">
         
-        {/* Left Content */}
-        <div style={{ maxWidth: "600px", flex: "1 1 300px", zIndex: 1, marginBottom: "40px", width: "100%" }}>
-          <div style={{ display: "inline-block", padding: "6px 16px", backgroundColor: "var(--accent-light)", color: "var(--accent-primary)", borderRadius: "20px", fontSize: "14px", fontWeight: 600, marginBottom: "24px" }}>
-            {t.badge}
-          </div>
-          <h1 style={{ fontSize: "clamp(32px, 6vw, 64px)", fontWeight: 700, letterSpacing: "-1.5px", lineHeight: 1.1, marginBottom: "24px", color: "var(--text-primary)" }}>
-            {t.heroTitle1} <br /> <span className="text-accent">{t.heroTitle2}</span> {t.heroTitle3}
-          </h1>
-          <p className="text-secondary" style={{ fontSize: "clamp(16px, 2.5vw, 20px)", marginBottom: "40px", maxWidth: "480px", lineHeight: 1.6 }}>
-            {t.heroSubtitle}
-          </p>
-          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-            <a href="#consulting" className="btn-primary" style={{ padding: "16px 32px", fontSize: "18px", display: "inline-flex" }}>
-              {t.btnServicos}
-            </a>
-            <a href="#contact" className="btn-secondary" style={{ display: "inline-flex" }}>
-              {t.btnEspecialista}
-            </a>
-          </div>
-        </div>
-
-        {/* Floating Animation Elements */}
-        <div style={{ position: "relative", zIndex: 1, flex: "1 1 300px", height: "400px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div className="animate-float" style={{ 
-            width: "100%", maxWidth: "360px", 
-            backgroundColor: "var(--bg-secondary)", 
-            borderRadius: "20px", 
-            padding: "32px", 
-            border: "1px solid var(--bg-tertiary)",
-            boxShadow: "var(--shadow-lg)",
-            position: "relative",
-            zIndex: 2
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
-              <span style={{ fontSize: "20px", color: "var(--accent-primary)" }}>📊</span>
-              <span style={{ fontWeight: 600, fontSize: "16px", color: "var(--text-primary)" }}>{t.chartTitle.split('\n').map((line: string, i: number) => <span key={i}>{line}{i === 0 && <br/>}</span>)}</span>
-            </div>
-            <div style={{ display: "flex", gap: "16px", alignItems: "flex-end", height: "120px", borderBottom: "1px solid var(--bg-tertiary)", paddingBottom: "16px", marginBottom: "16px" }}>
-              <div className="bar-1" style={{ flex: 1, backgroundColor: "var(--accent-primary)", borderRadius: "4px 4px 0 0" }}></div>
-              <div className="bar-2" style={{ flex: 1, backgroundColor: "var(--accent-primary)", borderRadius: "4px 4px 0 0" }}></div>
-              <div className="bar-3" style={{ flex: 1, backgroundColor: "var(--accent-primary)", borderRadius: "4px 4px 0 0" }}></div>
-              <div className="bar-4" style={{ flex: 1, backgroundColor: "var(--accent-primary)", borderRadius: "4px 4px 0 0" }}></div>
-            </div>
-            <div style={{ color: "var(--accent-primary)", fontWeight: 600, fontSize: "14px" }}>{t.chartGrowth}</div>
-          </div>
-
-          <div className="animate-float-delayed" style={{
-            position: "absolute",
-            left: "-60px",
-            bottom: "20px",
-            backgroundColor: "var(--bg-secondary)",
-            padding: "24px 32px",
-            borderRadius: "16px",
-            border: "1px solid var(--bg-tertiary)",
-            boxShadow: "var(--shadow-lg)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "8px",
-            zIndex: 3
-          }}>
-             <span style={{ fontSize: "28px", color: "#E94057" }}>🚀</span>
-             <span style={{ fontWeight: 700, fontSize: "14px", color: "var(--text-primary)" }}>{t.campanhaAtiva}</span>
-             <span style={{ fontSize: "14px", color: "var(--text-secondary)" }}>ROAS: 8.5x</span>
-          </div>
+        <div className="hero-editorial-content" style={{ position: "relative" }}>
           
-          <div className="animate-glow" style={{ position: "absolute", width: "100%", height: "100%", top: 0, left: 0, background: "radial-gradient(circle, rgba(0,219,121,0.05) 0%, transparent 70%)", zIndex: 0, borderRadius: "50%" }}></div>
+          {/* Mega Typography */}
+          <h1 className="hero-mega-text">
+            <span>NEW</span>
+            <span>DESIGN</span>
+            <span className="hero-text-outline">ERA</span>
+          </h1>
+
+          {/* Spline 3D Container — Ready for import */}
+          <div className="hero-spline-container" id="spline-hero">
+            <div className="hero-spline-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(0,219,121,0.5)" strokeWidth="1.5">
+                <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                <line x1="12" y1="22.08" x2="12" y2="12"/>
+              </svg>
+              <span style={{ color: "rgba(0,219,121,0.5)", fontSize: "14px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "2px" }}>Spline 3D</span>
+              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "12px" }}>Importe seu modelo aqui</span>
+            </div>
+          </div>
+
+          {/* Side Text — Right */}
+          <div className="hero-side-text" style={{ right: "48px", bottom: "80px", textAlign: "right", color: "rgba(255,255,255,0.6)" }}>
+            <span style={{ color: "rgba(0,219,121,0.8)", fontWeight: 700 }}>// </span>DESIGN THAT<br />
+            <span style={{ color: "rgba(0,219,121,0.8)", fontWeight: 700 }}>&nbsp;&nbsp;&nbsp;</span>SPEAKS YOUR BRAND
+          </div>
+
+          {/* Side Text — Left */}
+          <div className="hero-side-text" style={{ left: "48px", bottom: "80px", maxWidth: "320px", color: "rgba(255,255,255,0.5)" }}>
+            <span style={{ color: "rgba(0,219,121,0.8)", fontWeight: 700 }}>// </span>
+            SOMOS A INFINITY — UMA CONSULTORIA DE TECNOLOGIA AJUDANDO STARTUPS E EMPRESAS A CONSTRUIR PRODUTOS DIGITAIS LIMPOS E INTUITIVOS.
+          </div>
+
         </div>
+
+        {/* Client Logos Bar */}
+        <div className="hero-clients-bar">
+          <span>SUPABASE</span>
+          <span>NEXT.JS</span>
+          <span>VERCEL</span>
+          <span>META ADS</span>
+          <span>REACT</span>
+        </div>
+
       </section>
 
       {/* Tech Logos Carousel */}
