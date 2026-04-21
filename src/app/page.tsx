@@ -21,6 +21,26 @@ export default function Home() {
   const [formMessage, setFormMessage] = useState('');
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [phraseVisible, setPhraseVisible] = useState(true);
+
+  const heroPhases = [
+    "AUTOMATIZE. ESCALE. DOMINE.",
+    "IA QUE TRANSFORMA NEGÓCIOS.",
+    "DO CÓDIGO AO CRESCIMENTO.",
+    "O FUTURO É AGORA.",
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhraseVisible(false);
+      setTimeout(() => {
+        setPhraseIndex((prev) => (prev + 1) % heroPhases.length);
+        setPhraseVisible(true);
+      }, 600);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [heroPhases.length]);
 
   const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
@@ -109,10 +129,23 @@ export default function Home() {
 
           {/* Bottom info row */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "24px", marginTop: "32px" }}>
-            {/* Left */}
-            <div className="hero-side-text" style={{ maxWidth: "380px", color: "rgba(255,255,255,0.5)" }}>
+            {/* Left — Animated Phrases */}
+            <div className="hero-side-text" style={{ maxWidth: "420px", color: "rgba(255,255,255,0.7)", minHeight: "60px", position: "relative" }}>
               <span style={{ color: "rgba(0,219,121,0.8)", fontWeight: 700 }}>// </span>
-              SOMOS A INFINITY — UMA CONSULTORIA DE TECNOLOGIA AJUDANDO STARTUPS E EMPRESAS A CONSTRUIR PRODUTOS DIGITAIS LIMPOS E INTUITIVOS.
+              <span 
+                key={phraseIndex}
+                style={{
+                  display: "inline-block",
+                  fontSize: "clamp(16px, 2vw, 22px)",
+                  fontWeight: 800,
+                  letterSpacing: "2px",
+                  opacity: phraseVisible ? 1 : 0,
+                  transform: phraseVisible ? 'scale(1) translateY(0)' : 'scale(0.7) translateY(10px)',
+                  transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+              >
+                {heroPhases[phraseIndex]}
+              </span>
             </div>
             {/* Right */}
             <div className="hero-side-text" style={{ textAlign: "right", color: "rgba(255,255,255,0.6)" }}>
