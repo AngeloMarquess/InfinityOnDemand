@@ -467,7 +467,7 @@ button {
 .hero-mega-text {
   font-family: 'Inter', sans-serif;
   font-weight: 900;
-  font-size: clamp(64px, 13vw, 180px);
+  font-size: clamp(80px, 16vw, 240px);
   line-height: 0.9;
   letter-spacing: -4px;
   text-transform: uppercase;
