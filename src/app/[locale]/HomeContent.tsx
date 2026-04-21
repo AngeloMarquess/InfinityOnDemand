@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -54,6 +54,29 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
     setFormSubmitting(false);
   };
 
+  const splineContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleSplineLoad = useCallback(() => {
+    setTimeout(() => {
+      const container = splineContainerRef.current;
+      if (!container) return;
+      const allDivs = container.querySelectorAll('div > div > div > a, div > div > a, a[href*="spline"]');
+      allDivs.forEach((el: Element) => {
+        (el as HTMLElement).style.display = 'none';
+      });
+      const children = container.querySelectorAll('div > div > div');
+      children.forEach((el: Element) => {
+        const style = window.getComputedStyle(el);
+        if (style.position === 'absolute' && (style.bottom === '0px' || style.right === '0px')) {
+          const links = el.querySelectorAll('a');
+          if (links.length > 0) {
+            (el as HTMLElement).style.display = 'none';
+          }
+        }
+      });
+    }, 1000);
+  }, []);
+
   const prefix = locale === 'pt' ? '' : `/${locale}`;
 
   return (
@@ -66,9 +89,12 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
         <div className="hero-editorial-content" style={{ position: "relative" }}>
           
           {/* Spline 3D Robot */}
-          <div className="hero-spline-container" id="spline-hero">
+          <div className="hero-spline-container" id="spline-hero" ref={splineContainerRef}>
             <Suspense fallback={<div style={{ width: '100%', height: '100%' }} />}>
-              <Spline scene="https://prod.spline.design/mYumKXmmRbZMP5Zg/scene.splinecode" />
+              <Spline 
+                scene="https://prod.spline.design/mYumKXmmRbZMP5Zg/scene.splinecode" 
+                onLoad={handleSplineLoad}
+              />
             </Suspense>
           </div>
 
@@ -94,12 +120,17 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
         </div>
 
         {/* Client Logos Bar */}
-        <div className="hero-clients-bar">
-          <span>SUPABASE</span>
-          <span>NEXT.JS</span>
-          <span>VERCEL</span>
-          <span>META ADS</span>
-          <span>REACT</span>
+        {/* Client Logos Carousel */}
+        <div className="hero-clients-bar" style={{ overflow: "hidden" }}>
+          <div className="clients-carousel-track" style={{ display: "flex", gap: "60px", width: "max-content", alignItems: "center" }}>
+            {[
+              "SUPABASE", "NEXT.JS", "VERCEL", "META ADS", "REACT", "NODE.JS", "GOOGLE ADS",
+              "SUPABASE", "NEXT.JS", "VERCEL", "META ADS", "REACT", "NODE.JS", "GOOGLE ADS",
+              "SUPABASE", "NEXT.JS", "VERCEL", "META ADS", "REACT", "NODE.JS", "GOOGLE ADS",
+            ].map((text, i) => (
+              <span key={i}>{text}</span>
+            ))}
+          </div>
         </div>
 
       </section>
