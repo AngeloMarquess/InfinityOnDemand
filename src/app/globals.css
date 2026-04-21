@@ -521,8 +521,8 @@ button {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 140px;
-  background: linear-gradient(to top, #001a2e 50%, transparent);
+  height: 100px;
+  background: linear-gradient(to top, rgba(0,20,30,0.95) 20%, transparent);
   z-index: 10;
   pointer-events: none;
 }
