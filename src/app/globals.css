@@ -478,7 +478,7 @@ button {
 }
 
 .hero-mega-text span {
-  display: block;
+  display: inline;
 }
 
 .hero-mega-text .hero-text-outline {

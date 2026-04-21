@@ -58,9 +58,7 @@ export default function Home() {
           
           {/* Mega Typography */}
           <h1 className="hero-mega-text">
-            <span>NEW</span>
-            <span>AI</span>
-            <span className="hero-text-outline">ERA</span>
+            NEW AI <span className="hero-text-outline">ERA</span>
           </h1>
 
           {/* Spline 3D Container — Ready for import */}
