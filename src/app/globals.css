@@ -518,11 +518,11 @@ button {
 .hero-spline-container::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100px;
-  background: linear-gradient(to top, rgba(0,20,30,0.95) 20%, transparent);
+  bottom: -10px;
+  left: -50px;
+  right: -50px;
+  height: 180px;
+  background: linear-gradient(to top, rgba(0,15,25,1) 40%, rgba(0,15,25,0.7) 60%, transparent);
   z-index: 10;
   pointer-events: none;
 }
