@@ -65,11 +65,6 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
         
         <div className="hero-editorial-content" style={{ position: "relative" }}>
           
-          {/* Mega Typography */}
-          <h1 className="hero-mega-text">
-            NEW AI <span className="hero-text-outline">ERA</span>
-          </h1>
-
           {/* Spline 3D Robot */}
           <div className="hero-spline-container" id="spline-hero">
             <Suspense fallback={<div style={{ width: '100%', height: '100%' }} />}>
@@ -77,16 +72,23 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
             </Suspense>
           </div>
 
-          {/* Side Text — Right */}
-          <div className="hero-side-text" style={{ right: "48px", bottom: "80px", textAlign: "right", color: "rgba(255,255,255,0.6)" }}>
-            <span style={{ color: "rgba(0,219,121,0.8)", fontWeight: 700 }}>// </span>AUTOMATION THAT<br />
-            <span style={{ color: "rgba(0,219,121,0.8)", fontWeight: 700 }}>&nbsp;&nbsp;&nbsp;</span>SCALES YOUR BUSINESS
-          </div>
+          {/* Mega Typography */}
+          <h1 className="hero-mega-text">
+            NEW AI <span className="hero-text-outline">ERA</span>
+          </h1>
 
-          {/* Side Text — Left */}
-          <div className="hero-side-text" style={{ left: "48px", bottom: "80px", maxWidth: "320px", color: "rgba(255,255,255,0.5)" }}>
-            <span style={{ color: "rgba(0,219,121,0.8)", fontWeight: 700 }}>// </span>
-            SOMOS A INFINITY — UMA CONSULTORIA DE TECNOLOGIA AJUDANDO STARTUPS E EMPRESAS A CONSTRUIR PRODUTOS DIGITAIS LIMPOS E INTUITIVOS.
+          {/* Bottom info row */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "24px", marginTop: "32px" }}>
+            {/* Left */}
+            <div className="hero-side-text" style={{ maxWidth: "380px", color: "rgba(255,255,255,0.5)" }}>
+              <span style={{ color: "rgba(0,219,121,0.8)", fontWeight: 700 }}>// </span>
+              SOMOS A INFINITY — UMA CONSULTORIA DE TECNOLOGIA AJUDANDO STARTUPS E EMPRESAS A CONSTRUIR PRODUTOS DIGITAIS LIMPOS E INTUITIVOS.
+            </div>
+            {/* Right */}
+            <div className="hero-side-text" style={{ textAlign: "right", color: "rgba(255,255,255,0.6)" }}>
+              <span style={{ color: "rgba(0,219,121,0.8)", fontWeight: 700 }}>// </span>AUTOMATION THAT<br />
+              <span style={{ color: "rgba(0,219,121,0.8)", fontWeight: 700 }}>&nbsp;&nbsp;&nbsp;</span>SCALES YOUR BUSINESS
+            </div>
           </div>
 
         </div>

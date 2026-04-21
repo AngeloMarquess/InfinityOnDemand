@@ -462,10 +462,15 @@ button {
 .hero-editorial-content {
   position: relative;
   z-index: 1;
-  padding: 120px 48px 60px;
+  padding: 0 48px;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 40px;
 }
 
 .hero-mega-text {
@@ -495,13 +500,22 @@ button {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 500px;
-  height: 600px;
+  width: 700px;
+  height: 85vh;
   z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: all;
+}
+
+/* Hide Spline watermark */
+.hero-spline-container a[href*="spline"],
+.hero-spline-container div[class*="logo"],
+.hero-spline-container > div > div > a {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 .hero-spline-placeholder {
@@ -525,12 +539,13 @@ button {
 }
 
 .hero-side-text {
-  position: absolute;
+  position: relative;
   z-index: 4;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 1.6;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .hero-clients-bar {
@@ -562,8 +577,8 @@ button {
 
 @media (max-width: 1024px) {
   .hero-spline-container {
-    width: 350px;
-    height: 420px;
+    width: 500px;
+    height: 70vh;
   }
   .hero-mega-text {
     font-size: clamp(48px, 10vw, 120px);
@@ -572,10 +587,11 @@ button {
 
 @media (max-width: 768px) {
   .hero-editorial-content {
-    padding: 100px 20px 40px;
+    padding: 0 20px;
+    padding-bottom: 24px;
   }
   .hero-mega-text {
-    font-size: clamp(40px, 12vw, 80px);
+    font-size: clamp(36px, 12vw, 80px);
     letter-spacing: -2px;
   }
   .hero-spline-container {
@@ -584,16 +600,11 @@ button {
     left: auto;
     transform: none;
     width: 100%;
-    height: 350px;
-    margin: 32px auto;
+    height: 50vh;
+    margin: 0 auto;
   }
   .hero-side-text {
-    position: relative !important;
-    top: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    left: auto !important;
-    margin-top: 24px;
+    margin-top: 16px;
   }
   .hero-clients-bar {
     padding: 24px 20px;
