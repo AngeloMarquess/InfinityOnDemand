@@ -482,12 +482,17 @@ button {
   text-transform: uppercase;
   color: #ffffff;
   position: relative;
-  z-index: 2;
+  z-index: 5;
   white-space: nowrap;
 }
 
 .hero-mega-text span {
   display: inline;
+}
+
+.hero-mega-text .hero-text-highlight {
+  color: #00E5FF;
+  text-shadow: 0 0 40px rgba(0,229,255,0.4), 0 0 80px rgba(0,229,255,0.15);
 }
 
 .hero-mega-text .hero-text-outline {
@@ -499,10 +504,10 @@ button {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 700px;
-  height: 85vh;
-  z-index: 3;
+  transform: translate(-50%, -48%);
+  width: 800px;
+  height: 100vh;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;

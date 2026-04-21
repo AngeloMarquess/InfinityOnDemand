@@ -74,7 +74,7 @@ export default function HomeContent({ dict, locale }: { dict: any; locale: strin
 
           {/* Mega Typography */}
           <h1 className="hero-mega-text">
-            NEW AI <span className="hero-text-outline">ERA</span>
+            NEW <span className="hero-text-highlight">AI</span> <span className="hero-text-outline">ERA</span>
           </h1>
 
           {/* Bottom info row */}
