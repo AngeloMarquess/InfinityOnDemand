@@ -1,8 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+
+const Spline = dynamic(() => import('@splinetool/react-spline'), {
+  ssr: false,
+  loading: () => (
+    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 40, height: 40, border: '3px solid rgba(0,219,121,0.2)', borderTop: '3px solid #00DB79', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+    </div>
+  ),
+});
 
 export default function Home() {
   const [formNome, setFormNome] = useState('');
@@ -61,29 +71,11 @@ export default function Home() {
             NEW AI <span className="hero-text-outline">ERA</span>
           </h1>
 
-          {/* Spline 3D Container — Ready for import */}
+          {/* Spline 3D Robot */}
           <div className="hero-spline-container" id="spline-hero">
-            {/* 
-              Para importar um modelo do Spline Design, substitua o placeholder abaixo por:
-              
-              Opção 1 — Viewer direto:
-              <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.0/build/spline-viewer.js"></script>
-              <spline-viewer url="SUA_URL_DO_SPLINE_AQUI"></spline-viewer>
-              
-              Opção 2 — React component:
-              npm install @splinetool/react-spline
-              import Spline from '@splinetool/react-spline';
-              <Spline scene="SUA_URL_DO_SPLINE_AQUI" />
-            */}
-            <div className="hero-spline-placeholder">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(0,219,121,0.5)" strokeWidth="1.5">
-                <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                <line x1="12" y1="22.08" x2="12" y2="12"/>
-              </svg>
-              <span style={{ color: "rgba(0,219,121,0.5)", fontSize: "14px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "2px" }}>Spline 3D</span>
-              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "12px" }}>Importe seu modelo aqui</span>
-            </div>
+            <Suspense fallback={<div style={{ width: '100%', height: '100%' }} />}>
+              <Spline scene="https://prod.spline.design/mYumKXmmRbZMP5Zg/scene.splinecode" />
+            </Suspense>
           </div>
 
           {/* Side Text — Right */}
