@@ -307,11 +307,11 @@ export function getConfirmationEmailHtml(): string {
       <p>Olá! Obrigado por criar uma conta na Infinity On Demand. Para ter acesso completo ao CRM e ativar sua conta, por favor confirme seu e-mail clicando no botão abaixo:</p>
       
       <div class="btn-container">
-        <a href="{{ .ConfirmationURL }}" class="btn">Confirmar Meu E-mail</a>
+        <a href="https://crm.infinityondemand.com.br/confirm?token_hash={{ .TokenHash }}&type=signup" class="btn">Confirmar Meu E-mail</a>
       </div>
       
       <p style="font-size: 12px; margin-bottom: 0;">Se o botão acima não funcionar, você também pode copiar e colar este link no seu navegador:<br>
-      <a href="{{ .ConfirmationURL }}" style="color: #00AAFF; text-decoration: none; word-break: break-all;">{{ .ConfirmationURL }}</a></p>
+      <a href="https://crm.infinityondemand.com.br/confirm?token_hash={{ .TokenHash }}&type=signup" style="color: #00AAFF; text-decoration: none; word-break: break-all;">https://crm.infinityondemand.com.br/confirm?token_hash={{ .TokenHash }}&type=signup</a></p>
     </div>
     
     <div class="footer">
