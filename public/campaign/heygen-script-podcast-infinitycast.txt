@@ -1,0 +1,102 @@
+SCRIPT PODCAST — "INFINITY CAST" | EPISÓDIO PILOTO
+================================================================================
+Duração estimada: ~3 minutos (180 segundos)
+Formato: Bate-papo entre dois apresentadores (estilo podcast descontraído)
+Cenário sugerido: Mesa de podcast com microfones, fundo escuro com neon verde
+
+PERSONAGENS:
+🟢 JADE — Host principal. 23 anos, desenvolvedora, Recife. Tom jovem e descontraído.
+🔵 RICK — Co-host / convidado. Especialista em negócios digitais. Tom consultivo mas acessível.
+
+(Trocar "Rick" pelo nome/avatar que preferir no HeyGen)
+================================================================================
+
+[ABERTURA — 0s a 15s] 🎙️
+
+JADE: E aí, galera! Bem-vindos ao Infinity Cast, o podcast da Infinity On Demand onde a gente fala sobre tecnologia, negócios digitais e tudo que pode fazer sua empresa crescer. Eu sou a Jade, desenvolvedora aqui na Infinity, e hoje tô com uma companhia especial.
+
+RICK: Fala, pessoal! Eu sou o Rick, prazer estar aqui. Jade, bora trocar essa ideia?
+
+JADE: Bora demais!
+
+---
+
+[BLOCO 1 — O PROBLEMA | 15s a 45s] 🎙️
+
+JADE: Rick, pra começar, me diz uma coisa: por que tanta empresa ainda não tem um site em 2025?
+
+RICK: Olha, Jade, a maioria acha que Instagram resolve tudo. E resolve parte, sim. Mas o problema é que rede social é terreno alugado. Você não é dono daquilo. Se o algoritmo muda, se a conta cai... acabou.
+
+JADE: Exato! Eu vejo isso direto. O empresário coloca todo o negócio no Instagram e quando precisa aparecer no Google... nada. Zero. Invisível.
+
+RICK: E o cliente de 2025 pesquisa no Google antes de comprar qualquer coisa. Se sua empresa não aparece lá, pra ele, ela não existe.
+
+---
+
+[BLOCO 2 — A SOLUÇÃO | 45s a 1min 20s] 🎙️
+
+JADE: E é aí que entra o site profissional, né? Porque o site é seu. É o seu território na internet.
+
+RICK: Com certeza. E não é qualquer site, né, Jade? Tem que ser rápido, bonito, responsivo e otimizado pro Google. Senão é a mesma coisa que ter uma loja no melhor shopping e deixar a porta fechada.
+
+JADE: Boa comparação! Aqui na Infinity, por exemplo, a gente não entrega site de template. A gente constrói do zero, pensando na jornada do cliente. O objetivo não é só ficar bonito — é converter visitante em cliente.
+
+RICK: Isso é o que diferencia um site profissional de um site "qualquer". O profissional vende. O qualquer só ocupa espaço.
+
+---
+
+[BLOCO 3 — CRM E GESTÃO | 1min 20s a 2min] 🎙️
+
+JADE: E Rick, depois que o site começa a trazer leads, vem o segundo desafio: como gerenciar tudo isso?
+
+RICK: Ah, esse é o ponto que muita empresa trava. Chega lead por todo lado — WhatsApp, formulário, Instagram — e o empresário se perde. Não faz follow-up, esquece proposta, e aí perde a venda.
+
+JADE: É por isso que a gente desenvolveu o CRM da Infinity. Pipeline visual, orçamentos automáticos, agenda integrada, dashboard financeiro... tudo num lugar só.
+
+RICK: Tipo, o cara consegue ver em qual etapa cada negociação está?
+
+JADE: Exatamente. Estilo Kanban. Arrasta o lead de uma coluna pra outra conforme avança. Nenhum lead fica esquecido. E o melhor: dá pra ver quanto faturou, quanto tem a receber, desempenho da equipe... tudo em tempo real.
+
+RICK: Isso é game changer pra quem quer escalar.
+
+---
+
+[BLOCO 4 — DIFERENCIAL INFINITY | 2min a 2min 30s] 🎙️
+
+JADE: E o nosso diferencial é que a gente faz tudo. Site, CRM, automação, design, estratégia digital. O cliente não precisa contratar cinco fornecedores diferentes.
+
+RICK: One stop shop digital, basicamente.
+
+JADE: Isso! E com suporte humanizado. Nada de robô te respondendo com mensagem genérica. A gente senta junto, entende o negócio do cliente e entrega solução sob medida.
+
+RICK: Que é o que o nome diz, né? On Demand. Sob demanda.
+
+JADE: Exatamente. Cada empresa é única, e a solução também tem que ser.
+
+---
+
+[ENCERRAMENTO + CTA — 2min 30s a 3min] 🎙️
+
+JADE: Bom, galera, se você chegou até aqui, já entendeu que ter presença digital profissional não é luxo — é sobrevivência.
+
+RICK: E se você quer dar o próximo passo, a Infinity tá aí pra isso. Site, CRM, estratégia completa.
+
+JADE: Acessa o nosso site: www.infinityondemand.com.br. Ou chama a gente no Direct que a gente bate um papo sem compromisso.
+
+RICK: E se curtiu esse podcast, comenta aqui embaixo, compartilha com aquele amigo empresário que ainda tá na planilha...
+
+JADE: ...e segue a gente pra não perder os próximos episódios. Valeu, galera! Até o próximo Infinity Cast!
+
+RICK: Falou, pessoal! Até mais!
+
+================================================================================
+NOTAS DE PRODUÇÃO HEYGEN:
+- Usar recurso "Multi-Avatar" do HeyGen (2 avatares na mesma cena)
+- Layout lado a lado, estilo podcast (câmera fixa ou alternando foco)
+- Fundo: estúdio escuro com iluminação neon verde (#00DB79) e azul (#00AAFF)
+- Microfones de podcast visíveis (elemento gráfico ou cenário)
+- Overlay: "INFINITY CAST" no canto superior + logo
+- Cortes entre câmeras a cada fala para dar ritmo
+- Música de fundo: lo-fi suave ou beat tech minimalista (bem baixo)
+- Thumbnail: os dois avatares com microfones + "INFINITY CAST EP.01"
+================================================================================
