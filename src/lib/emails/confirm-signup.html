@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirme seu Cadastro | Infinity On Demand</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0B0F19;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #FFFFFF;
+      -webkit-font-smoothing: antialiased;
+    }
+    .email-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background-color: #111622;
+      border: 1px solid #1F2A3F;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 40px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .header {
+      padding: 40px 40px 20px 40px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .content {
+      padding: 40px;
+      text-align: center;
+    }
+    .footer {
+      background-color: #0D111A;
+      padding: 24px 40px;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      font-size: 11px;
+      color: #5F6E80;
+    }
+    .logo-text-gradient {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+      color: #00DF81;
+    }
+    .logo-sub {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #8F9CAE;
+      margin-top: 2px;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: #FFFFFF;
+    }
+    p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #8F9CAE;
+      margin-top: 0;
+      margin-bottom: 24px;
+    }
+    .btn-container {
+      margin-top: 30px;
+      margin-bottom: 30px;
+    }
+    .btn {
+      background-color: #00DF81;
+      background-image: linear-gradient(135deg, #00DF81 0%, #00AAFF 100%);
+      color: #0B0F19 !important;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      display: inline-block;
+      font-size: 14px;
+      box-shadow: 0 4px 15px rgba(0, 223, 129, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <div class="logo-text-gradient">Infinity</div>
+      <div class="logo-sub">Ondemand</div>
+    </div>
+    
+    <div class="content">
+      <h1>Confirme seu cadastro 🔐</h1>
+      
+      <p>Olá! Obrigado por criar uma conta na Infinity On Demand. Para ter acesso completo ao CRM e ativar sua conta, por favor confirme seu e-mail clicando no botão abaixo:</p>
+      
+      <div class="btn-container">
+        <a href="{{ .ConfirmationURL }}" class="btn">Confirmar Meu E-mail</a>
+      </div>
+      
+      <p style="font-size: 12px; margin-bottom: 0;">Se o botão acima não funcionar, você também pode copiar e colar este link no seu navegador:<br>
+      <a href="{{ .ConfirmationURL }}" style="color: #00AAFF; text-decoration: none; word-break: break-all;">{{ .ConfirmationURL }}</a></p>
+    </div>
+    
+    <div class="footer">
+      Se você não solicitou este e-mail, pode ignorá-lo com segurança.<br>
+      &copy; 2026 Infinity On Demand. Todos os direitos reservados.
+    </div>
+  </div>
+</body>
+</html>
