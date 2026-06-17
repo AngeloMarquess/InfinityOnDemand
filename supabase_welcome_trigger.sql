@@ -31,7 +31,7 @@ BEGIN
         url := 'https://infinityondemand.com.br/api/crm/welcome',
         headers := jsonb_build_object(
           'Content-Type', 'application/json',
-          'Authorization', 'Bearer 8Gcg3Wk1n07jemaf95IvqADuhOHLoty4UlFCdPVQYzixsNT2' -- Token de Segurança (FLASH_API_SECRET)
+          'Authorization', 'Bearer SEU_FLASH_API_SECRET_AQUI' -- Substitua pelo token de segurança (FLASH_API_SECRET)
         ),
         body := jsonb_build_object(
           'email', NEW.email,

@@ -5,7 +5,12 @@ export async function POST(request: Request) {
   try {
     // 1. Authorization check
     const authHeader = request.headers.get('Authorization');
-    const secretKey = process.env.FLASH_API_SECRET || '8Gcg3Wk1n07jemaf95IvqADuhOHLoty4UlFCdPVQYzixsNT2';
+    const secretKey = process.env.FLASH_API_SECRET;
+    
+    if (!secretKey) {
+      console.error('FLASH_API_SECRET is not configured');
+      return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+    }
     
     if (!authHeader || authHeader !== `Bearer ${secretKey}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
