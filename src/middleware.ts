@@ -23,29 +23,6 @@ function getLocaleFromPath(pathname: string): string | null {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const hostname = request.headers.get('host') || '';
-
-  // CRM subdomain: redirect crm.infinityondemand.com.br → /admin/crm
-  if (hostname.startsWith('crm.')) {
-    // Allow API routes and static assets to pass through
-    if (
-      pathname.startsWith('/api/') ||
-      pathname.startsWith('/_next/') ||
-      pathname.startsWith('/favicon') ||
-      pathname.includes('.')
-    ) {
-      return NextResponse.next();
-    }
-
-    // If already on /admin/crm, let it through
-    if (pathname.startsWith('/admin/crm')) {
-      return NextResponse.next();
-    }
-
-    // Redirect root and other paths to /admin/crm
-    const crmUrl = new URL('/admin/crm' + (pathname === '/' ? '' : pathname), request.url);
-    return NextResponse.rewrite(crmUrl);
-  }
 
   // Skip API routes, static files, Next.js internals, and public assets
   if (
