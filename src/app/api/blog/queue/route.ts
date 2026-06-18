@@ -24,6 +24,13 @@ export async function OPTIONS() {
 export async function GET() {
   try {
     const supabase = getSupabase();
+    
+    // Debug logging to see what env var Next.js is actually loading on the server
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+    console.log('[DEBUG QUEUE] URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log('[DEBUG QUEUE] Key length:', key.length);
+    console.log('[DEBUG QUEUE] Key prefix:', key.substring(0, 15));
+
     const { data, error } = await supabase
       .from('content_queue')
       .select('*')
