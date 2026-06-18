@@ -33,16 +33,28 @@ interface Subscriber {
   created_at: string;
 }
 
-type Tab = 'posts' | 'comments' | 'subscribers';
+interface QueueItem {
+  id: string;
+  created_at: string;
+  topic: string;
+  status: string;
+  scheduled_for: string | null;
+  published_at: string | null;
+}
+
+type Tab = 'posts' | 'comments' | 'subscribers' | 'queue';
 
 export default function AdminBlogPage() {
   const [tab, setTab] = useState<Tab>('posts');
   const [posts, setPosts] = useState<Post[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [queue, setQueue] = useState<QueueItem[]>([]);
   const [totalSubs, setTotalSubs] = useState(0);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
+  const [bulkText, setBulkText] = useState('');
+  const [submittingQueue, setSubmittingQueue] = useState(false);
 
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
@@ -73,11 +85,51 @@ export default function AdminBlogPage() {
     setLoading(false);
   }, [baseUrl]);
 
+  const fetchQueue = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${baseUrl}/api/blog/queue`);
+      const data = await res.json();
+      setQueue(data || []);
+    } catch (err) {
+      console.error(err);
+    }
+    setLoading(false);
+  }, [baseUrl]);
+
   useEffect(() => {
     if (tab === 'posts') fetchPosts();
     else if (tab === 'comments') fetchComments();
     else if (tab === 'subscribers') fetchSubscribers();
-  }, [tab, fetchPosts, fetchComments, fetchSubscribers]);
+    else if (tab === 'queue') fetchQueue();
+  }, [tab, fetchPosts, fetchComments, fetchSubscribers, fetchQueue]);
+
+  const handleAddQueue = async () => {
+    if (!bulkText.trim()) return;
+    setSubmittingQueue(true);
+    const topics = bulkText.split('\n').map(t => t.trim()).filter(t => t.length > 0);
+    try {
+      const res = await fetch(`${baseUrl}/api/blog/queue`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topics }),
+      });
+      if (res.ok) {
+        setBulkText('');
+        fetchQueue();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmittingQueue(false);
+    }
+  };
+
+  const deleteQueueItem = async (id: string) => {
+    if (!confirm('Remover este tema da fila?')) return;
+    await fetch(`${baseUrl}/api/blog/queue?id=${id}`, { method: 'DELETE' });
+    fetchQueue();
+  };
 
   const deletePost = async (id: string) => {
     if (!confirm('Deletar este post?')) return;
@@ -143,6 +195,7 @@ export default function AdminBlogPage() {
             <button style={styles.tab(tab === 'posts')} onClick={() => setTab('posts')}>Posts</button>
             <button style={styles.tab(tab === 'comments')} onClick={() => setTab('comments')}>Comentários</button>
             <button style={styles.tab(tab === 'subscribers')} onClick={() => setTab('subscribers')}>Assinantes</button>
+            <button style={styles.tab(tab === 'queue')} onClick={() => setTab('queue')}>Fila IA</button>
           </div>
           {tab === 'posts' && (
             <a href="/admin/blog/editor" style={styles.btn}>+ Novo Post</a>
@@ -361,6 +414,101 @@ export default function AdminBlogPage() {
                 </tbody>
               </table>
             )}
+          </>
+        )}
+
+        {/* Queue Tab */}
+        {tab === 'queue' && (
+          <>
+            <div style={styles.statsRow}>
+              <div style={styles.stat}>
+                <div style={{ fontSize: '28px', fontWeight: 700, color: '#00DF81' }}>{queue.length}</div>
+                <div style={{ fontSize: '13px', color: '#888' }}>Total na Fila</div>
+              </div>
+              <div style={styles.stat}>
+                <div style={{ fontSize: '28px', fontWeight: 700, color: '#ffbc00' }}>{queue.filter(q => q.status === 'pending').length}</div>
+                <div style={{ fontSize: '13px', color: '#888' }}>Pendentes</div>
+              </div>
+              <div style={styles.stat}>
+                <div style={{ fontSize: '28px', fontWeight: 700, color: '#00AAFF' }}>{queue.filter(q => q.status === 'published').length}</div>
+                <div style={{ fontSize: '13px', color: '#888' }}>Publicados</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px', flexWrap: 'wrap' }}>
+              {/* Left Column: Add Topics */}
+              <div style={{ padding: '24px', backgroundColor: '#111827', borderRadius: '12px', border: '1px solid #1a1f2e', height: 'fit-content' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 600, marginTop: 0, marginBottom: '8px', color: '#fff' }}>✍️ Adicionar Temas em Lote</h3>
+                <p style={{ fontSize: '13px', color: '#888', margin: '0 0 16px' }}>
+                  Escreva um tema por linha. O robô do n8n vai pegar cada um deles na ordem para gerar e publicar no Blog e no Instagram.
+                </p>
+                <textarea
+                  value={bulkText}
+                  onChange={e => setBulkText(e.target.value)}
+                  placeholder="Ex:&#10;Como otimizar seu site para SEO&#10;5 Dicas de marketing para Instagram&#10;O que é um CRM e por que usar?"
+                  style={{ width: '100%', minHeight: '200px', padding: '12px', borderRadius: '8px', border: '1px solid #1a1f2e', backgroundColor: '#0B0F19', color: '#fff', fontSize: '14px', fontFamily: 'inherit', resize: 'vertical', marginBottom: '16px', outline: 'none' }}
+                />
+                <button
+                  onClick={handleAddQueue}
+                  disabled={submittingQueue || !bulkText.trim()}
+                  style={{ ...styles.btn, width: '100%', padding: '12px', display: 'block', opacity: (submittingQueue || !bulkText.trim()) ? 0.5 : 1, cursor: (submittingQueue || !bulkText.trim()) ? 'not-allowed' : 'pointer' }}
+                >
+                  {submittingQueue ? 'Adicionando...' : '📥 Adicionar à Fila'}
+                </button>
+              </div>
+
+              {/* Right Column: Queue List */}
+              <div style={{ padding: '24px', backgroundColor: '#111827', borderRadius: '12px', border: '1px solid #1a1f2e', overflowX: 'auto' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 600, marginTop: 0, marginBottom: '16px', color: '#fff' }}>📋 Fila de Agendamento</h3>
+                
+                {loading ? (
+                  <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Carregando fila...</div>
+                ) : queue.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Fila vazia. Adicione temas ao lado para começar!</div>
+                ) : (
+                  <table style={styles.table}>
+                    <thead>
+                      <tr>
+                        <th style={styles.th}>Tema / Tópico</th>
+                        <th style={styles.th}>Status</th>
+                        <th style={styles.th}>Data de Criação</th>
+                        <th style={styles.th}>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {queue.map(item => (
+                        <tr key={item.id}>
+                          <td style={{ ...styles.td, fontWeight: 500 }}>{item.topic}</td>
+                          <td style={styles.td}>
+                            <span style={{
+                              color: item.status === 'published' ? '#00DF81' : item.status === 'processing' ? '#ffbc00' : item.status === 'failed' ? '#ef4444' : '#aaa',
+                              fontWeight: 600,
+                              fontSize: '13px'
+                            }}>
+                              ● {item.status === 'published' ? 'Publicado' : item.status === 'processing' ? 'Processando' : item.status === 'failed' ? 'Falhou' : 'Pendente'}
+                            </span>
+                          </td>
+                          <td style={styles.td}>
+                            <span style={{ fontSize: '13px', color: '#888' }}>
+                              {new Date(item.created_at).toLocaleDateString('pt-BR')}
+                            </span>
+                          </td>
+                          <td style={styles.td}>
+                            <button
+                              style={styles.btnDanger}
+                              disabled={item.status === 'processing'}
+                              onClick={() => deleteQueueItem(item.id)}
+                            >
+                              Remover
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
           </>
         )}
       </div>
