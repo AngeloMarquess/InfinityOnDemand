@@ -70,9 +70,19 @@ export default function AdminBlogPage() {
 
   const fetchComments = useCallback(async () => {
     setLoading(true);
-    const res = await fetch(`${baseUrl}/api/blog/comments?admin=true`);
-    const data = await res.json();
-    setComments(data || []);
+    try {
+      const res = await fetch(`${baseUrl}/api/blog/comments?admin=true`);
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setComments(data);
+      } else {
+        console.error('Comments API returned non-array:', data);
+        setComments([]);
+      }
+    } catch (err) {
+      console.error(err);
+      setComments([]);
+    }
     setLoading(false);
   }, [baseUrl]);
 
@@ -90,9 +100,15 @@ export default function AdminBlogPage() {
     try {
       const res = await fetch(`${baseUrl}/api/blog/queue`);
       const data = await res.json();
-      setQueue(data || []);
+      if (Array.isArray(data)) {
+        setQueue(data);
+      } else {
+        console.error('Queue API returned non-array:', data);
+        setQueue([]);
+      }
     } catch (err) {
       console.error(err);
+      setQueue([]);
     }
     setLoading(false);
   }, [baseUrl]);
