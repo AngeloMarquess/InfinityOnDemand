@@ -27,6 +27,22 @@ export async function signOut() {
   return getSupabase().auth.signOut();
 }
 
+export async function signInWithGoogle() {
+  return getSupabase().auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/aluno` : undefined,
+    },
+  });
+}
+
+export async function resetPassword(email: string) {
+  return getSupabase().auth.resetPasswordForEmail(email, {
+    redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/aluno` : undefined,
+  });
+}
+
+
 // --------------------------------------------------------------- CATALOG
 export async function fetchCourses(): Promise<Course[]> {
   const { data } = await getSupabase()

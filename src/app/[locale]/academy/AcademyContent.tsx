@@ -141,13 +141,11 @@ export default function AcademyContent({ dict, locale }: { dict: any; locale: st
         <div className="acd-grid-3">
           {/* Mensal */}
           <div className="acd-plan">
-            <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-secondary)' }}>{es ? 'Mensual' : 'Mensal'}</div>
-            <div style={{ margin: '14px 0 4px' }}><span className="acd-plan-price">R$97</span><span className="text-secondary">/{es ? 'mes' : 'mês'}</span></div>
-            <p className="text-secondary" style={{ fontSize: 14, marginBottom: 20 }}>{es ? 'Flexibilidad total' : 'Flexibilidade total'}</p>
+                      <p className="text-secondary" style={{ fontSize: 14, marginBottom: 20 }}>{es ? 'Flexibilidad total' : 'Flexibilidade total'}</p>
             <div style={{ flex: 1 }}>
               {b2cFeatures.map((f, i) => (<div key={i} className="acd-plan-feat"><span className="acd-check">✓</span>{es ? f[1] : f[0]}</div>))}
             </div>
-            <a href="#contact" className="btn-secondary" style={{ marginTop: 22, width: '100%' }}>{es ? 'Empezar' : 'Começar'}</a>
+            <Link href={`${membersUrl}?plano=mensal`} className="btn-secondary" style={{ marginTop: 22, width: '100%', textAlign: 'center', textDecoration: 'none' }}>{es ? 'Empezar' : 'Começar'}</Link>
           </div>
           {/* Anual — featured */}
           <div className="acd-plan acd-plan--featured">
@@ -159,7 +157,7 @@ export default function AcademyContent({ dict, locale }: { dict: any; locale: st
               {b2cFeatures.map((f, i) => (<div key={i} className="acd-plan-feat"><span className="acd-check">✓</span>{es ? f[1] : f[0]}</div>))}
               <div className="acd-plan-feat"><span className="acd-check">✓</span>{es ? '2 meses gratis' : '2 meses grátis'}</div>
             </div>
-            <a href="#contact" className="btn-primary" style={{ marginTop: 22, width: '100%', color: '#fff' }}>{es ? 'Quiero el anual' : 'Quero o anual'}</a>
+            <Link href={`${membersUrl}?plano=anual`} className="btn-primary" style={{ marginTop: 22, width: '100%', color: '#fff', textAlign: 'center', textDecoration: 'none' }}>{es ? 'Quiero el anual' : 'Quero o anual'}</Link>
           </div>
           {/* Trial */}
           <div className="acd-plan">
@@ -171,7 +169,7 @@ export default function AcademyContent({ dict, locale }: { dict: any; locale: st
               <div className="acd-plan-feat"><span className="acd-check">✓</span>{es ? 'Acceso a la plataforma' : 'Acesso à plataforma'}</div>
               <div className="acd-plan-feat"><span className="acd-check">✓</span>{es ? 'Prueba la gamificación' : 'Experimente a gamificação'}</div>
             </div>
-            <Link href={membersUrl} className="btn-secondary" style={{ marginTop: 22, width: '100%' }}>{es ? 'Probar gratis' : 'Testar grátis'}</Link>
+            <Link href={`${membersUrl}?plano=degustacao`} className="btn-secondary" style={{ marginTop: 22, width: '100%', textAlign: 'center', textDecoration: 'none' }}>{es ? 'Probar gratis' : 'Testar grátis'}</Link>
           </div>
         </div>
       </section>
@@ -186,7 +184,7 @@ export default function AcademyContent({ dict, locale }: { dict: any; locale: st
               <p className="acd-lead" style={{ marginBottom: 28 }}>
                 {es ? 'Educación corporativa práctica en Marketing, Ventas y Gestión — con panel de progreso, asientos y rutas por cargo.' : 'Educação corporativa prática em Marketing, Vendas e Gestão — com dashboard de progresso, assentos e trilhas por cargo.'}
               </p>
-              <a href="#contact" className="btn-primary" style={{ padding: '16px 34px' }}>{es ? 'Hablar con ventas' : 'Falar com vendas'}</a>
+              <a href="https://wa.me/558193997207?text=Ol%C3%A1!%20Gostaria%20de%20saber%20mais%20sobre%20o%20Infinity%20Academy%20for%20Business." target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ padding: '16px 34px', textDecoration: 'none', display: 'inline-block' }}>{es ? 'Hablar con ventas' : 'Falar com vendas'}</a>
             </div>
             <div>
               {b2bFeatures.map((f, i) => (<div key={i} className="acd-plan-feat" style={{ fontSize: 16 }}><span className="acd-check">✓</span>{es ? f[1] : f[0]}</div>))}

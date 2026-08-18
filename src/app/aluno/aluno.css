@@ -125,14 +125,393 @@
 .alu-ach .ti { font-weight: 700; font-size: 14px; margin: 8px 0 4px; }
 .alu-ach .de { font-size: 12px; color: var(--text-secondary); }
 
-/* ---------- Auth gate ---------- */
-.alu-auth { min-height: 100vh; display: grid; place-items: center; padding: 24px;
-  background: radial-gradient(800px 400px at 50% -10%, rgba(0,219,121,0.14), transparent 60%), #06090f; }
-.alu-auth-card { width: 100%; max-width: 420px; background: var(--bg-secondary); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 36px; }
-.alu-input { width: 100%; padding: 13px 16px; border-radius: 10px; background: #0a0e16; border: 1px solid rgba(255,255,255,0.1); color: var(--text-primary); font-size: 15px; margin-bottom: 14px; outline: none; transition: border-color .2s; }
-.alu-input:focus { border-color: var(--accent-primary); }
-.alu-tab { flex: 1; padding: 10px; text-align: center; font-weight: 600; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; }
-.alu-tab.active { color: var(--text-primary); border-color: var(--accent-primary); }
+/* ---------- Auth gate (Split Screen Conexem style) ---------- */
+.alu-split-auth {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: #06090f;
+  color: var(--text-primary);
+}
+
+.alu-split-left {
+  flex: 1;
+  max-width: 580px;
+  background: #080c14;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 40px;
+  position: relative;
+  z-index: 10;
+}
+
+.alu-split-form-box {
+  width: 100%;
+  max-width: 400px;
+}
+
+.alu-auth-brand {
+  margin-bottom: 32px;
+}
+
+.alu-auth-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.alu-auth-subtitle {
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.alu-input-group {
+  margin-bottom: 18px;
+}
+
+.alu-input-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.alu-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.alu-input-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 16px;
+  color: var(--text-secondary);
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.alu-custom-input {
+  width: 100%;
+  padding: 13px 44px 13px 42px;
+  background: #0d131f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 14.5px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.alu-custom-input:focus {
+  border-color: #00DF81;
+  background: #111827;
+  box-shadow: 0 0 0 3px rgba(0, 223, 129, 0.15);
+}
+
+.alu-eye-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  font-size: 16px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.alu-eye-btn:hover {
+  opacity: 1;
+}
+
+.alu-auth-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  font-size: 13px;
+}
+
+.alu-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.alu-checkbox {
+  accent-color: #00DF81;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.alu-forgot-link {
+  background: none;
+  border: none;
+  color: #00DF81;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.alu-forgot-link:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+.alu-feedback {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  margin-bottom: 18px;
+  line-height: 1.4;
+}
+
+.alu-feedback.error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.alu-feedback.success {
+  background: rgba(0, 219, 121, 0.12);
+  border: 1px solid rgba(0, 219, 121, 0.3);
+  color: #00DF81;
+}
+
+.alu-btn-submit {
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(90deg, #00DF81 0%, #00AAFF 100%);
+  color: #06090f;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(0, 219, 121, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alu-btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(0, 219, 121, 0.5);
+  filter: brightness(1.05);
+}
+
+.alu-btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.alu-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top-color: #06090f;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.alu-divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0 18px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.alu-divider::before,
+.alu-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.alu-divider span {
+  padding: 0 14px;
+}
+
+.alu-btn-google {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: #0d131f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.alu-btn-google:hover {
+  background: #131c2d;
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.alu-auth-footer {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 20px;
+}
+
+.alu-link-highlight {
+  background: none;
+  border: none;
+  color: #00DF81;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0 4px;
+}
+
+.alu-link-highlight:hover {
+  color: #00AAFF;
+}
+
+.alu-link-subtle {
+  color: var(--text-secondary);
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.alu-link-subtle:hover {
+  color: #ffffff;
+}
+
+/* RIGHT PANEL */
+.alu-split-right {
+  flex: 1.3;
+  position: relative;
+  background: radial-gradient(circle at 70% 30%, rgba(0, 170, 255, 0.15) 0%, transparent 60%),
+              radial-gradient(circle at 30% 70%, rgba(0, 219, 121, 0.2) 0%, transparent 60%),
+              #05080e;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+  text-align: center;
+}
+
+.alu-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(rgba(0, 219, 121, 0.1) 1px, transparent 1px),
+    radial-gradient(rgba(0, 170, 255, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.alu-banner-glow-circle {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 219, 121, 0.12) 0%, rgba(0, 170, 255, 0.08) 50%, transparent 70%);
+  filter: blur(50px);
+  animation: pulseGlow 8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.9) translate(-20px, -20px); opacity: 0.5; }
+  100% { transform: scale(1.1) translate(20px, 20px); opacity: 0.9; }
+}
+
+.alu-banner-content {
+  position: relative;
+  z-index: 10;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.alu-banner-badge {
+  display: inline-flex;
+  padding: 16px 20px;
+  background: rgba(11, 15, 25, 0.7);
+  border: 1px solid rgba(0, 219, 121, 0.35);
+  border-radius: 20px;
+  margin-bottom: 32px;
+  box-shadow: 0 0 30px rgba(0, 219, 121, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.alu-banner-heading {
+  font-size: clamp(32px, 4.5vw, 48px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.alu-banner-desc {
+  font-size: 16.5px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+
+.alu-btn-matricula {
+  display: inline-block;
+  padding: 16px 36px;
+  border-radius: 12px;
+  background: rgba(0, 219, 121, 0.12);
+  border: 1px solid rgba(0, 219, 121, 0.5);
+  color: #00DF81;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 20px rgba(0, 219, 121, 0.2);
+}
+
+.alu-btn-matricula:hover {
+  background: #00DF81;
+  color: #06090f;
+  box-shadow: 0 0 32px rgba(0, 219, 121, 0.5);
+  transform: translateY(-2px);
+}
 
 /* ---------- Modal ---------- */
 .alu-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); z-index: 150; display: grid; place-items: center; padding: 24px; }
@@ -140,6 +519,22 @@
 
 .alu-back { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 14px; font-weight: 600; padding: 14px 32px; }
 .alu-back:hover { color: var(--text-primary); }
+
+@media (max-width: 960px) {
+  .alu-split-auth {
+    flex-direction: column;
+  }
+  .alu-split-left {
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 40px 24px;
+  }
+  .alu-split-right {
+    padding: 60px 24px;
+  }
+}
+
 
 @media (max-width: 900px) {
   .alu-player-wrap { grid-template-columns: 1fr; }
