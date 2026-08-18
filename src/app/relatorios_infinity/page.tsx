@@ -8,6 +8,7 @@ import ConfiguracoesTab from './ConfiguracoesTab';
 import AgentTab from './AgentTab';
 import FlashSDRTab from './FlashSDRTab';
 import BriefingTab from './BriefingTab';
+import AcademyAdminTab from './AcademyAdminTab';
 
 /* ─────────── DATA ─────────── */
 const profileData = {
@@ -346,7 +347,7 @@ export default function RelatoriosInfinity() {
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'evolucao' | 'briefing' | 'agent' | 'config' | 'sdr'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'evolucao' | 'briefing' | 'agent' | 'config' | 'sdr' | 'academy'>('overview');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [carouselSlides, setCarouselSlides] = useState<Record<string, number>>({});
   const [scheduleStatus, setScheduleStatus] = useState<Record<string, { status: 'idle' | 'loading' | 'success' | 'error'; message?: string }>>({
@@ -685,6 +686,7 @@ export default function RelatoriosInfinity() {
     { id: 'briefing' as const, label: 'Briefings', icon: '📋' },
     { id: 'agent' as const, label: 'Flash IA', icon: '⚡' },
     { id: 'sdr' as const, label: 'Flash SDR', icon: '💬' },
+    { id: 'academy' as const, label: 'Academy', icon: '🎓' },
     { id: 'config' as const, label: 'Configurações', icon: '⚙️' },
   ];
 
@@ -1937,6 +1939,9 @@ export default function RelatoriosInfinity() {
 
         {/* ═══════════ TAB: FLASH SDR ═══════════ */}
         {activeTab === 'sdr' && <FlashSDRTab />}
+
+        {/* ═══════════ TAB: ACADEMY LMS ADMIN ═══════════ */}
+        {activeTab === 'academy' && <AcademyAdminTab />}
 
       </main>
 

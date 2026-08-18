@@ -21,6 +21,7 @@ export interface Course {
   is_published: boolean;
   is_featured: boolean;
   order_index: number;
+  created_at?: string;
 }
 
 export interface Lesson {
@@ -35,6 +36,7 @@ export interface Lesson {
   order_index: number;
   xp_reward: number;
   is_free: boolean;
+  created_at?: string;
 }
 
 export interface Module {
@@ -43,6 +45,7 @@ export interface Module {
   title: string;
   order_index: number;
   lessons: Lesson[];
+  created_at?: string;
 }
 
 export interface Enrollment {
