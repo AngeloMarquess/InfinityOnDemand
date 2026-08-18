@@ -329,6 +329,17 @@ export const DEFAULT_MODULES_MAP: Record<string, Module[]> = {
   ],
 };
 
+// Aliases for slug lookups
+DEFAULT_MODULES_MAP['ia-generativa-marketing'] = DEFAULT_MODULES_MAP['c1'];
+DEFAULT_MODULES_MAP['ia-para-negocios'] = DEFAULT_MODULES_MAP['c1'];
+DEFAULT_MODULES_MAP['spin-selling-alta-conversao'] = DEFAULT_MODULES_MAP['c2'];
+DEFAULT_MODULES_MAP['maquina-de-vendas'] = DEFAULT_MODULES_MAP['c2'];
+DEFAULT_MODULES_MAP['gestao-financeira-kpis'] = DEFAULT_MODULES_MAP['c3'];
+DEFAULT_MODULES_MAP['gestao-que-escala'] = DEFAULT_MODULES_MAP['c3'];
+DEFAULT_MODULES_MAP['trafego-pago-meta-google'] = DEFAULT_MODULES_MAP['c4'];
+DEFAULT_MODULES_MAP['trafego-pago-do-zero'] = DEFAULT_MODULES_MAP['c4'];
+
+
 export const DEFAULT_ACHIEVEMENTS: Achievement[] = [
   { id: 'ach1', code: 'primeiro_play', title: 'Primeiro Play', description: 'Assistiu à primeira aula na plataforma.', icon: '▶️', xp_reward: 50, tier: 'bronze', unlocked: true },
   { id: 'ach2', code: 'streak_3', title: 'Sprint 3 Dias', description: 'Manteve ofensiva diária por 3 dias consecutivos.', icon: '🔥', xp_reward: 100, tier: 'bronze', unlocked: true },
@@ -415,6 +426,13 @@ export async function fetchCourseBySlug(slug: string): Promise<Course | null> {
   return fallback ?? DEFAULT_COURSES[0] ?? null;
 }
 
+const REAL_MASTERCLASS_VIDEOS = [
+  'https://www.youtube.com/embed/1vR3FY_x7Y4',
+  'https://www.youtube.com/embed/3JZ_D3ELwOQ',
+  'https://www.youtube.com/embed/aircAruvnKk',
+  'https://www.youtube.com/embed/8v_4kJQzP8g',
+];
+
 export async function fetchCourseContent(courseId: string): Promise<Module[]> {
   try {
     const { data: modules } = await getSupabase()
@@ -430,9 +448,16 @@ export async function fetchCourseContent(courseId: string): Promise<Module[]> {
       .order('order_index', { ascending: true });
 
     const mods = (modules as Omit<Module, 'lessons'>[]) ?? [];
-    const les = (lessons as Lesson[]) ?? [];
+    const rawLes = (lessons as Lesson[]) ?? [];
 
-    if (mods.length > 0 || les.length > 0) {
+    if (mods.length > 0 || rawLes.length > 0) {
+      const les = rawLes.map((l, idx) => ({
+        ...l,
+        video_url: (!l.video_url || l.video_url.includes('commondatastorage') || l.video_url.includes('BigBuckBunny') || l.video_url.includes('ElephantsDream'))
+          ? REAL_MASTERCLASS_VIDEOS[idx % REAL_MASTERCLASS_VIDEOS.length]
+          : l.video_url,
+      }));
+
       if (mods.length === 0 && les.length > 0) {
         return [{ id: 'default', course_id: courseId, title: 'Conteúdo', order_index: 0, lessons: les }];
       }
@@ -442,8 +467,10 @@ export async function fetchCourseContent(courseId: string): Promise<Module[]> {
     // fallback
   }
 
-  // Find in default modules map
-  const defaultMods = DEFAULT_MODULES_MAP[courseId] || DEFAULT_MODULES_MAP['c1'];
+  // Find in default modules map by ID or slug
+  const defaultMods = DEFAULT_MODULES_MAP[courseId]
+    || DEFAULT_MODULES_MAP['c2']
+    || DEFAULT_MODULES_MAP['c1'];
   return defaultMods || [];
 }
 
