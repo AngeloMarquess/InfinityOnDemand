@@ -1,8 +1,172 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { signIn, signUp, signInWithGoogle, resetPassword } from '@/lib/academy/client';
+
+// Interactive/Animated Particle Streams in Infinity Colors
+function InfinityWaveBackground() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationId: number;
+    let width = (canvas.width = canvas.parentElement?.clientWidth || 600);
+    let height = (canvas.height = canvas.parentElement?.clientHeight || 800);
+
+    const handleResize = () => {
+      if (!canvas.parentElement) return;
+      width = canvas.width = canvas.parentElement.clientWidth;
+      height = canvas.height = canvas.parentElement.clientHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    // Floating bokeh particles
+    const bokehParticles: Array<{
+      x: number;
+      y: number;
+      radius: number;
+      color: string;
+      vx: number;
+      vy: number;
+      alpha: number;
+      alphaSpeed: number;
+    }> = [];
+
+    const colors = [
+      'rgba(0, 223, 129, ',   // emerald neon
+      'rgba(0, 170, 255, ',   // electric cyan
+      'rgba(163, 230, 53, ',  // lime highlight
+      'rgba(56, 189, 248, ',  // sky blue
+    ];
+
+    for (let i = 0; i < 70; i++) {
+      bokehParticles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 3 + 1,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4 - 0.2,
+        alpha: Math.random() * 0.6 + 0.2,
+        alphaSpeed: (Math.random() * 0.01 + 0.005) * (Math.random() > 0.5 ? 1 : -1),
+      });
+    }
+
+    let time = 0;
+
+    const render = () => {
+      time += 0.008;
+      ctx.clearRect(0, 0, width, height);
+
+      // Deep dark cosmic background
+      const bgGrad = ctx.createRadialGradient(
+        width * 0.5, height * 0.4, 50,
+        width * 0.5, height * 0.5, Math.max(width, height)
+      );
+      bgGrad.addColorStop(0, '#0a1322');
+      bgGrad.addColorStop(0.5, '#060a12');
+      bgGrad.addColorStop(1, '#030508');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw flowing curved particle ribbons / waves
+      const lines = 36;
+      for (let i = 0; i < lines; i++) {
+        const lineProgress = i / lines;
+        const colorFactor = (Math.sin(time + lineProgress * Math.PI) + 1) / 2;
+
+        ctx.beginPath();
+        const startY = height * 0.2 + lineProgress * (height * 0.6);
+
+        // Gradient for this strand
+        const strandGrad = ctx.createLinearGradient(0, 0, width, height);
+        strandGrad.addColorStop(0, `rgba(0, 170, 255, ${0.12 + colorFactor * 0.15})`);
+        strandGrad.addColorStop(0.5, `rgba(0, 223, 129, ${0.25 + colorFactor * 0.25})`);
+        strandGrad.addColorStop(1, `rgba(0, 170, 255, ${0.08 + colorFactor * 0.15})`);
+
+        ctx.strokeStyle = strandGrad;
+        ctx.lineWidth = 1.2;
+
+        const points = 24;
+        for (let j = 0; j <= points; j++) {
+          const x = (width / points) * j;
+          const wave1 = Math.sin(j * 0.35 + time * 1.5 + i * 0.12) * 55;
+          const wave2 = Math.cos(j * 0.25 - time * 0.8 + i * 0.08) * 35;
+          const y = startY + wave1 + wave2;
+
+          if (j === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+
+          // Dense glowing dots along the strand
+          if (j % 2 === 0 && Math.random() > 0.3) {
+            ctx.fillStyle = `rgba(0, 223, 129, ${0.4 + colorFactor * 0.4})`;
+            ctx.fillRect(x + (Math.random() - 0.5) * 4, y + (Math.random() - 0.5) * 4, 1.5, 1.5);
+          }
+        }
+        ctx.stroke();
+      }
+
+      // Draw ambient bokeh particles
+      for (const p of bokehParticles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha += p.alphaSpeed;
+
+        if (p.alpha > 0.8 || p.alpha < 0.15) {
+          p.alphaSpeed = -p.alphaSpeed;
+        }
+
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `${p.color}${p.alpha})`;
+        ctx.fill();
+
+        // Subtle glow around larger particles
+        if (p.radius > 2) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius * 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = `${p.color}${p.alpha * 0.25})`;
+          ctx.fill();
+        }
+      }
+
+      animationId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+      }}
+    />
+  );
+}
 
 export default function AuthGate({ onAuthed }: { onAuthed: () => void }) {
   const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>('login');
@@ -90,24 +254,36 @@ export default function AuthGate({ onAuthed }: { onAuthed: () => void }) {
           {/* Logo Header */}
           <div className="alu-auth-brand">
             <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-              <svg width="34" height="17" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 0 8px rgba(0, 219, 121, 0.5))' }}>
-                <defs>
-                  <linearGradient id="inf-auth-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#00DB79" />
-                    <stop offset="100%" stopColor="#00AAFF" />
-                  </linearGradient>
-                </defs>
-                <path d="M30 10 C15 10 10 25 10 25 C10 25 15 40 30 40 C45 40 55 10 70 10 C85 10 90 25 90 25 C90 25 85 40 70 40 C55 40 45 10 30 10 Z" stroke="url(#inf-auth-grad)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <div style={{ display: 'flex', gap: 5, alignItems: 'baseline' }}>
-                <span className="text-gradient" style={{ fontWeight: 800, fontSize: 18, letterSpacing: '1px' }}>INFINITY</span>
-                <span style={{ fontWeight: 500, fontSize: 13, color: 'var(--text-secondary)' }}>ACADEMY</span>
+              <div style={{
+                width: 38,
+                height: 38,
+                borderRadius: 10,
+                background: 'rgba(0, 219, 121, 0.12)',
+                border: '1px solid rgba(0, 219, 121, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                <svg width="28" height="14" viewBox="0 0 100 50" fill="none" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <linearGradient id="inf-auth-logo-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#00DB79" />
+                      <stop offset="100%" stopColor="#00AAFF" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M30 10 C15 10 10 25 10 25 C10 25 15 40 30 40 C45 40 55 10 70 10 C85 10 90 25 90 25 C90 25 85 40 70 40 C55 40 45 10 30 10 Z" stroke="url(#inf-auth-logo-grad)" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'baseline' }}>
+                <span className="text-gradient" style={{ fontWeight: 800, fontSize: 18, letterSpacing: '0.8px' }}>INFINITY</span>
+                <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-secondary)' }}>ACADEMY</span>
               </div>
             </Link>
           </div>
 
           {/* Titles */}
-          <div style={{ marginBottom: 28 }}>
+          <div style={{ marginBottom: 26 }}>
             <h1 className="alu-auth-title">
               {mode === 'login' && 'Já estuda com a gente?'}
               {mode === 'signup' && 'Criar sua conta de aluno'}
@@ -312,22 +488,34 @@ export default function AuthGate({ onAuthed }: { onAuthed: () => void }) {
         </div>
       </div>
 
-      {/* RIGHT COLUMN: BRANDING HERO BANNER */}
+      {/* RIGHT COLUMN: BRANDING HERO BANNER WITH PARTICLES */}
       <div className="alu-split-right">
-        <div className="alu-banner-overlay" />
-        <div className="alu-banner-glow-circle" />
+        <InfinityWaveBackground />
 
         <div className="alu-banner-content">
-          {/* Glowing Infinity Badge */}
+          {/* Logo Badge Card - perfectly proportioned and centered */}
           <div className="alu-banner-badge">
-            <svg width="42" height="21" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 0 12px rgba(0, 219, 121, 0.7))' }}>
+            <svg
+              width="46"
+              height="23"
+              viewBox="0 0 100 50"
+              fill="none"
+              preserveAspectRatio="xMidYMid meet"
+              style={{ filter: 'drop-shadow(0 0 10px rgba(0, 219, 121, 0.75))', display: 'block' }}
+            >
               <defs>
-                <linearGradient id="inf-banner-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <linearGradient id="inf-badge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="#00DB79" />
                   <stop offset="100%" stopColor="#00AAFF" />
                 </linearGradient>
               </defs>
-              <path d="M30 10 C15 10 10 25 10 25 C10 25 15 40 30 40 C45 40 55 10 70 10 C85 10 90 25 90 25 C90 25 85 40 70 40 C55 40 45 10 30 10 Z" stroke="url(#inf-banner-grad)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
+              <path
+                d="M30 10 C15 10 10 25 10 25 C10 25 15 40 30 40 C45 40 55 10 70 10 C85 10 90 25 90 25 C90 25 85 40 70 40 C55 40 45 10 30 10 Z"
+                stroke="url(#inf-badge-grad)"
+                strokeWidth="9"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </div>
 
