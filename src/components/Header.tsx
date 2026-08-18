@@ -9,10 +9,11 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
   const currentLocale = locale || 'pt';
   const prefix = currentLocale === 'pt' ? '' : `/${currentLocale}`;
   const t = dict?.header || {
-    sobre: 'Sobre', labs: 'Labs', consultoria: 'Consultoria', ecommerce: 'E-commerce',
+    sobre: 'Sobre', labs: 'Labs', consultoria: 'Consultoria', academy: 'Academy', ecommerce: 'E-commerce',
     crm: 'CRM', delivery: 'Delivery SaaS', analytics: 'Analytics', contato: 'Contato',
     inicio: 'Início', sobreNos: 'Sobre nós', testeAgora: 'Teste agora', login: 'Login',
   };
+  const academyLabel = t.academy || 'Academy';
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -58,6 +59,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
           <Link href={`${prefix}/sobre`} style={{ padding: "8px 12px", borderRadius: "4px" }}>{t.sobre}</Link>
           <Link href={`${prefix}/#labs`} style={{ padding: "8px 12px", borderRadius: "4px" }}>{t.labs}</Link>
           <Link href={`${prefix}/consultoria`} style={{ padding: "8px 12px", borderRadius: "4px" }}>{t.consultoria}</Link>
+          <Link href={`${prefix}/academy`} className="text-gradient" style={{ padding: "8px 12px", borderRadius: "4px", fontWeight: 700 }}>{academyLabel}</Link>
           <Link href={`${prefix}/ecommerce`} style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.ecommerce}</Link>
           <a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.crm}</a>
           <Link href={`${prefix}/delivery`} style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.delivery}</Link>
@@ -152,6 +154,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
           <Link href={`${prefix}/sobre`} onClick={closeMenu}>{t.sobreNos}</Link>
           <Link href={`${prefix}/#labs`} onClick={closeMenu}>{t.labs}</Link>
           <Link href={`${prefix}/consultoria`} onClick={closeMenu}>{t.consultoria}</Link>
+          <Link href={`${prefix}/academy`} onClick={closeMenu}>{academyLabel}</Link>
           <Link href={`${prefix}/ecommerce`} onClick={closeMenu}>{t.ecommerce}</Link>
           <a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" onClick={closeMenu}>
             {t.crm}

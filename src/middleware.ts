@@ -10,6 +10,7 @@ const nonLocalizedRoutes = [
   '/instagram-carousel',
   '/teste-whatsapp',
   '/Briefing',
+  '/aluno',
 ];
 
 function getLocaleFromPath(pathname: string): string | null {
