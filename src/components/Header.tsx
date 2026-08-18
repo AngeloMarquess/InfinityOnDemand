@@ -61,7 +61,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
           <Link href={`${prefix}/consultoria`} style={{ padding: "8px 12px", borderRadius: "4px" }}>{t.consultoria}</Link>
           <Link href={`${prefix}/ecommerce`} style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.ecommerce}</Link>
           <a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.crm}</a>
-          <Link href={`${prefix}/academy`} className="text-gradient" style={{ padding: "8px 12px", borderRadius: "4px", fontWeight: 700 }}>{academyLabel}</Link>
+          <Link href={`${prefix}/academy`} style={{ padding: "8px 12px", borderRadius: "4px", color: "#00DF81", fontWeight: 700 }}>{academyLabel}</Link>
           <Link href={`${prefix}/delivery`} style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.delivery}</Link>
           <Link href="/relatorios_infinity" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.analytics}</Link>
           
@@ -158,7 +158,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
           <a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" onClick={closeMenu}>
             {t.crm}
           </a>
-          <Link href={`${prefix}/academy`} onClick={closeMenu} className="text-gradient" style={{ fontWeight: 700 }}>{academyLabel}</Link>
+          <Link href={`${prefix}/academy`} onClick={closeMenu} style={{ color: "#00DF81", fontWeight: 700 }}>{academyLabel}</Link>
           <Link href={`${prefix}/delivery`} onClick={closeMenu}>{t.delivery}</Link>
           <Link href="/relatorios_infinity" onClick={closeMenu}>{t.analytics}</Link>
           <Link href="#contact" onClick={closeMenu}>{t.contato}</Link>
