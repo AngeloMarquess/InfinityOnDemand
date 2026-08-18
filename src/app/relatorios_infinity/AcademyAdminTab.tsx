@@ -42,6 +42,19 @@ interface AchievementRow {
   unlocked_count?: number;
 }
 
+interface InstructorRow {
+  id: string;
+  name: string;
+  role: string;
+  bio: string;
+  courses: number;
+  students: number;
+  avatar: string;
+  email?: string;
+  linkedin?: string;
+  track?: string;
+}
+
 // Fallback initial demonstration catalog
 const INITIAL_DEMO_COURSES: Course[] = [
   {
@@ -162,6 +175,11 @@ export default function AcademyAdminTab() {
     { id: 'ach3', title: 'Trilha de IA Dominada', description: 'Concluiu 100% da trilha de Inteligência Artificial.', icon: '🤖', tier: 'ouro', unlocked_count: 5 },
     { id: 'ach4', title: 'Primeira Venda Fechada', description: 'Completou o módulo de Closing do curso SPIN Selling.', icon: '💰', tier: 'prata', unlocked_count: 12 },
   ]);
+  const [instructors, setInstructors] = useState<InstructorRow[]>([
+    { id: 'inst1', name: 'Angelo Marques', role: 'Head de IA & Performance', bio: 'Especialista em inteligência artificial aplicada a marketing, sistemas de vendas e automações complexas.', courses: 3, students: 48, avatar: '👨‍💻', email: 'angelo.marques@infinityondemand.com.br', linkedin: 'https://linkedin.com', track: 'ia' },
+    { id: 'inst2', name: 'Lucas Andrade', role: 'Especialista em Vendas B2B', bio: 'Mais de 10 anos de experiência estruturando máquinas de vendas, cadências de outbound e fechamentos de alto ticket.', courses: 2, students: 35, avatar: '💼', email: 'lucas.andrade@infinityondemand.com.br', linkedin: 'https://linkedin.com', track: 'vendas' },
+    { id: 'inst3', name: 'Carla Silveira', role: 'CFO & Consultora Financeira', bio: 'Mestre em finanças corporativas, focada em métricas de unit economics, DRE e valuation para startups.', courses: 2, students: 28, avatar: '📊', email: 'carla.silveira@infinityondemand.com.br', linkedin: 'https://linkedin.com', track: 'administracao' },
+  ]);
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('');
@@ -175,6 +193,8 @@ export default function AcademyAdminTab() {
   const [editingLesson, setEditingLesson] = useState<Partial<Lesson> | null>(null);
   const [studentModalOpen, setStudentModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<StudentProfile | null>(null);
+  const [instructorModalOpen, setInstructorModalOpen] = useState(false);
+  const [editingInstructor, setEditingInstructor] = useState<Partial<InstructorRow> | null>(null);
 
   // Fetch admin data on mount
   useEffect(() => {
@@ -942,31 +962,118 @@ export default function AcademyAdminTab() {
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {subTab === 'instructors' && (
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
-            {[
-              { name: 'Angelo Marques', role: 'Head de IA & Performance', bio: 'Especialista em inteligência artificial aplicada a marketing, sistemas de vendas e automações complexas.', courses: 3, students: 48, avatar: '👨‍💻' },
-              { name: 'Lucas Andrade', role: 'Especialista em Vendas B2B', bio: 'Mais de 10 anos de experiência estruturando máquinas de vendas, cadências de outbound e fechamentos de alto ticket.', courses: 2, students: 35, avatar: '💼' },
-              { name: 'Carla Silveira', role: 'CFO & Consultora Financeira', bio: 'Mestre em finanças corporativas, focada em métricas de unit economics, DRE e valuation para startups.', courses: 2, students: 28, avatar: '📊' },
-            ].map((inst, i) => (
-              <div key={i} style={{
+          {/* Header Bar */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 14,
+            marginBottom: 24,
+            padding: '20px 24px',
+            background: '#0d111a',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: 18,
+          }}>
+            <div>
+              <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: '#fff' }}>
+                Corpo Docente & Especialistas ({instructors.length})
+              </h3>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', margin: '4px 0 0' }}>
+                Cadastre e gerencie os professores, biografia, trilhas e cursos ministrados.
+              </p>
+            </div>
+
+            <button
+              onClick={() => {
+                setEditingInstructor({
+                  avatar: '👨‍🏫',
+                  track: 'marketing',
+                  courses: 1,
+                });
+                setInstructorModalOpen(true);
+              }}
+              style={{
+                padding: '10px 22px',
+                borderRadius: 10,
+                border: 'none',
+                background: 'linear-gradient(90deg, #00DF81 0%, #00AAFF 100%)',
+                color: '#06090f',
+                fontWeight: 800,
+                fontSize: 13.5,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                boxShadow: '0 4px 18px rgba(0, 219, 121, 0.35)',
+              }}
+            >
+              <span>+</span> Cadastrar Novo Professor
+            </button>
+          </div>
+
+          {/* Cards Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+            {instructors.map((inst) => (
+              <div key={inst.id} style={{
                 background: '#0d111a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, padding: 24,
-                display: 'flex', flexDirection: 'column',
+                display: 'flex', flexDirection: 'column', position: 'relative',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-                  <div style={{ width: 50, height: 50, borderRadius: 14, background: 'rgba(0,219,121,0.15)', fontSize: 24, display: 'grid', placeItems: 'center' }}>
-                    {inst.avatar}
+                  <div style={{ width: 54, height: 54, borderRadius: 16, background: 'rgba(0,219,121,0.15)', border: '1px solid rgba(0,219,121,0.3)', fontSize: 26, display: 'grid', placeItems: 'center' }}>
+                    {inst.avatar || '👨‍🏫'}
                   </div>
-                  <div>
-                    <h4 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#fff' }}>{inst.name}</h4>
-                    <p style={{ margin: '2px 0 0', fontSize: 12.5, color: '#00DF81', fontWeight: 600 }}>{inst.role}</p>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h4 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{inst.name}</h4>
+                    <p style={{ margin: '3px 0 0', fontSize: 13, color: '#00DF81', fontWeight: 600 }}>{inst.role}</p>
                   </div>
                 </div>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, marginBottom: 18, flex: 1 }}>
+
+                <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 18, flex: 1 }}>
                   {inst.bio}
                 </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'rgba(255,255,255,0.4)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 12 }}>
+
+                {inst.email && (
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span>✉️</span> {inst.email}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12.5, color: 'rgba(255,255,255,0.5)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14, marginBottom: 16 }}>
                   <span>📚 {inst.courses} cursos ativos</span>
-                  <span>👥 {inst.students} alunos</span>
+                  <span>👥 {inst.students || 0} alunos impactados</span>
+                </div>
+
+                {/* Actions */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <button
+                    onClick={() => {
+                      setEditingInstructor(inst);
+                      setInstructorModalOpen(true);
+                    }}
+                    style={{
+                      padding: '8px 12px', borderRadius: 8,
+                      backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                      color: '#fff', fontSize: 12.5, fontWeight: 600, cursor: 'pointer',
+                    }}
+                  >
+                    ✏️ Editar
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (confirm(`Remover professor ${inst.name}?`)) {
+                        setInstructors((prev) => prev.filter((i) => i.id !== inst.id));
+                      }
+                    }}
+                    style={{
+                      padding: '8px 12px', borderRadius: 8,
+                      backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)',
+                      color: '#f87171', fontSize: 12.5, fontWeight: 600, cursor: 'pointer',
+                    }}
+                  >
+                    🗑️ Excluir
+                  </button>
                 </div>
               </div>
             ))}
@@ -1295,6 +1402,165 @@ export default function AcademyAdminTab() {
           </div>
         </div>
       )}
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* MODAL: CADASTRAR / EDITAR PROFESSOR                                 */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {instructorModalOpen && editingInstructor && (
+        <div style={{
+          position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)',
+          backdropFilter: 'blur(8px)', zIndex: 1000,
+          display: 'grid', placeItems: 'center', padding: 20,
+        }}>
+          <div style={{
+            background: '#0d111a', border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: 20, width: '100%', maxWidth: 560, maxHeight: '90vh',
+            overflowY: 'auto', padding: 32,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <h3 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>
+                {editingInstructor.id ? '✏️ Editar Professor' : '👨‍🏫 Cadastrar Novo Professor'}
+              </h3>
+              <button
+                onClick={() => setInstructorModalOpen(false)}
+                style={{ background: 'none', border: 'none', color: '#fff', fontSize: 20, cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!editingInstructor.name) return;
+                if (editingInstructor.id) {
+                  setInstructors((prev) => prev.map((inst) => (inst.id === editingInstructor.id ? { ...inst, ...editingInstructor } as InstructorRow : inst)));
+                } else {
+                  const newInst: InstructorRow = {
+                    id: `inst_${Date.now()}`,
+                    name: editingInstructor.name,
+                    role: editingInstructor.role || 'Instrutor Especialista',
+                    bio: editingInstructor.bio || '',
+                    avatar: editingInstructor.avatar || '👨‍🏫',
+                    courses: Number(editingInstructor.courses) || 1,
+                    students: 0,
+                    email: editingInstructor.email || '',
+                    linkedin: editingInstructor.linkedin || '',
+                    track: editingInstructor.track || 'marketing',
+                  };
+                  setInstructors((prev) => [newInst, ...prev]);
+                }
+                setInstructorModalOpen(false);
+                setEditingInstructor(null);
+              }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+            >
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>NOME DO PROFESSOR</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ex: Dr. Roberto Alencar"
+                  value={editingInstructor.name || ''}
+                  onChange={(e) => setEditingInstructor({ ...editingInstructor, name: e.target.value })}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: 8, background: '#080c14', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', outline: 'none' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>CARGO / ESPECIALIDADE</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: Especialista em Tráfego & IA"
+                    value={editingInstructor.role || ''}
+                    onChange={(e) => setEditingInstructor({ ...editingInstructor, role: e.target.value })}
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: 8, background: '#080c14', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', outline: 'none' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>ÍCONE / EMOJI</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: 👨‍💻, 💼, 📊, 🚀"
+                    value={editingInstructor.avatar || '👨‍🏫'}
+                    onChange={(e) => setEditingInstructor({ ...editingInstructor, avatar: e.target.value })}
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: 8, background: '#080c14', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', outline: 'none' }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>TRILHA PRINCIPAL</label>
+                <select
+                  value={editingInstructor.track || 'marketing'}
+                  onChange={(e) => setEditingInstructor({ ...editingInstructor, track: e.target.value })}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: 8, background: '#080c14', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', outline: 'none' }}
+                >
+                  <option value="marketing">Marketing & Growth</option>
+                  <option value="vendas">Vendas & Comercial</option>
+                  <option value="administracao">Administração & Finanças</option>
+                  <option value="ia">IA & Automação</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>MINI-BIOGRAFIA / EXPERIÊNCIA</label>
+                <textarea
+                  rows={3}
+                  placeholder="Resumo das credenciais, resultados e autoridade do professor..."
+                  value={editingInstructor.bio || ''}
+                  onChange={(e) => setEditingInstructor({ ...editingInstructor, bio: e.target.value })}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: 8, background: '#080c14', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', outline: 'none', resize: 'vertical' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>E-MAIL</label>
+                  <input
+                    type="email"
+                    placeholder="professor@infinityondemand.com.br"
+                    value={editingInstructor.email || ''}
+                    onChange={(e) => setEditingInstructor({ ...editingInstructor, email: e.target.value })}
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: 8, background: '#080c14', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', outline: 'none' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>LINKEDIN / PORTFÓLIO</label>
+                  <input
+                    type="text"
+                    placeholder="https://linkedin.com/in/..."
+                    value={editingInstructor.linkedin || ''}
+                    onChange={(e) => setEditingInstructor({ ...editingInstructor, linkedin: e.target.value })}
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: 8, background: '#080c14', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', outline: 'none' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginTop: 14 }}>
+                <button
+                  type="button"
+                  onClick={() => setInstructorModalOpen(false)}
+                  style={{ padding: '12px 20px', borderRadius: 10, background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '12px 24px', borderRadius: 10, background: 'linear-gradient(90deg, #00DF81, #00AAFF)', border: 'none', color: '#06090f', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  Salvar Professor
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
