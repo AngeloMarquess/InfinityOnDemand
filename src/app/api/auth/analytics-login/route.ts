@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { getServerSupabase } from '@/lib/supabase';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 // Admin emails allowed to access Infinity Analytics
 // Set ANALYTICS_ADMIN_EMAILS in .env as comma-separated emails
@@ -27,6 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Authenticate with Supabase Auth
+    const supabase = getServerSupabase();
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
