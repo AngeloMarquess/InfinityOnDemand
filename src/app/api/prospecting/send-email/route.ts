@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     const crmOwnerId = process.env.CRM_OWNER_USER_ID;
     const openaiKey = process.env.OPENAI_API_KEY;
     const RESEND_API_KEY = getEnvVar('RESEND_API_KEY');
-    const FROM_EMAIL = getEnvVar('RESEND_FROM_EMAIL') || 'angelo.marques@infinityondemand.com.br';
+    const FROM_EMAIL = getEnvVar('RESEND_FROM_EMAIL') || 'contato@infinityondemand.com.br';
 
     if (!supabaseUrl || !supabaseServiceKey || !crmOwnerId) {
       return NextResponse.json({ error: 'Missing server configuration' }, { status: 500 });
