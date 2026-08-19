@@ -115,6 +115,13 @@ export async function POST(request: NextRequest) {
 
     const leadsToInsert = [];
 
+    // Helper to extract CNPJ from text
+    const extractCnpj = (text: string): string | null => {
+      if (!text) return null;
+      const match = text.match(/\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/) || text.match(/\b\d{14}\b/);
+      return match ? match[0] : null;
+    };
+
     for (const item of items) {
       const placeName = item.title || item.Place_name || 'Sem nome';
       const rawPhone = item.phone || item.Phone;
@@ -135,14 +142,35 @@ export async function POST(request: NextRequest) {
 
       const city = item.city || item.City || '';
       const state = item.state || item.State || '';
-      const street = item.street || item.Street || '';
-      const rating = item.totalScore || 0;
-      const reviews = item.reviewsCount || 0;
-      const website = item.website || '';
+      const street = item.street || item.Street || item.address || item.Address || '';
+      const neighborhood = item.neighborhood || item.bairro || item.subLocality || '';
+      const postalCode = item.postalCode || item.postal_code || item.cep || item.zipCode || '';
+      const rating = item.totalScore || item.rating || 0;
+      const reviews = item.reviewsCount || item.userRatingsTotal || 0;
+      const website = item.website || item.url_website || '';
       const categories = item.categoryName || (item.categories || []).join(', ') || '';
-      const googleUrl = item.url || '';
-      const email = (item.emails && item.emails.length > 0) ? item.emails[0] : null;
-      const instagram = (item.instagrams && item.instagrams.length > 0) ? item.instagrams[0] : null;
+      const googleUrl = item.url || item.googleUrl || '';
+      
+      // Multi-source email extraction
+      const email = 
+        item.email || 
+        (Array.isArray(item.emails) && item.emails.length > 0 ? item.emails[0] : null) || 
+        item.contactEmail || 
+        item.emailAddress || 
+        null;
+
+      // Multi-source CNPJ extraction
+      const rawCnpj = 
+        item.cnpj || 
+        item.taxId || 
+        item.cpf_cnpj || 
+        item.vatNumber || 
+        extractCnpj(item.description || '') || 
+        extractCnpj(item.about || '') || 
+        extractCnpj(item.additionalInfo || '') || 
+        null;
+
+      const instagram = (Array.isArray(item.instagrams) && item.instagrams.length > 0 ? item.instagrams[0] : null) || item.instagram || null;
 
       const notes = [
         `📍 Lead capturado via Apify (Google Maps) em ${new Date().toLocaleDateString('pt-BR')}.`,
@@ -151,6 +179,7 @@ export async function POST(request: NextRequest) {
         street ? `📍 Endereço: ${street}` : '',
         website ? `🌐 Site: ${website}` : '',
         email ? `📧 Email: ${email}` : '',
+        rawCnpj ? `🆔 CNPJ: ${rawCnpj}` : '',
         instagram ? `📸 Instagram: ${instagram}` : '',
         googleUrl ? `🗺 Maps: ${googleUrl}` : '',
       ].filter(Boolean).join('\n');
@@ -161,14 +190,17 @@ export async function POST(request: NextRequest) {
         phone: formattedPhone,
         email: email,
         company: placeName,
-        city: city,
-        state: state,
+        cpf_cnpj: rawCnpj,
+        cep: postalCode || null,
+        neighborhood: neighborhood || null,
+        city: city || null,
+        state: state || null,
+        address: street || null,
         origin: 'apify',
         contact_type: 'lead',
         stage_id: novoLeadStageId,
         notes: notes,
         estimated_value: 0,
-        address: street || null,
       });
     }
 
