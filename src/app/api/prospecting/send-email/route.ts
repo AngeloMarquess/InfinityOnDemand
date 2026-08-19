@@ -260,6 +260,8 @@ Mantenha o tom profissional, específico, com foco em 3 melhorias e oferta de di
               max_tokens: 250,
             });
 
+            const raw = completion.choices[0]?.message?.content || '';
+            const parsed = JSON.parse(raw.replace(/```json?\n?/g, '').replace(/```/g, '').trim());
             if (parsed.subject) subject = parsed.subject;
             if (parsed.body) textBody = parsed.body;
           } catch {
