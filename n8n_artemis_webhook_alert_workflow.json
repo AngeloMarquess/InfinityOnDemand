@@ -1,0 +1,79 @@
+{
+  "name": "🏛️ Olimpo - Artemis Alerta de Lead Quente (Telegram)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "artemis-webhook",
+        "options": {}
+      },
+      "id": "webhook-evolution",
+      "name": "Webhook Evolution API",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        200,
+        300
+      ],
+      "webhookId": "artemis-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrair dados da mensagem recebida via Evolution API v2\nconst body = $input.item.json.body || $input.item.json;\nconst data = body.data || {};\nconst key = data.key || {};\nconst message = data.message || {};\n\n// Ignorar mensagens enviadas pelo próprio bot/número (fromMe: true)\nif (key.fromMe === true) {\n  return [];\n}\n\n// Ignorar mensagens de grupos ou status broadcast\nconst remoteJid = key.remoteJid || '';\nif (remoteJid.includes('@g.us') || remoteJid.includes('status@broadcast')) {\n  return [];\n}\n\n// Extrair número limpo\nconst phone = remoteJid.replace('@s.whatsapp.net', '').replace(/\\D/g, '');\nconst pushName = data.pushName || 'Lead Interessado';\n\n// Extrair texto da mensagem (texto simples, estendido ou transcrição)\nlet text = message.conversation || \n           message.extendedTextMessage?.text || \n           message.imageMessage?.caption ||\n           message.videoMessage?.caption ||\n           '';\n\nif (!text && message.audioMessage) {\n  text = '🎙️ [Áudio recebido]';\n}\n\nif (!text) {\n  text = '📎 [Mídia / Arquivo recebido]';\n}\n\nreturn {\n  json: {\n    phone,\n    pushName,\n    text,\n    timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),\n    whatsappLink: `https://wa.me/${phone}`\n  }\n};"
+      },
+      "id": "code-filter",
+      "name": "Filtrar & Extrair Mensagem do Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "1769259678",
+        "text": "=🚨 *LEAD QUENTE RESPONDEU À ARTEMIS!* ⚡\\n\\n👤 *Nome:* {{ $json.pushName }}\\n📱 *Telefone:* +{{ $json.phone }}\\n⏰ *Horário:* {{ $json.timestamp }}\\n\\n💬 *Mensagem do Lead:*\\n_{{ $json.text }}_\\n\\n👉 [Clique aqui para assumir a conversa no WhatsApp]({{ $json.whatsappLink }})",
+        "additionalFields": {
+          "parse_mode": "Markdown",
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "telegram-lead-alert",
+      "name": "Disparar Alerta no Telegram (CEO)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Evolution API": {
+      "main": [
+        [
+          {
+            "node": "Filtrar & Extrair Mensagem do Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar & Extrair Mensagem do Lead": {
+      "main": [
+        [
+          {
+            "node": "Disparar Alerta no Telegram (CEO)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "name": "🏛️ Olimpo - Artemis Prospecção Outbound 24/7",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-manual",
+      "name": "Disparo Manual / Iniciar",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 10 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "trigger-cron",
+      "name": "Horário Comercial (Seg-Sex 10h)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lista inicial de leads para prospecção da Artemis\n// Pode ser substituída por consulta ao Supabase, Apify ou Planilha\nreturn [\n  {\n    json: {\n      name: \"Ricardo\",\n      business: \"Pizzaria Bella\",\n      phone: \"81999990001\",\n      segment: \"Alimentação\"\n    }\n  },\n  {\n    json: {\n      name: \"Camila\",\n      business: \"Boutique Chic\",\n      phone: \"81999990002\",\n      segment: \"Vestuário\"\n    }\n  }\n];"
+      },
+      "id": "code-leads",
+      "name": "Origem de Leads (Artemis)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "split-batches",
+      "name": "Processar 1 Lead por Vez",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        680,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Sanitização e formatação de telefone para padrão WhatsApp (DDI + DDD + Número)\nconst item = $input.item.json;\nlet rawPhone = String(item.phone || '').replace(/\\D/g, '');\n\nif (rawPhone.startsWith('0')) {\n  rawPhone = rawPhone.substring(1);\n}\nif (!rawPhone.startsWith('55')) {\n  rawPhone = '55' + rawPhone;\n}\n\n// Copy persuasiva adaptada ao nicho\nconst saudacao = `Olá ${item.name}! Tudo bem? ⚡`;\nconst copy = `${saudacao}\\n\\nAqui é a **Artemis**, especialista em soluções digitais da **Infinity On Demand**.\\n\\nVi o trabalho da *${item.business}* e notei que vocês têm grande potencial para aumentar os pedidos diretos e reduzir taxas abusivas de marketplaces.\\n\\nPreparamos uma demonstração exclusiva de 2 minutos do nosso Cardápio e Plataforma Própria.\\n\\nPosso te enviar o link rápido para você dar uma olhada sem compromisso?`;\n\nreturn {\n  json: {\n    ...item,\n    formattedPhone: rawPhone,\n    messageText: copy\n  }\n};"
+      },
+      "id": "code-format",
+      "name": "Formatar Número & Copy Persuasiva",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://89.116.74.147:8080/message/sendText/artemis",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "1C257567D7A9-446A-A8DF-A1D7F2536AF6"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.formattedPhone }}\",\n  \"text\": \"{{ $json.messageText }}\",\n  \"delay\": 1200,\n  \"linkPreview\": true\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "http-evolution",
+      "name": "Disparar WhatsApp (Evolution API)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1140,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 45,
+        "unit": "seconds"
+      },
+      "id": "wait-security",
+      "name": "Delay de Segurança (45s)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1380,
+        380
+      ],
+      "webhookId": "artemis-cadence-wait"
+    },
+    {
+      "parameters": {
+        "chatId": "1769259678",
+        "text": "=🎯 *Artemis Prospecção - Disparo Realizado*\\n\\n👤 *Lead:* {{ $('Formatar Número & Copy Persuasiva').item.json.name }} ({{ $('Formatar Número & Copy Persuasiva').item.json.business }})\\n📱 *Telefone:* {{ $('Formatar Número & Copy Persuasiva').item.json.formattedPhone }}\\n🟢 *Status:* Enviado com sucesso via Evolution API.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "telegram-alert",
+      "name": "Alerta Telegram (Zeus / CEO)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1600,
+        380
+      ]
+    }
+  ],
+  "connections": {
+    "Disparo Manual / Iniciar": {
+      "main": [
+        [
+          {
+            "node": "Origem de Leads (Artemis)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Horário Comercial (Seg-Sex 10h)": {
+      "main": [
+        [
+          {
+            "node": "Origem de Leads (Artemis)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Origem de Leads (Artemis)": {
+      "main": [
+        [
+          {
+            "node": "Processar 1 Lead por Vez",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar 1 Lead por Vez": {
+      "main": [
+        [
+          {
+            "node": "Formatar Número & Copy Persuasiva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Número & Copy Persuasiva": {
+      "main": [
+        [
+          {
+            "node": "Disparar WhatsApp (Evolution API)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Disparar WhatsApp (Evolution API)": {
+      "main": [
+        [
+          {
+            "node": "Delay de Segurança (45s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delay de Segurança (45s)": {
+      "main": [
+        [
+          {
+            "node": "Alerta Telegram (Zeus / CEO)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alerta Telegram (Zeus / CEO)": {
+      "main": [
+        [
+          {
+            "node": "Processar 1 Lead por Vez",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
