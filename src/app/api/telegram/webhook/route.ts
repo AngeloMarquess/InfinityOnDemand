@@ -124,6 +124,24 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ ok: true, action: 'no_leads' });
       }
 
+      // Detect Campaign / Template Pillar from user command
+      let targetPillar: string | null = null;
+      let pillarNameLabel = 'Auto-Segmentação Inteligente (IA por Nicho)';
+
+      if (cleanText.includes('sites') || cleanText.includes('site') || cleanText.includes('clinica')) {
+        targetPillar = 'sites';
+        pillarNameLabel = 'Sites & Presença Digital';
+      } else if (cleanText.includes('sistema') || cleanText.includes('ia') || cleanText.includes('automac')) {
+        targetPillar = 'sistemas';
+        pillarNameLabel = 'Sistemas & Automações com IA';
+      } else if (cleanText.includes('loja') || cleanText.includes('ecommerce') || cleanText.includes('moda') || cleanText.includes('catalogo')) {
+        targetPillar = 'ecommerce';
+        pillarNameLabel = 'E-commerce & Catálogo WhatsApp';
+      } else if (cleanText.includes('trafego') || cleanText.includes('tráfego') || cleanText.includes('ads')) {
+        targetPillar = 'trafego';
+        pillarNameLabel = 'Tráfego Pago & Performance';
+      }
+
       let limit = 15;
       if (cleanText.includes('todos') || cleanText.includes('tudo') || cleanText.includes('all')) {
         limit = unsentContacts.length > 0 ? unsentContacts.length : contactsWithEmail.length;
@@ -137,7 +155,7 @@ export async function POST(request: NextRequest) {
       const leadsToProcess = (unsentContacts.length > 0 ? unsentContacts : contactsWithEmail).slice(0, limit);
       const leadIds = leadsToProcess.map(c => c.id);
 
-      await sendTelegramMessage(chatId, `🏹 *Artemis iniciando disparo de ${leadIds.length} e-mails persuasivos...* ⚡\n_Conectando ao Resend e gerando links rastreáveis..._`);
+      await sendTelegramMessage(chatId, `🏹 *Artemis iniciando disparo de ${leadIds.length} e-mails...* ⚡\n🎯 *Estratégia:* ${pillarNameLabel}\n_Conectando ao Resend e gerando links rastreáveis com IA..._`);
 
       try {
         const sendRes = await fetch('https://www.infinityondemand.com.br/api/prospecting/send-email', {
@@ -148,7 +166,7 @@ export async function POST(request: NextRequest) {
           },
           body: JSON.stringify({
             leadIds,
-            templatePillar: 'sites',
+            templatePillar: targetPillar, // null = auto per lead
           }),
         });
 
@@ -162,7 +180,8 @@ export async function POST(request: NextRequest) {
 
 📊 *Relatório da Operação:*
 • *Enviados agora:* ${sentNow} e-mails entregues via Resend
-• *Remetente:* \`contato@infinityondemand.com.br\`
+• *Estratégia Aplicada:* ${pillarNameLabel}
+• *Remetente Oficial:* \`contato@infinityondemand.com.br\`
 • *Pipeline CRM:* Movidos para *"Email Enviado"*
 • *Click Tracking:* Links rastreáveis ativos 🔥
 
@@ -190,21 +209,26 @@ ${listPreview}${leadsToProcess.length > 5 ? `\n_...e mais ${leadsToProcess.lengt
     if (cleanText === '/start' || cleanText === '/ajuda' || cleanText === '/help' || cleanText === '/menu') {
       const menuText = `🏛️ *Bem-vindo ao Ecossistema Olimpo!* ⚡
 
-Eu sou *Zeus*, seu Conselheiro Estratégico de BI, e estou conectado à *Artemis* para automação de vendas da *Infinity On Demand*.
+Eu sou *Zeus*, seu Conselheiro Estratégico de BI, e estou conectado à *Artemis* para automação de prospecção e e-mail marketing da *Infinity On Demand*.
 
-📋 *Comandos Disponíveis:*
+📋 *Comandos de Disparo de E-mail:*
 
-🏹 *Prospecção & E-mail Marketing:*
-• \`/envie os emails\` — Disparar próxima leva de e-mails com links rastreáveis
-• \`/enviar emails 30\` — Disparar para 30 leads
-• \`/enviar emails todos\` — Disparar para toda a base com e-mail
-• \`/minerar <nicho cidade>\` — Minerar 60 leads no Google Maps
+🏹 *Disparo com Segmentação Automática (IA por Nicho):*
+• \`/envie os emails\` — Artemis analisa cada lead e envia o template ideal
+• \`/enviar emails 30\` — Dispara para 30 leads
+• \`/enviar emails todos\` — Dispara para toda a base com e-mail
 
-📊 *Relatórios & Métricas por Data:*
-• \`/relatorio\` — Relatório completo de hoje, semana passada e total
-• \`/status\` — Status do ecossistema e pipeline
+🎯 *Disparo por Campanha Específica:*
+• \`/envie os emails sites\` — Focado em Sites & Diagnóstico Grátis
+• \`/envie os emails sistemas\` — Focado em Robôs WhatsApp com IA
+• \`/envie os emails ecommerce\` — Focado em Catálogo Virtual & Lojas
+• \`/envie os emails trafego\` — Focado em Anúncios Google & Meta
 
-_Você também pode fazer qualquer pergunta em linguagem natural!_`;
+🔍 *Mineração Google Maps:*
+• \`/minerar <nicho cidade>\` — Minera 60 leads no Apify (Ex: \`/minerar clinicas recife\`)
+
+📊 *Relatórios por Data:*
+• \`/relatorio\` — Métricas de hoje, semana passada e total`;
 
       await sendTelegramMessage(chatId, menuText);
       return NextResponse.json({ ok: true, action: 'menu' });
@@ -273,14 +297,14 @@ DADOS REAIS EM TEMPO REAL DO CRM E MARKETING:
 - Principais Nichos: ${topSegments || 'Diversos'}
 
 COMANDOS DISPONÍVEIS:
-- /envie os emails ou /enviar emails [quantidade] -> Dispara e-mails da Artemis com link rastreável via Resend.
+- /envie os emails [campanha] -> Dispara e-mails da Artemis com auto-segmentação e link rastreável via Resend.
 - /minerar <nicho e cidade> -> Minera 60 leads no Google Maps via Apify.
 - /relatorio -> Apresenta o consolidado por datas.
 
 INSTRUÇÕES:
-- Se ele perguntar sobre datas, quantos e-mails foram enviados hoje, semana passada ou no mês, forneça o relatório detalhado por período acima.
-- Se ele pedir para enviar e-mails, oriente que basta digitar "/envie os emails".
-- Mantenha respostas curtas e objetivas (máximo 3 ou 4 blocos).`;
+- Se ele perguntar sobre como a Artemis escolhe as campanhas, explique que ela usa a inteligência de nicho para casar o melhor template com cada lead ou permite forçar pelo comando.
+- Se ele perguntar sobre datas, informe o breakdown por período.
+- Mantenha respostas curtas e objetivas.`;
 
     let reply = '';
     const modelsToTry = ['gpt-4o', 'gpt-4', 'gpt-3.5-turbo', 'gpt-4o-mini'];
