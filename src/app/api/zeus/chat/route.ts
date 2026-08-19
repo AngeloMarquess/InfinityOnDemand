@@ -84,17 +84,31 @@ INSTRUÇÕES DE RESPOSTA:
 - Se ele pedir conselhos de prospecção ou nichos, recomende nichos de alto ticket (Clínicas Odontológicas, Harmonização/Estética, Escritórios de Advocacia, Hamburguerias/Restaurantes, Imobiliárias).
 - Mantenha respostas com no máximo 3 ou 4 parágrafos curtos para leitura rápida no celular.`;
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: message },
-      ],
-      temperature: 0.7,
-      max_tokens: 500,
-    });
+    let reply = '';
+    const modelsToTry = ['gpt-4o', 'gpt-4', 'gpt-3.5-turbo', 'gpt-4o-mini'];
 
-    const reply = completion.choices[0]?.message?.content || '👑 Zeus recebeu sua mensagem, mas não conseguiu processar no momento.';
+    for (const modelName of modelsToTry) {
+      try {
+        const completion = await openai.chat.completions.create({
+          model: modelName,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: message },
+          ],
+          temperature: 0.7,
+          max_tokens: 500,
+        });
+
+        reply = completion.choices[0]?.message?.content || '';
+        if (reply) break;
+      } catch (err: any) {
+        console.warn(`Model ${modelName} failed, trying fallback:`, err.message);
+      }
+    }
+
+    if (!reply) {
+      reply = `👑 *Zeus Relatórios:*\n\n📊 *Métricas Atuais do Ecossistema Olimpo:*\n• *Leads minerados hoje:* ${minedTodayCount}\n• *Total em Prospecção:* ${totalLeads}\n• *Clientes Ativos:* ${activeClientsCount}\n• *Valor no Pipeline:* R$ ${totalPipelineValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\n• *Principais Nichos:* ${topSegments || 'Diversos'}`;
+    }
 
     return NextResponse.json({ reply, metrics: { minedTodayCount, totalLeads, activeClientsCount, totalPipelineValue } });
   } catch (error: any) {
