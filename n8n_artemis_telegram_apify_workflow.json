@@ -99,7 +99,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"searchStringsArray\": [\"{{ $('Validar & Extrair Nicho').item.json.searchTerm }}\"],\n  \"maxCrawledPlacesPerSearch\": 60,\n  \"language\": \"pt\",\n  \"countryCode\": \"br\",\n  \"scrapeContacts\": true,\n  \"extractEmails\": true\n}",
+        "jsonBody": "={\n  \"searchStringsArray\": [\"{{ $('Filtrar Comando /minerar').item.json.searchTerm }}\"],\n  \"maxCrawledPlacesPerSearch\": 60,\n  \"language\": \"pt-BR\",\n  \"countryCode\": \"br\",\n  \"scrapeContacts\": true,\n  \"extractEmails\": true\n}",
         "options": {
           "timeout": 300000
         }
