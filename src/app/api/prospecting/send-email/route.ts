@@ -18,29 +18,72 @@ function getEnvVar(name: string): string | undefined {
   }
 }
 
-// 4 High-Conversion Segment Templates
-export const SEGMENT_TEMPLATES: Record<string, { subject: string; body: string; pillar: string }> = {
+// 4 High-Conversion Segment Templates with Low-Friction Persuasive Hooks
+export const SEGMENT_TEMPLATES: Record<string, { subject: string; body: string; pillar: string; ctaText: string }> = {
   sites: {
     pillar: 'Sites & Presença Digital',
-    subject: 'Novo posicionamento digital para {empresa}',
-    body: 'Olá! Notei que a presença online do {empresa} tem grande potencial de crescimento. Na Infinity On Demand, desenvolvemos landing pages e sites de alta conversão integrados com inteligência artificial para transformar visitantes em clientes qualificados todos os dias.\n\nPodemos apresentar um diagnóstico rápido de 5 minutos sem compromisso?'
+    ctaText: 'Quero meu diagnóstico gratuito →',
+    subject: '{empresa}, 3 ajustes no site que trariam mais {resultado}',
+    body: `Olá! Dei uma olhada na presença digital da {empresa} e vi que uns ajustes simples no site já poderiam converter mais visitantes em {resultado} — sem precisar gastar mais em anúncio.
+
+Na Infinity On Demand a gente cria sites e landing pages de alta velocidade, com IA integrada, feitos pra transformar quem procura {segmento} na região de vocês em cliente de verdade.
+
+Posso te mandar um diagnóstico visual gratuito de 5 minutos apontando 3 pontos de melhoria no site de vocês. Quer que eu envie?`
   },
   sistemas: {
     pillar: 'Sistemas & Automações com IA',
-    subject: 'Automação inteligente de atendimento para {empresa}',
-    body: 'Olá equipe do {empresa}! Criamos sistemas sob medida e robôs com IA que atendem no WhatsApp 24h por dia, agendam serviços e eliminam trabalho manual da sua operação.\n\nGostaria de ver uma demonstração de como a IA pode atender seus clientes automaticamente?'
+    ctaText: 'Ver demonstração da IA →',
+    subject: '{empresa}, como atender clientes no WhatsApp 24h sem aumentar equipe',
+    body: `Olá equipe do {empresa}!
+
+Notei que o fluxo de atendimento de vocês pode se beneficiar muito de um agente inteligente com IA. Desenvolvemos robôs sob medida que atendem no WhatsApp 24 horas por dia, agendam {resultado} e tiram dúvidas em tempo real sem fila de espera.
+
+Posso liberar um link de demonstração interativa de 3 minutos para vocês testarem na prática?`
   },
   ecommerce: {
     pillar: 'E-commerce & Lojas Virtuais',
-    subject: 'Escala de vendas e catálogo online para {empresa}',
-    body: 'Olá! Vimos o excelente trabalho do {empresa} e preparamos uma solução para turbinar suas vendas online. Nossa plataforma de e-commerce e catálogo digital conta com checkout transparente e integração direta com WhatsApp para multiplicar seus pedidos diários.\n\nPodemos te enviar uma demonstração gratuita da loja virtual?'
+    ctaText: 'Conhecer catálogo inteligente →',
+    subject: '{empresa}, como vender online com catálogo direto no WhatsApp',
+    body: `Olá! Acompanho o trabalho da {empresa} e vi que vocês têm excelentes produtos.
+
+Estruturamos catálogos digitais e lojas virtuais com checkout transparente e envio automático para o WhatsApp, permitindo gerar mais {resultado} sem depender de taxas abusivas de terceiros.
+
+Posso te mandar uma prévia de como ficaria a vitrine online de vocês?`
   },
   trafego: {
     pillar: 'Tráfego Pago & Performance',
-    subject: 'Atraia mais clientes qualificados em {cidade} para {empresa}',
-    body: 'Olá! Gerenciamos campanhas de tráfego de alta performance no Google e Meta Ads focadas exclusivamente em gerar contatos e vendas reais para o {empresa} na sua região.\n\nPodemos fazer uma estimativa gratuita de quantos novos clientes você pode atrair este mês?'
+    ctaText: 'Solicitar estimativa de alcance →',
+    subject: '{empresa}, estimativa de novos clientes para este mês em {cidade}',
+    body: `Olá! Tudo bem?
+
+Fizemos um levantamento rápido de mercado na região de {cidade} e mapeamos centenas de pessoas buscando diariamente por {segmento}.
+
+Com campanhas estratégicas de Google e Meta Ads, conseguimos direcionar essas pessoas prontas para comprar direto para o WhatsApp da {empresa}.
+
+Gostaria de ver nossa estimativa gratuita de alcance e novos contatos para este mês?`
   }
 };
+
+function detectSegmentAndResult(lead: any) {
+  const text = `${lead.name || ''} ${lead.company || ''} ${lead.project_interest || ''} ${lead.notes || ''}`.toLowerCase();
+  
+  if (text.includes('clinica') || text.includes('estetica') || text.includes('odonto') || text.includes('dermato') || text.includes('botox') || text.includes('harmonizacao') || text.includes('saude')) {
+    return { segmento: 'serviços de estética e saúde', resultado: 'pacientes agendados' };
+  }
+  if (text.includes('advoc') || text.includes('jurid') || text.includes('direito') || text.includes('contabil')) {
+    return { segmento: 'serviços jurídicos e consultivos', resultado: 'novos contratos' };
+  }
+  if (text.includes('loja') || text.includes('moda') || text.includes('roupa') || text.includes('calcado') || text.includes('biquini') || text.includes('ecommerce') || text.includes('vestuario')) {
+    return { segmento: 'moda e vestuário', resultado: 'vendas diretas' };
+  }
+  if (text.includes('burger') || text.includes('pizza') || text.includes('restaurante') || text.includes('sushi') || text.includes('delivery') || text.includes('lanche')) {
+    return { segmento: 'gastronomia e delivery', resultado: 'pedidos diretos' };
+  }
+  if (text.includes('imobiliaria') || text.includes('corretor') || text.includes('imoveis')) {
+    return { segmento: 'imóveis e locação', resultado: 'visitas e propostas' };
+  }
+  return { segmento: 'seus serviços', resultado: 'clientes qualificados' };
+}
 
 function detectSegmentPillar(lead: any): 'sites' | 'sistemas' | 'ecommerce' | 'trafego' {
   const text = `${lead.name || ''} ${lead.company || ''} ${lead.project_interest || ''} ${lead.notes || ''}`.toLowerCase();
@@ -168,14 +211,19 @@ export async function POST(request: NextRequest) {
       try {
         const pillarKey = templatePillar || detectSegmentPillar(lead);
         const template = SEGMENT_TEMPLATES[pillarKey] || SEGMENT_TEMPLATES.sites;
+        const { segmento, resultado } = detectSegmentAndResult(lead);
 
         let subject = template.subject
           .replace(/{empresa}/g, lead.name || 'sua empresa')
-          .replace(/{cidade}/g, lead.city || 'sua região');
+          .replace(/{cidade}/g, lead.city || 'sua região')
+          .replace(/{segmento}/g, segmento)
+          .replace(/{resultado}/g, resultado);
         
         let textBody = template.body
           .replace(/{empresa}/g, lead.name || 'sua empresa')
-          .replace(/{cidade}/g, lead.city || 'sua região');
+          .replace(/{cidade}/g, lead.city || 'sua região')
+          .replace(/{segmento}/g, segmento)
+          .replace(/{resultado}/g, resultado);
 
         // Enhance with OpenAI if available
         if (openaiKey) {
@@ -186,13 +234,13 @@ export async function POST(request: NextRequest) {
               messages: [
                 {
                   role: 'system',
-                  content: `Você é o Flash ⚡ / Artemis, especialista em Prospecção B2B da Infinity On Demand.
-Gere um JSON {"subject": "...", "body": "..."} para email de prospecção focado no pilar: "${template.pillar}".
-Seja direto, profissional, humanizado e com forte proposta de valor. Máximo 4 parágrafos curtos.`,
+                  content: `Você é o Flash ⚡ / Artemis, especialista em Prospecção B2B de Alta Conversão da Infinity On Demand.
+Gere um JSON {"subject": "...", "body": "..."} para email de prospecção com alta persuasão e oferta de baixa fricção.
+Mantenha o tom profissional, específico, com foco em 3 melhorias e oferta de diagnóstico gratuito de 5 minutos.`,
                 },
                 {
                   role: 'user',
-                  content: `Empresa: ${lead.name}\nEmail: ${lead.email}\nCidade: ${lead.city || 'Recife'}\nNicho: ${lead.project_interest || 'Comércio/Serviços'}\nTemplate base:\n${textBody}`,
+                  content: `Empresa: ${lead.name}\nEmail: ${lead.email}\nCidade: ${lead.city || 'Recife'}\nNicho: ${lead.project_interest || segmento}\nResultado esperado: ${resultado}\nTemplate base:\nAssunto: ${subject}\nCorpo:\n${textBody}`,
                 },
               ],
               temperature: 0.7,
@@ -209,7 +257,7 @@ Seja direto, profissional, humanizado e com forte proposta de valor. Máximo 4 p
         }
 
         // Build HTML email
-        const htmlEmail = buildProspectingEmail(lead.name, textBody, template.pillar);
+        const htmlEmail = buildProspectingEmail(lead.name, textBody, template.pillar, template.ctaText);
 
         // Send via Resend
         const resendRes = await fetch('https://api.resend.com/emails', {
@@ -265,7 +313,7 @@ Seja direto, profissional, humanizado e com forte proposta de valor. Máximo 4 p
   }
 }
 
-function buildProspectingEmail(leadName: string, bodyText: string, pillarName: string): string {
+function buildProspectingEmail(leadName: string, bodyText: string, pillarName: string, ctaText: string = 'Conhecer Soluções da Infinity →'): string {
   const bodyHtml = bodyText.replace(/\n/g, '<br>');
   
   return `<!DOCTYPE html>
@@ -292,7 +340,7 @@ function buildProspectingEmail(leadName: string, bodyText: string, pillarName: s
       <!-- CTA Button -->
       <div style="text-align:center;margin:32px 0;">
         <a href="https://infinityondemand.com.br" style="display:inline-block;background:#10b981;color:#ffffff;font-weight:700;font-size:15px;padding:14px 36px;border-radius:12px;text-decoration:none;box-shadow:0 4px 12px rgba(16,185,129,0.3);">
-          Conhecer Soluções da Infinity →
+          ${ctaText}
         </a>
       </div>
 
@@ -305,7 +353,7 @@ function buildProspectingEmail(leadName: string, bodyText: string, pillarName: s
       </div>
 
       <p style="color:#94a3b8;font-size:11px;text-align:center;margin:24px 0 0;">
-        Se você não deseja receber novidades sobre tecnologia para sua empresa, basta ignorar este e-mail.
+        Se você não deseja receber novidades sobre tecnologia para sua empresa, basta responder "parar".
       </p>
     </div>
 
