@@ -18,27 +18,57 @@ function getEnvVar(name: string): string | undefined {
   }
 }
 
-/**
- * Email Prospecting — Flash contacts leads via email (Resend).
- * 
- * POST body:
- *   { leadId: string }     — email a single specific lead
- *   { limit?: number }     — batch: email N leads with email addresses (default 10, max 50)
- * 
- * Requires: Authorization: Bearer <FLASH_API_SECRET>
- */
+// 4 High-Conversion Segment Templates
+export const SEGMENT_TEMPLATES: Record<string, { subject: string; body: string; pillar: string }> = {
+  sites: {
+    pillar: 'Sites & Presença Digital',
+    subject: 'Novo posicionamento digital para {empresa}',
+    body: 'Olá! Notei que a presença online do {empresa} tem grande potencial de crescimento. Na Infinity On Demand, desenvolvemos landing pages e sites de alta conversão integrados com inteligência artificial para transformar visitantes em clientes qualificados todos os dias.\n\nPodemos apresentar um diagnóstico rápido de 5 minutos sem compromisso?'
+  },
+  sistemas: {
+    pillar: 'Sistemas & Automações com IA',
+    subject: 'Automação inteligente de atendimento para {empresa}',
+    body: 'Olá equipe do {empresa}! Criamos sistemas sob medida e robôs com IA que atendem no WhatsApp 24h por dia, agendam serviços e eliminam trabalho manual da sua operação.\n\nGostaria de ver uma demonstração de como a IA pode atender seus clientes automaticamente?'
+  },
+  ecommerce: {
+    pillar: 'E-commerce & Lojas Virtuais',
+    subject: 'Escala de vendas e catálogo online para {empresa}',
+    body: 'Olá! Vimos o excelente trabalho do {empresa} e preparamos uma solução para turbinar suas vendas online. Nossa plataforma de e-commerce e catálogo digital conta com checkout transparente e integração direta com WhatsApp para multiplicar seus pedidos diários.\n\nPodemos te enviar uma demonstração gratuita da loja virtual?'
+  },
+  trafego: {
+    pillar: 'Tráfego Pago & Performance',
+    subject: 'Atraia mais clientes qualificados em {cidade} para {empresa}',
+    body: 'Olá! Gerenciamos campanhas de tráfego de alta performance no Google e Meta Ads focadas exclusivamente em gerar contatos e vendas reais para o {empresa} na sua região.\n\nPodemos fazer uma estimativa gratuita de quantos novos clientes você pode atrair este mês?'
+  }
+};
+
+function detectSegmentPillar(lead: any): 'sites' | 'sistemas' | 'ecommerce' | 'trafego' {
+  const text = `${lead.name || ''} ${lead.company || ''} ${lead.project_interest || ''} ${lead.notes || ''}`.toLowerCase();
+  
+  if (text.includes('loja') || text.includes('moda') || text.includes('roupa') || text.includes('calcado') || text.includes('biquini') || text.includes('ecommerce') || text.includes('delivery') || text.includes('burger') || text.includes('pizza') || text.includes('restaurante')) {
+    return 'ecommerce';
+  }
+  if (text.includes('clinica') || text.includes('estetica') || text.includes('odonto') || text.includes('advoc') || text.includes('consult') || text.includes('imobiliaria')) {
+    return 'sites';
+  }
+  if (text.includes('sistema') || text.includes('automac') || text.includes('software') || text.includes('ia') || text.includes('bot')) {
+    return 'sistemas';
+  }
+  return 'trafego';
+}
+
 export async function POST(request: NextRequest) {
   // Auth check
   const auth = validateApiKey(request);
   if (!auth.valid) return auth.error!;
 
-  // Rate limit: 5 email sends per minute
-  const limit_check = rateLimit(request, { maxRequests: 5, windowMs: 60_000, keyPrefix: 'email-send' });
+  // Rate limit: 10 email sends per minute
+  const limit_check = rateLimit(request, { maxRequests: 10, windowMs: 60_000, keyPrefix: 'email-send' });
   if (!limit_check.allowed) return limit_check.error!;
 
   try {
     const body = await request.json().catch(() => ({}));
-    const { leadId } = body;
+    const { leadId, templatePillar } = body;
     const limit = Math.min(body.limit || 10, 50);
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -57,21 +87,38 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get stages
+    // Get stages or ensure "Email Enviado" exists
     const { data: stagesData } = await supabase
       .from('crm_stages')
-      .select('id, name')
-      .eq('user_id', crmOwnerId);
+      .select('id, name, order_index')
+      .eq('user_id', crmOwnerId)
+      .order('order_index', { ascending: true });
 
-    const stages = stagesData || [];
-    const novoLeadStage = stages.find(s => s.name === 'Novo Lead');
-    const primeiroContatoStage = stages.find(s => s.name === 'Primeiro Contato');
+    let stages = stagesData || [];
+    let emailEnviadoStage = stages.find(s => s.name.toLowerCase().includes('email enviado') || s.name.toLowerCase().includes('e-mail enviado'));
 
-    if (!primeiroContatoStage) {
-      return NextResponse.json({ error: 'Pipeline stage "Primeiro Contato" not found' }, { status: 400 });
+    // Create "Email Enviado" stage automatically if missing
+    if (!emailEnviadoStage) {
+      const maxOrder = stages.reduce((max, s) => Math.max(max, s.order_index || 0), 0);
+      const { data: createdStage } = await supabase
+        .from('crm_stages')
+        .insert([{
+          user_id: crmOwnerId,
+          name: 'Email Enviado',
+          color: '#ef4444',
+          order_index: maxOrder + 1
+        }])
+        .select()
+        .single();
+      
+      if (createdStage) {
+        emailEnviadoStage = createdStage;
+      }
     }
 
-    let leads;
+    const targetStageId = emailEnviadoStage?.id || stages.find(s => s.name === 'Primeiro Contato')?.id;
+
+    let leads: any[] = [];
 
     if (leadId) {
       const { data, error } = await supabase
@@ -89,6 +136,7 @@ export async function POST(request: NextRequest) {
       }
       leads = [data];
     } else {
+      const novoLeadStage = stages.find(s => s.name === 'Novo Lead');
       if (!novoLeadStage) {
         return NextResponse.json({ error: 'Pipeline stage "Novo Lead" not found' }, { status: 400 });
       }
@@ -118,54 +166,50 @@ export async function POST(request: NextRequest) {
 
     for (const lead of leads) {
       try {
-        // Generate personalized email subject and body via GPT
-        let subject: string;
-        let textBody: string;
+        const pillarKey = templatePillar || detectSegmentPillar(lead);
+        const template = SEGMENT_TEMPLATES[pillarKey] || SEGMENT_TEMPLATES.sites;
 
+        let subject = template.subject
+          .replace(/{empresa}/g, lead.name || 'sua empresa')
+          .replace(/{cidade}/g, lead.city || 'sua região');
+        
+        let textBody = template.body
+          .replace(/{empresa}/g, lead.name || 'sua empresa')
+          .replace(/{cidade}/g, lead.city || 'sua região');
+
+        // Enhance with OpenAI if available
         if (openaiKey) {
-          const openai = new OpenAI({ apiKey: openaiKey });
-          const completion = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
-            messages: [
-              {
-                role: 'system',
-                content: `Você é o Flash ⚡, SDR da Infinity On Demand. 
-Gere um JSON com "subject" e "body" para um email de prospecção.
-
-REGRAS:
-- Subject: curto, máximo 60 caracteres, que desperte curiosidade
-- Body: texto simples (sem HTML), máximo 5 linhas
-- Mencione o nome do estabelecimento
-- Seja profissional e direto
-- Termine com uma pergunta ou call-to-action
-- NÃO use markdown/negrito
-- Responda APENAS o JSON, nada mais`,
-              },
-              {
-                role: 'user',
-                content: `Lead: ${lead.name}\nEmail: ${lead.email}\nCidade: ${lead.city || 'não informado'}\nCategoria: ${lead.notes?.match(/Categoria: (.+)/)?.[1] || 'estabelecimento'}`,
-              },
-            ],
-            temperature: 0.8,
-            max_tokens: 200,
-          });
-
           try {
+            const openai = new OpenAI({ apiKey: openaiKey });
+            const completion = await openai.chat.completions.create({
+              model: 'gpt-4o-mini',
+              messages: [
+                {
+                  role: 'system',
+                  content: `Você é o Flash ⚡ / Artemis, especialista em Prospecção B2B da Infinity On Demand.
+Gere um JSON {"subject": "...", "body": "..."} para email de prospecção focado no pilar: "${template.pillar}".
+Seja direto, profissional, humanizado e com forte proposta de valor. Máximo 4 parágrafos curtos.`,
+                },
+                {
+                  role: 'user',
+                  content: `Empresa: ${lead.name}\nEmail: ${lead.email}\nCidade: ${lead.city || 'Recife'}\nNicho: ${lead.project_interest || 'Comércio/Serviços'}\nTemplate base:\n${textBody}`,
+                },
+              ],
+              temperature: 0.7,
+              max_tokens: 250,
+            });
+
             const raw = completion.choices[0]?.message?.content || '';
             const parsed = JSON.parse(raw.replace(/```json?\n?/g, '').replace(/```/g, '').trim());
-            subject = parsed.subject || `Proposta para ${lead.name}`;
-            textBody = parsed.body || '';
+            if (parsed.subject) subject = parsed.subject;
+            if (parsed.body) textBody = parsed.body;
           } catch {
-            subject = `Aumente as vendas do ${lead.name} com delivery digital`;
-            textBody = `Olá! Sou o Angelo da Infinity On Demand.\n\nEncontrei o ${lead.name} e acredito que nossa plataforma de delivery pode ajudar vocês a vender mais.\n\nPosso te mostrar em 5 minutos?`;
+            // Use base template
           }
-        } else {
-          subject = `Aumente as vendas do ${lead.name} com delivery digital`;
-          textBody = `Olá! Sou o Angelo da Infinity On Demand.\n\nEncontrei o ${lead.name} e acredito que nossa plataforma de delivery pode ajudar vocês a vender mais.\n\nPosso te mostrar em 5 minutos?`;
         }
 
         // Build HTML email
-        const htmlEmail = buildProspectingEmail(lead.name, textBody);
+        const htmlEmail = buildProspectingEmail(lead.name, textBody, template.pillar);
 
         // Send via Resend
         const resendRes = await fetch('https://api.resend.com/emails', {
@@ -186,17 +230,18 @@ REGRAS:
         const resendData = await resendRes.json();
 
         if (resendRes.ok) {
-          // Move to "Primeiro Contato" stage
           const now = new Date().toLocaleDateString('pt-BR');
-          const updatedNotes = (lead.notes || '') + `\n\n📧 Flash prospectou por email em ${now}:\nAssunto: "${subject}"`;
+          const updatedNotes = (lead.notes || '') + `\n\n📧 Email Marketing [${template.pillar}] enviado em ${now}:\nAssunto: "${subject}"`;
 
-          await supabase
-            .from('crm_contacts')
-            .update({
-              stage_id: primeiroContatoStage.id,
-              notes: updatedNotes,
-            })
-            .eq('id', lead.id);
+          if (targetStageId) {
+            await supabase
+              .from('crm_contacts')
+              .update({
+                stage_id: targetStageId,
+                notes: updatedNotes,
+              })
+              .eq('id', lead.id);
+          }
 
           sent++;
           results.push({ name: lead.name, email: lead.email, status: 'sent', message: subject });
@@ -205,8 +250,7 @@ REGRAS:
           results.push({ name: lead.name, email: lead.email, status: 'failed', message: resendData?.message || 'Resend error' });
         }
 
-        // Rate limit: 1 second between emails
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 800));
       } catch (err) {
         failed++;
         results.push({ name: lead.name, email: lead.email, status: 'error', message: (err as Error).message });
@@ -221,47 +265,54 @@ REGRAS:
   }
 }
 
-// ─── Professional HTML Email Template ───
-function buildProspectingEmail(leadName: string, bodyText: string): string {
+function buildProspectingEmail(leadName: string, bodyText: string, pillarName: string): string {
   const bodyHtml = bodyText.replace(/\n/g, '<br>');
   
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
   <div style="max-width:600px;margin:0 auto;padding:24px;">
     
     <!-- Header -->
-    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border-radius:16px 16px 0 0;padding:32px;text-align:center;">
-      <div style="font-size:24px;font-weight:800;color:#fff;margin-bottom:4px;">
-        <span style="background:linear-gradient(90deg,#00df81,#007aff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">∞</span>
-        <span style="color:#fff;margin-left:8px;">Infinity On Demand</span>
+    <div style="background:linear-gradient(135deg,#090d16 0%,#111827 100%);border-radius:16px 16px 0 0;padding:36px 32px;text-align:center;border-bottom:3px solid #10b981;">
+      <div style="font-size:24px;font-weight:800;color:#fff;margin-bottom:6px;">
+        <span style="color:#10b981;font-size:28px;margin-right:6px;">∞</span>
+        <span style="color:#ffffff;letter-spacing:-0.5px;">Infinity On Demand</span>
       </div>
-      <p style="color:#94a3b8;margin:0;font-size:14px;">Tecnologia para seu negócio crescer</p>
+      <p style="color:#94a3b8;margin:0;font-size:13px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">${pillarName}</p>
     </div>
 
     <!-- Body -->
-    <div style="background:#fff;padding:32px;border-radius:0 0 16px 16px;box-shadow:0 4px 6px rgba(0,0,0,0.05);">
-      <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 24px;">
+    <div style="background:#ffffff;padding:36px 32px;border-radius:0 0 16px 16px;box-shadow:0 10px 25px -5px rgba(0,0,0,0.05);">
+      <p style="color:#1e293b;font-size:15px;line-height:1.75;margin:0 0 28px;">
         ${bodyHtml}
       </p>
 
       <!-- CTA Button -->
-      <div style="text-align:center;margin:24px 0;">
-        <a href="https://infinityondemand.com.br" style="display:inline-block;background:linear-gradient(90deg,#00df81,#007aff);color:#fff;font-weight:700;font-size:15px;padding:14px 40px;border-radius:12px;text-decoration:none;">
-          Conhecer a Plataforma →
+      <div style="text-align:center;margin:32px 0;">
+        <a href="https://infinityondemand.com.br" style="display:inline-block;background:#10b981;color:#ffffff;font-weight:700;font-size:15px;padding:14px 36px;border-radius:12px;text-decoration:none;box-shadow:0 4px 12px rgba(16,185,129,0.3);">
+          Conhecer Soluções da Infinity →
         </a>
       </div>
 
-      <p style="color:#9ca3af;font-size:12px;text-align:center;margin:16px 0 0;">
-        Se não tiver interesse, basta ignorar este email.
+      <div style="border-top:1px solid #f1f5f9;padding-top:20px;margin-top:28px;">
+        <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">
+          <strong>Angelo Marques</strong><br>
+          CEO & Fundador | Infinity On Demand<br>
+          <a href="https://wa.me/5581971027939" style="color:#10b981;text-decoration:none;">(81) 97102-7939 (WhatsApp)</a>
+        </p>
+      </div>
+
+      <p style="color:#94a3b8;font-size:11px;text-align:center;margin:24px 0 0;">
+        Se você não deseja receber novidades sobre tecnologia para sua empresa, basta ignorar este e-mail.
       </p>
     </div>
 
     <!-- Footer -->
-    <div style="text-align:center;padding:24px;color:#9ca3af;font-size:11px;">
-      <p style="margin:0;">Infinity On Demand © ${new Date().getFullYear()}</p>
-      <p style="margin:4px 0 0;">angelo.marques@infinityondemand.com.br</p>
+    <div style="text-align:center;padding:24px;color:#94a3b8;font-size:12px;">
+      <p style="margin:0;">Infinity On Demand © ${new Date().getFullYear()} — Tecnologia, Presença Digital & IA</p>
+      <p style="margin:4px 0 0;">Recife, PE • Brasil</p>
     </div>
   </div>
 </body>
