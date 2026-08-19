@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const { leadId, leadIds, templatePillar, customSubject, customBody, customCtaText } = body;
+    const { leadId, leadIds, templatePillar, customSubject, customBody, customCtaText, destinationUrl } = body;
     const limit = Math.min(body.limit || 10, 50);
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -260,8 +260,6 @@ Mantenha o tom profissional, específico, com foco em 3 melhorias e oferta de di
               max_tokens: 250,
             });
 
-            const raw = completion.choices[0]?.message?.content || '';
-            const parsed = JSON.parse(raw.replace(/```json?\n?/g, '').replace(/```/g, '').trim());
             if (parsed.subject) subject = parsed.subject;
             if (parsed.body) textBody = parsed.body;
           } catch {
@@ -269,8 +267,8 @@ Mantenha o tom profissional, específico, com foco em 3 melhorias e oferta de di
           }
         }
 
-        // Build HTML email
-        const htmlEmail = buildProspectingEmail(lead.name, textBody, template.pillar, emailCta);
+        // Build HTML email with Tracked Link
+        const htmlEmail = buildProspectingEmail(lead.name, textBody, template.pillar, emailCta, destinationUrl || 'https://infinityondemand.com.br', lead.id);
 
         // Send via Resend
         const resendRes = await fetch('https://api.resend.com/emails', {
@@ -326,8 +324,18 @@ Mantenha o tom profissional, específico, com foco em 3 melhorias e oferta de di
   }
 }
 
-function buildProspectingEmail(leadName: string, bodyText: string, pillarName: string, ctaText: string = 'Conhecer Soluções da Infinity →'): string {
+function buildProspectingEmail(
+  leadName: string, 
+  bodyText: string, 
+  pillarName: string, 
+  ctaText: string = 'Conhecer Soluções da Infinity →',
+  destinationUrl: string = 'https://infinityondemand.com.br',
+  leadId?: string
+): string {
   const bodyHtml = bodyText.replace(/\n/g, '<br>');
+  const trackedLink = leadId 
+    ? `https://www.infinityondemand.com.br/api/track/click?lid=${leadId}&c=${encodeURIComponent(pillarName)}&u=${encodeURIComponent(destinationUrl)}`
+    : destinationUrl;
   
   return `<!DOCTYPE html>
 <html>
@@ -350,9 +358,9 @@ function buildProspectingEmail(leadName: string, bodyText: string, pillarName: s
         ${bodyHtml}
       </p>
 
-      <!-- CTA Button -->
+      <!-- CTA Button with Click Tracking -->
       <div style="text-align:center;margin:32px 0;">
-        <a href="https://infinityondemand.com.br" style="display:inline-block;background:#10b981;color:#ffffff;font-weight:700;font-size:15px;padding:14px 36px;border-radius:12px;text-decoration:none;box-shadow:0 4px 12px rgba(16,185,129,0.3);">
+        <a href="${trackedLink}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#10b981;color:#ffffff;font-weight:700;font-size:15px;padding:14px 36px;border-radius:12px;text-decoration:none;box-shadow:0 4px 12px rgba(16,185,129,0.3);">
           ${ctaText}
         </a>
       </div>
