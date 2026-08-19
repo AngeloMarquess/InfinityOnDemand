@@ -1,0 +1,150 @@
+{
+  "name": "🏛️ Olimpo - Zeus AI Conversacional (Telegram)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 20
+            }
+          ]
+        }
+      },
+      "id": "zeus-schedule",
+      "name": "Verificar Perguntas a cada 20s",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8627190797:AAE5Pg2K87-vkujNVvnFKVfmrp1hPgxc834/getUpdates",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "zeus-get-updates",
+      "name": "Buscar Mensagens Telegram (Zeus)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst results = $input.item.json.result || [];\n\nconst messages = [];\nlet lastUpdateId = staticData.lastZeusUpdateId || 0;\nlet maxUpdateId = lastUpdateId;\n\n// Reset if first run or updateId rotated\nif (results.length > 0 && lastUpdateId > 0 && results[results.length - 1].update_id < lastUpdateId) {\n  lastUpdateId = 0;\n  maxUpdateId = 0;\n}\n\nfor (const update of results) {\n  if (update.update_id > lastUpdateId) {\n    if (update.update_id > maxUpdateId) {\n      maxUpdateId = update.update_id;\n    }\n    const text = update.message?.text || '';\n    const chatId = update.message?.chat?.id;\n    // Process any non-empty text that is not a start command\n    if (text && text !== '/start' && chatId) {\n      messages.push({\n        json: {\n          updateId: update.update_id,\n          chatId: String(chatId),\n          text: text.trim(),\n          timestamp: new Date().toLocaleTimeString('pt-BR')\n        }\n      });\n    }\n  }\n}\n\nstaticData.lastZeusUpdateId = maxUpdateId;\nreturn messages;"
+      },
+      "id": "zeus-filter",
+      "name": "Filtrar Novas Perguntas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.infinityondemand.com.br/api/zeus/chat",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": \"{{ $json.text }}\",\n  \"chatId\": \"{{ $json.chatId }}\"\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "zeus-ai-brain",
+      "name": "Consultar Cérebro Zeus (IA + Métricas CRM)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Filtrar Novas Perguntas').item.json.chatId }}",
+        "text": "={{ $json.reply }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "zeus-reply-telegram",
+      "name": "Responder no Telegram (Zeus)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Verificar Perguntas a cada 20s": {
+      "main": [
+        [
+          {
+            "node": "Buscar Mensagens Telegram (Zeus)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Mensagens Telegram (Zeus)": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Novas Perguntas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Novas Perguntas": {
+      "main": [
+        [
+          {
+            "node": "Consultar Cérebro Zeus (IA + Métricas CRM)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar Cérebro Zeus (IA + Métricas CRM)": {
+      "main": [
+        [
+          {
+            "node": "Responder no Telegram (Zeus)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
