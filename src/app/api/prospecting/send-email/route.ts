@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const { leadId, leadIds, templatePillar } = body;
+    const { leadId, leadIds, templatePillar, customSubject, customBody, customCtaText } = body;
     const limit = Math.min(body.limit || 10, 50);
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -224,17 +224,19 @@ export async function POST(request: NextRequest) {
         const template = SEGMENT_TEMPLATES[pillarKey] || SEGMENT_TEMPLATES.sites;
         const { segmento, resultado } = detectSegmentAndResult(lead);
 
-        let subject = template.subject
+        let subject = (customSubject || template.subject)
           .replace(/{empresa}/g, lead.name || 'sua empresa')
           .replace(/{cidade}/g, lead.city || 'sua região')
           .replace(/{segmento}/g, segmento)
           .replace(/{resultado}/g, resultado);
         
-        let textBody = template.body
+        let textBody = (customBody || template.body)
           .replace(/{empresa}/g, lead.name || 'sua empresa')
           .replace(/{cidade}/g, lead.city || 'sua região')
           .replace(/{segmento}/g, segmento)
           .replace(/{resultado}/g, resultado);
+
+        const emailCta = customCtaText || template.ctaText || 'Conhecer Soluções da Infinity →';
 
         // Enhance with OpenAI if available
         if (openaiKey) {
@@ -268,7 +270,7 @@ Mantenha o tom profissional, específico, com foco em 3 melhorias e oferta de di
         }
 
         // Build HTML email
-        const htmlEmail = buildProspectingEmail(lead.name, textBody, template.pillar, template.ctaText);
+        const htmlEmail = buildProspectingEmail(lead.name, textBody, template.pillar, emailCta);
 
         // Send via Resend
         const resendRes = await fetch('https://api.resend.com/emails', {
