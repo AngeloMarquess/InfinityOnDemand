@@ -199,6 +199,8 @@ export async function POST(request: NextRequest) {
         origin: 'apify',
         contact_type: 'lead',
         stage_id: novoLeadStageId,
+        project_interest: categories || null,
+        tags: [categories, city, state].filter(Boolean) as string[],
         notes: notes,
         estimated_value: 0,
       });
