@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const { leadId, templatePillar } = body;
+    const { leadId, leadIds, templatePillar } = body;
     const limit = Math.min(body.limit || 10, 50);
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -163,7 +163,18 @@ export async function POST(request: NextRequest) {
 
     let leads: any[] = [];
 
-    if (leadId) {
+    if (leadIds && Array.isArray(leadIds) && leadIds.length > 0) {
+      const { data, error } = await supabase
+        .from('crm_contacts')
+        .select('*')
+        .in('id', leadIds)
+        .eq('user_id', crmOwnerId);
+
+      if (error || !data) {
+        return NextResponse.json({ error: 'Failed to fetch selected leads' }, { status: 400 });
+      }
+      leads = data.filter(d => Boolean(d.email && d.email.includes('@')));
+    } else if (leadId) {
       const { data, error } = await supabase
         .from('crm_contacts')
         .select('*')
