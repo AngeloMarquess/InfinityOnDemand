@@ -105,19 +105,14 @@ export async function POST(request: NextRequest) {
   const auth = validateApiKey(request);
   if (!auth.valid) return auth.error!;
 
-  // Rate limit: 10 email sends per minute
-  const limit_check = rateLimit(request, { maxRequests: 10, windowMs: 60_000, keyPrefix: 'email-send' });
-  if (!limit_check.allowed) return limit_check.error!;
-
   try {
     const body = await request.json().catch(() => ({}));
     const { leadId, leadIds, templatePillar, customSubject, customBody, customCtaText, destinationUrl } = body;
-    const limit = Math.min(body.limit || 10, 50);
+    const limit = Math.min(body.limit || 15, 50);
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const crmOwnerId = process.env.CRM_OWNER_USER_ID;
-    const openaiKey = process.env.OPENAI_API_KEY;
     const RESEND_API_KEY = getEnvVar('RESEND_API_KEY');
     const FROM_EMAIL = getEnvVar('RESEND_FROM_EMAIL') || 'contato@infinityondemand.com.br';
 
@@ -138,138 +133,56 @@ export async function POST(request: NextRequest) {
       .order('order_index', { ascending: true });
 
     let stages = stagesData || [];
-    let emailEnviadoStage = stages.find(s => s.name.toLowerCase().includes('email enviado') || s.name.toLowerCase().includes('e-mail enviado'));
+    let emailSentStage = stages.find(s => s.name.toLowerCase().includes('email enviado') || s.name.toLowerCase().includes('contato feito'));
 
-    // Create "Email Enviado" stage automatically if missing
-    if (!emailEnviadoStage) {
-      const maxOrder = stages.reduce((max, s) => Math.max(max, s.order_index || 0), 0);
-      const { data: createdStage } = await supabase
-        .from('crm_stages')
-        .insert([{
-          user_id: crmOwnerId,
-          name: 'Email Enviado',
-          color: '#ef4444',
-          order_index: maxOrder + 1
-        }])
-        .select()
-        .single();
-      
-      if (createdStage) {
-        emailEnviadoStage = createdStage;
-      }
+    if (!emailSentStage && stages.length > 1) {
+      emailSentStage = stages[1];
     }
 
-    const targetStageId = emailEnviadoStage?.id || stages.find(s => s.name === 'Primeiro Contato')?.id;
+    // Fetch leads to send
+    let leadsQuery = supabase
+      .from('crm_contacts')
+      .select('id, name, company, email, phone, city, notes, tags, project_interest, created_at, stage_id');
 
-    let leads: any[] = [];
-
-    if (leadIds && Array.isArray(leadIds) && leadIds.length > 0) {
-      const { data, error } = await supabase
-        .from('crm_contacts')
-        .select('*')
-        .in('id', leadIds)
-        .eq('user_id', crmOwnerId);
-
-      if (error || !data) {
-        return NextResponse.json({ error: 'Failed to fetch selected leads' }, { status: 400 });
-      }
-      leads = data.filter(d => Boolean(d.email && d.email.includes('@')));
-    } else if (leadId) {
-      const { data, error } = await supabase
-        .from('crm_contacts')
-        .select('*')
-        .eq('id', leadId)
-        .eq('user_id', crmOwnerId)
-        .single();
-
-      if (error || !data) {
-        return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
-      }
-      if (!data.email) {
-        return NextResponse.json({ error: 'Lead has no email' }, { status: 400 });
-      }
-      leads = [data];
+    if (leadId) {
+      leadsQuery = leadsQuery.eq('id', leadId);
+    } else if (Array.isArray(leadIds) && leadIds.length > 0) {
+      leadsQuery = leadsQuery.in('id', leadIds);
     } else {
-      const novoLeadStage = stages.find(s => s.name === 'Novo Lead');
-      if (!novoLeadStage) {
-        return NextResponse.json({ error: 'Pipeline stage "Novo Lead" not found' }, { status: 400 });
-      }
-      const { data, error: fetchError } = await supabase
-        .from('crm_contacts')
-        .select('*')
-        .eq('user_id', crmOwnerId)
-        .eq('origin', 'apify')
-        .eq('stage_id', novoLeadStage.id)
-        .not('email', 'is', null)
-        .order('created_at', { ascending: true })
-        .limit(limit);
-
-      if (fetchError) {
-        return NextResponse.json({ error: `Failed to fetch leads: ${fetchError.message}` }, { status: 500 });
-      }
-      leads = data || [];
+      leadsQuery = leadsQuery.limit(limit);
     }
 
+    const { data: rawLeads, error: leadsErr } = await leadsQuery;
+    if (leadsErr || !rawLeads || rawLeads.length === 0) {
+      return NextResponse.json({ sent: 0, message: 'Nenhum lead encontrado' });
+    }
+
+    // Filter valid emails
+    const leads = rawLeads.filter(l => Boolean(l.email && l.email.includes('@') && l.email.trim().length > 3));
     if (leads.length === 0) {
-      return NextResponse.json({ message: 'No leads with email to contact', sent: 0 });
+      return NextResponse.json({ sent: 0, message: 'Nenhum lead com email válido' });
     }
 
-    let sent = 0;
-    let failed = 0;
-    const results: { name: string; email: string; status: string; message?: string }[] = [];
-
-    for (const lead of leads) {
-      try {
+    // Process all leads in parallel for instant sub-second dispatch
+    const results = await Promise.allSettled(
+      leads.map(async (lead) => {
         const pillarKey = templatePillar || detectSegmentPillar(lead);
         const template = SEGMENT_TEMPLATES[pillarKey] || SEGMENT_TEMPLATES.sites;
         const { segmento, resultado } = detectSegmentAndResult(lead);
 
-        let subject = (customSubject || template.subject)
+        const subject = (customSubject || template.subject)
           .replace(/{empresa}/g, lead.name || 'sua empresa')
           .replace(/{cidade}/g, lead.city || 'sua região')
           .replace(/{segmento}/g, segmento)
           .replace(/{resultado}/g, resultado);
         
-        let textBody = (customBody || template.body)
+        const textBody = (customBody || template.body)
           .replace(/{empresa}/g, lead.name || 'sua empresa')
           .replace(/{cidade}/g, lead.city || 'sua região')
           .replace(/{segmento}/g, segmento)
           .replace(/{resultado}/g, resultado);
 
         const emailCta = customCtaText || template.ctaText || 'Conhecer Soluções da Infinity →';
-
-        // Enhance with OpenAI if available
-        if (openaiKey) {
-          try {
-            const openai = new OpenAI({ apiKey: openaiKey });
-            const completion = await openai.chat.completions.create({
-              model: 'gpt-4o-mini',
-              messages: [
-                {
-                  role: 'system',
-                  content: `Você é o Flash ⚡ / Artemis, especialista em Prospecção B2B de Alta Conversão da Infinity On Demand.
-Gere um JSON {"subject": "...", "body": "..."} para email de prospecção com alta persuasão e oferta de baixa fricção.
-Mantenha o tom profissional, específico, com foco em 3 melhorias e oferta de diagnóstico gratuito de 5 minutos.`,
-                },
-                {
-                  role: 'user',
-                  content: `Empresa: ${lead.name}\nEmail: ${lead.email}\nCidade: ${lead.city || 'Recife'}\nNicho: ${lead.project_interest || segmento}\nResultado esperado: ${resultado}\nTemplate base:\nAssunto: ${subject}\nCorpo:\n${textBody}`,
-                },
-              ],
-              temperature: 0.7,
-              max_tokens: 250,
-            });
-
-            const raw = completion.choices[0]?.message?.content || '';
-            const parsed = JSON.parse(raw.replace(/```json?\n?/g, '').replace(/```/g, '').trim());
-            if (parsed.subject) subject = parsed.subject;
-            if (parsed.body) textBody = parsed.body;
-          } catch {
-            // Use base template
-          }
-        }
-
-        // Build HTML email with Tracked Link
         const htmlEmail = buildProspectingEmail(lead.name, textBody, template.pillar, emailCta, destinationUrl || 'https://infinityondemand.com.br', lead.id);
 
         // Send via Resend
@@ -284,108 +197,121 @@ Mantenha o tom profissional, específico, com foco em 3 melhorias e oferta de di
             to: [lead.email],
             subject,
             html: htmlEmail,
-            text: textBody,
           }),
         });
 
-        const resendData = await resendRes.json();
-
-        if (resendRes.ok) {
-          const now = new Date().toLocaleDateString('pt-BR');
-          const updatedNotes = (lead.notes || '') + `\n\n📧 Email Marketing [${template.pillar}] enviado em ${now}:\nAssunto: "${subject}"`;
-
-          if (targetStageId) {
-            await supabase
-              .from('crm_contacts')
-              .update({
-                stage_id: targetStageId,
-                notes: updatedNotes,
-              })
-              .eq('id', lead.id);
-          }
-
-          sent++;
-          results.push({ name: lead.name, email: lead.email, status: 'sent', message: subject });
-        } else {
-          failed++;
-          results.push({ name: lead.name, email: lead.email, status: 'failed', message: resendData?.message || 'Resend error' });
+        if (!resendRes.ok) {
+          const errText = await resendRes.text();
+          throw new Error(`Resend error: ${errText}`);
         }
 
-        await new Promise(resolve => setTimeout(resolve, 800));
-      } catch (err) {
-        failed++;
-        results.push({ name: lead.name, email: lead.email, status: 'error', message: (err as Error).message });
-      }
-    }
+        const resendData = await resendRes.json();
 
-    return NextResponse.json({ success: true, total: leads.length, sent, failed, results });
-  } catch (error) {
-    console.error('Email prospecting error:', error);
-    const msg = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json({ error: msg }, { status: 500 });
+        // Update contact notes and stage in Supabase
+        const currentNotes = lead.notes || '';
+        const timestamp = new Date().toLocaleString('pt-BR');
+        const updatedNotes = `${currentNotes}\n\n📧 [Email Marketing Enviado] via Resend em ${timestamp} (${template.pillar}) - ID: ${resendData.id}`.trim();
+        
+        const updatePayload: any = {
+          notes: updatedNotes,
+          updated_at: new Date().toISOString(),
+        };
+
+        if (emailSentStage) {
+          updatePayload.stage_id = emailSentStage.id;
+        }
+
+        await supabase.from('crm_contacts').update(updatePayload).eq('id', lead.id);
+
+        return {
+          leadId: lead.id,
+          name: lead.name,
+          email: lead.email,
+          resendId: resendData.id,
+        };
+      })
+    );
+
+    const sentLeads = results.filter(r => r.status === 'fulfilled').map((r: any) => r.value);
+    const failedLeads = results.filter(r => r.status === 'rejected').map((r: any) => r.reason?.message);
+
+    return NextResponse.json({
+      sent: sentLeads.length,
+      failed: failedLeads.length,
+      details: sentLeads,
+    });
+  } catch (error: any) {
+    console.error('Send email error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-function buildProspectingEmail(
-  leadName: string, 
-  bodyText: string, 
-  pillarName: string, 
-  ctaText: string = 'Conhecer Soluções da Infinity →',
-  destinationUrl: string = 'https://infinityondemand.com.br',
-  leadId?: string
-): string {
-  const bodyHtml = bodyText.replace(/\n/g, '<br>');
-  const trackedLink = leadId 
-    ? `https://www.infinityondemand.com.br/api/track/click?lid=${leadId}&c=${encodeURIComponent(pillarName)}&u=${encodeURIComponent(destinationUrl)}`
-    : destinationUrl;
-  
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-  <div style="max-width:600px;margin:0 auto;padding:24px;">
-    
-    <!-- Header -->
-    <div style="background:linear-gradient(135deg,#090d16 0%,#111827 100%);border-radius:16px 16px 0 0;padding:36px 32px;text-align:center;border-bottom:3px solid #10b981;">
-      <div style="font-size:24px;font-weight:800;color:#fff;margin-bottom:6px;">
-        <span style="color:#10b981;font-size:28px;margin-right:6px;">∞</span>
-        <span style="color:#ffffff;letter-spacing:-0.5px;">Infinity On Demand</span>
-      </div>
-      <p style="color:#94a3b8;margin:0;font-size:13px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">${pillarName}</p>
-    </div>
+function buildProspectingEmail(name: string, bodyText: string, pillar: string, ctaText: string, destinationUrl: string, leadId: string): string {
+  const trackedUrl = `https://www.infinityondemand.com.br/api/track/click?lid=${leadId}&c=${encodeURIComponent(pillar)}&u=${encodeURIComponent(destinationUrl)}`;
+  const currentYear = new Date().getFullYear();
 
-    <!-- Body -->
-    <div style="background:#ffffff;padding:36px 32px;border-radius:0 0 16px 16px;box-shadow:0 10px 25px -5px rgba(0,0,0,0.05);">
-      <p style="color:#1e293b;font-size:15px;line-height:1.75;margin:0 0 28px;">
-        ${bodyHtml}
-      </p>
-
-      <!-- CTA Button with Click Tracking -->
-      <div style="text-align:center;margin:32px 0;">
-        <a href="${trackedLink}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#10b981;color:#ffffff;font-weight:700;font-size:15px;padding:14px 36px;border-radius:12px;text-decoration:none;box-shadow:0 4px 12px rgba(16,185,129,0.3);">
-          ${ctaText}
-        </a>
-      </div>
-
-      <div style="border-top:1px solid #f1f5f9;padding-top:20px;margin-top:28px;">
-        <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">
-          <strong>Angelo Marques</strong><br>
-          CEO & Fundador | Infinity On Demand<br>
-          <a href="https://wa.me/5581971027939" style="color:#10b981;text-decoration:none;">(81) 97102-7939 (WhatsApp)</a>
-        </p>
-      </div>
-
-      <p style="color:#94a3b8;font-size:11px;text-align:center;margin:24px 0 0;">
-        Se você não deseja receber novidades sobre tecnologia para sua empresa, basta responder "parar".
-      </p>
-    </div>
-
-    <!-- Footer -->
-    <div style="text-align:center;padding:24px;color:#94a3b8;font-size:12px;">
-      <p style="margin:0;">Infinity On Demand © ${new Date().getFullYear()} — Tecnologia, Presença Digital & IA</p>
-      <p style="margin:4px 0 0;">Recife, PE • Brasil</p>
-    </div>
-  </div>
+  return `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infinity On Demand</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #f8fafc;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0b0f19; padding: 40px 10px;">
+    <tr>
+      <td align="center">
+        <table width="100%" max-width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #111827; border-radius: 16px; border: 1px solid #1f2937; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); padding: 36px 24px; border-bottom: 2px solid #10b981;">
+              <div style="font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">
+                <span style="color: #10b981; font-size: 30px; margin-right: 6px;">∞</span>
+                <span style="color: #ffffff;">Infinity</span> <span style="color: #94a3b8; font-weight: 400;">On Demand</span>
+              </div>
+              <p style="color: #10b981; margin: 8px 0 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">
+                ${pillar}
+              </p>
+            </td>
+          </tr>
+          <!-- Body Content -->
+          <tr>
+            <td style="padding: 36px 32px; color: #e2e8f0; font-size: 15px; line-height: 1.75;">
+              <div style="white-space: pre-line; margin-bottom: 32px;">
+                ${bodyText}
+              </div>
+              <!-- CTA Button with Click Tracking -->
+              <div style="text-align: center; margin: 36px 0;">
+                <a href="${trackedUrl}" target="_blank" style="display: inline-block; background-color: #10b981; color: #ffffff; font-weight: 700; font-size: 14px; padding: 14px 34px; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
+                  ${ctaText}
+                </a>
+              </div>
+              <!-- Signature -->
+              <div style="border-top: 1px solid #1f2937; padding-top: 24px; margin-top: 32px;">
+                <p style="color: #94a3b8; font-size: 13px; margin: 0; line-height: 1.5;">
+                  <strong style="color: #ffffff; font-size: 14px;">Angelo Marques</strong><br />
+                  CEO & Fundador | Infinity On Demand<br />
+                  <span style="color: #10b981;">(81) 97102-7939 (WhatsApp)</span>
+                </p>
+              </div>
+              <p style="color: #64748b; font-size: 11px; text-align: center; margin: 28px 0 0;">
+                Se não deseja mais receber nossos insights sobre tecnologia, responda "parar".
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding: 20px; background-color: #090d16; color: #64748b; font-size: 11px; border-top: 1px solid #1f2937;">
+              <p style="margin: 0;">Infinity On Demand © ${currentYear} — Tecnologia, Presença Digital & IA</p>
+              <p style="margin: 4px 0 0;">Recife, PE • Brasil</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
-</html>`;
+</html>
+  `.trim();
 }

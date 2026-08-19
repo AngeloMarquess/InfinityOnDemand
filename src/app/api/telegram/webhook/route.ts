@@ -60,7 +60,14 @@ export async function POST(request: NextRequest) {
 
     const chatId = message.chat?.id;
     const rawText = message.text.trim();
-    const cleanText = rawText.toLowerCase();
+    
+    // Normalize text (remove accents and hyphen from e-mail)
+    const cleanText = rawText
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/e-mail/g, 'email')
+      .replace(/e-mails/g, 'emails');
 
     if (!chatId) {
       return NextResponse.json({ ok: true, ignored: 'no chat id' });
@@ -124,6 +131,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ ok: true, action: 'no_leads' });
       }
 
+      if (unsentContacts.length === 0) {
+        await sendTelegramMessage(chatId, `🏹 *Artemis — Base 100% Contactada!* ⚡\n\nTodos os *${contactsWithEmail.length} leads com e-mail* já receberam suas campanhas!\n\n👉 Use o comando \`/minerar <nicho e cidade>\` para minerar novos leads no Google Maps.`);
+        return NextResponse.json({ ok: true, action: 'all_already_sent' });
+      }
+
       // Detect Campaign / Template Pillar from user command
       let targetPillar: string | null = null;
       let pillarNameLabel = 'Auto-Segmentação Inteligente (IA por Nicho)';
@@ -137,14 +149,14 @@ export async function POST(request: NextRequest) {
       } else if (cleanText.includes('loja') || cleanText.includes('ecommerce') || cleanText.includes('moda') || cleanText.includes('catalogo')) {
         targetPillar = 'ecommerce';
         pillarNameLabel = 'E-commerce & Catálogo WhatsApp';
-      } else if (cleanText.includes('trafego') || cleanText.includes('tráfego') || cleanText.includes('ads')) {
+      } else if (cleanText.includes('trafego') || cleanText.includes('ads')) {
         targetPillar = 'trafego';
         pillarNameLabel = 'Tráfego Pago & Performance';
       }
 
       let limit = 15;
       if (cleanText.includes('todos') || cleanText.includes('tudo') || cleanText.includes('all')) {
-        limit = unsentContacts.length > 0 ? unsentContacts.length : contactsWithEmail.length;
+        limit = unsentContacts.length;
       } else {
         const numMatch = cleanText.match(/\d+/);
         if (numMatch) {
@@ -152,11 +164,10 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      const leadsToProcess = (unsentContacts.length > 0 ? unsentContacts : contactsWithEmail).slice(0, limit);
+      const leadsToProcess = unsentContacts.slice(0, limit);
       const leadIds = leadsToProcess.map(c => c.id);
 
-      await sendTelegramMessage(chatId, `🏹 *Artemis iniciando disparo de ${leadIds.length} e-mails...* ⚡\n🎯 *Estratégia:* ${pillarNameLabel}\n_Conectando ao Resend e gerando links rastreáveis com IA..._`);
-
+      // Trigger parallel send-email endpoint
       try {
         const sendRes = await fetch('https://www.infinityondemand.com.br/api/prospecting/send-email', {
           method: 'POST',
@@ -166,7 +177,7 @@ export async function POST(request: NextRequest) {
           },
           body: JSON.stringify({
             leadIds,
-            templatePillar: targetPillar, // null = auto per lead
+            templatePillar: targetPillar,
           }),
         });
 
@@ -179,8 +190,8 @@ export async function POST(request: NextRequest) {
         const reply = `🏹 *Artemis — Disparo Concluído com Sucesso!* ⚡
 
 📊 *Relatório da Operação:*
-• *Enviados agora:* ${sentNow} e-mails entregues via Resend
-• *Estratégia Aplicada:* ${pillarNameLabel}
+• *Enviados nesta rodada:* ${sentNow} e-mails entregues via Resend
+• *Estratégia:* ${pillarNameLabel}
 • *Remetente Oficial:* \`contato@infinityondemand.com.br\`
 • *Pipeline CRM:* Movidos para *"Email Enviado"*
 • *Click Tracking:* Links rastreáveis ativos 🔥
@@ -302,7 +313,6 @@ COMANDOS DISPONÍVEIS:
 - /relatorio -> Apresenta o consolidado por datas.
 
 INSTRUÇÕES:
-- Se ele perguntar sobre como a Artemis escolhe as campanhas, explique que ela usa a inteligência de nicho para casar o melhor template com cada lead ou permite forçar pelo comando.
 - Se ele perguntar sobre datas, informe o breakdown por período.
 - Mantenha respostas curtas e objetivas.`;
 
