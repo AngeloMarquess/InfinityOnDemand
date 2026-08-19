@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 const APIFY_API_TOKEN = process.env.APIFY_API_TOKEN;
 
 interface ApifyGoogleMapsItem {
+  [key: string]: any;
   title?: string;
   phone?: string;
   street?: string;
@@ -20,12 +21,6 @@ interface ApifyGoogleMapsItem {
   emails?: string[];
   instagrams?: string[];
   facebooks?: string[];
-  // Alternate field names from different scrapers
-  Place_name?: string;
-  Phone?: string;
-  Street?: string;
-  City?: string;
-  State?: string;
 }
 
 function formatBrazilianPhone(raw: string | undefined | null): string | null {
