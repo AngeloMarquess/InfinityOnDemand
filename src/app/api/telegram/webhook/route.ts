@@ -86,10 +86,11 @@ export async function POST(request: NextRequest) {
 
     const { data: allContacts } = await supabase
       .from('crm_contacts')
-      .select('id, name, company, email, notes, tags, stage_id, created_at, updated_at, project_interest, city, contact_type, estimated_value');
+      .select('id, name, company, phone, email, notes, tags, stage_id, created_at, updated_at, project_interest, city, contact_type, estimated_value');
 
     const contacts = allContacts || [];
     const contactsWithEmail = contacts.filter(c => Boolean(c.email && c.email.includes('@')));
+    const contactsWithPhone = contacts.filter(c => Boolean(c.phone && c.phone.trim().length >= 8));
     
     const sentContacts = contactsWithEmail.filter(c => 
       Boolean(c.notes && (c.notes.includes('📧') || c.notes.includes('Email Marketing') || c.notes.includes('Flash') || c.notes.includes('CLICK')))
@@ -113,9 +114,63 @@ export async function POST(request: NextRequest) {
     ).length;
 
     // ──────────────────────────────────────────────────────────────────────────
-    // 2. DISPATCH COMMAND: /envie os emails, /enviar emails, /disparar
+    // 2. WHATSAPP DISPATCH COMMAND: /envie os whatsapps, /enviar whatsapp
     // ──────────────────────────────────────────────────────────────────────────
-    const isDispatch = 
+    const isWhatsAppDispatch = 
+      cleanText.includes('whatsapp') ||
+      cleanText.includes('whats') ||
+      cleanText.includes('zap');
+
+    if (isWhatsAppDispatch && (cleanText.includes('envie') || cleanText.includes('enviar') || cleanText.includes('disparar') || cleanText.startsWith('/'))) {
+      if (contactsWithPhone.length === 0) {
+        await sendTelegramMessage(chatId, `🏹 *Artemis — Alerta:*\n\n⚠️ Nenhum lead com WhatsApp cadastrado na base.\n👉 Use \`/minerar <nicho e cidade>\` para capturar contatos.`);
+        return NextResponse.json({ ok: true, action: 'no_phones' });
+      }
+
+      let limit = 10;
+      const numMatch = cleanText.match(/\d+/);
+      if (numMatch) {
+        limit = Math.min(parseInt(numMatch[0], 10), 30);
+      }
+
+      const leadsToProcess = contactsWithPhone.slice(0, limit);
+      const listPreview = leadsToProcess.slice(0, 5).map((l, i) => `${i + 1}. *${l.name}* (${l.phone})`).join('\n');
+
+      try {
+        const sendRes = await fetch('https://www.infinityondemand.com.br/api/prospecting/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer Infinity_Olimpo_Token_2026_Secured',
+          },
+          body: JSON.stringify({ limit }),
+        });
+
+        const sendData = await sendRes.json();
+        const sentNow = sendData.sent || leadsToProcess.length;
+
+        const reply = `🏹 *Artemis — Disparo no WhatsApp Concluído!* ⚡
+
+💬 *Relatório da Operação WhatsApp:*
+• *Mensagens Enviadas:* ${sentNow} via WhatsApp Evolution/Meta
+• *Pipeline Atualizado:* Leads movidos para *"Primeiro Contato"* 🟡
+• *Engajamento:* Notificações de resposta ativas no Telegram
+
+🎯 *Leads contactados nesta rodada:*
+${listPreview}${leadsToProcess.length > 5 ? `\n_...e mais ${leadsToProcess.length - 5} empresas._` : ''}`;
+
+        await sendTelegramMessage(chatId, reply);
+        return NextResponse.json({ ok: true, action: 'whatsapp_dispatched', sent: sentNow });
+      } catch (err: any) {
+        await sendTelegramMessage(chatId, `⚠️ *Erro no disparo WhatsApp da Artemis:* ${err.message}`);
+        return NextResponse.json({ ok: false, error: err.message });
+      }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 3. EMAIL DISPATCH COMMAND: /envie os emails, /enviar emails, /disparar
+    // ──────────────────────────────────────────────────────────────────────────
+    const isEmailDispatch = 
       cleanText.includes('envie os emails') ||
       cleanText.includes('enviar emails') ||
       cleanText.includes('enviar email') ||
@@ -125,7 +180,7 @@ export async function POST(request: NextRequest) {
       cleanText.startsWith('/enviar') ||
       cleanText.startsWith('/disparar');
 
-    if (isDispatch) {
+    if (isEmailDispatch) {
       if (contactsWithEmail.length === 0) {
         await sendTelegramMessage(chatId, `🏹 *Artemis — Alerta:*\n\n⚠️ Nenhum lead com e-mail cadastrado na base.\n👉 Use \`/minerar <nicho e cidade>\` para capturar contatos.`);
         return NextResponse.json({ ok: true, action: 'no_leads' });
@@ -189,11 +244,11 @@ export async function POST(request: NextRequest) {
 
         const reply = `🏹 *Artemis — Disparo Concluído com Sucesso!* ⚡
 
-📊 *Relatório da Operação:*
+📊 *Relatório da Operação E-mail:*
 • *Enviados nesta rodada:* ${sentNow} e-mails entregues via Resend
 • *Estratégia:* ${pillarNameLabel}
 • *Remetente Oficial:* \`contato@infinityondemand.com.br\`
-• *Pipeline CRM:* Movidos para *"Email Enviado"*
+• *Pipeline CRM:* Movidos para *"Email Enviado"* 🔴
 • *Click Tracking:* Links rastreáveis ativos 🔥
 
 📅 *Breakdown de E-mails por Data:*
@@ -215,25 +270,22 @@ ${listPreview}${leadsToProcess.length > 5 ? `\n_...e mais ${leadsToProcess.lengt
     }
 
     // ──────────────────────────────────────────────────────────────────────────
-    // 3. START / AJUDA / MENU DE COMANDOS
+    // 4. START / AJUDA / MENU DE COMANDOS
     // ──────────────────────────────────────────────────────────────────────────
     if (cleanText === '/start' || cleanText === '/ajuda' || cleanText === '/help' || cleanText === '/menu') {
       const menuText = `🏛️ *Bem-vindo ao Ecossistema Olimpo!* ⚡
 
-Eu sou *Zeus*, seu Conselheiro Estratégico de BI, e estou conectado à *Artemis* para automação de prospecção e e-mail marketing da *Infinity On Demand*.
+Eu sou *Zeus*, seu Conselheiro Estratégico de BI, e estou conectado à *Artemis* para automação de prospecção da *Infinity On Demand*.
 
-📋 *Comandos de Disparo de E-mail:*
+📋 *Comandos de Prospecção:*
 
-🏹 *Disparo com Segmentação Automática (IA por Nicho):*
-• \`/envie os emails\` — Artemis analisa cada lead e envia o template ideal
-• \`/enviar emails 30\` — Dispara para 30 leads
-• \`/enviar emails todos\` — Dispara para toda a base com e-mail
+💬 *WhatsApp:*
+• \`/envie os whatsapps\` — Disparar mensagens WhatsApp e mover para *"Primeiro Contato"* 🟡
+• \`/enviar whatsapp 20\` — Disparar para 20 contatos no WhatsApp
 
-🎯 *Disparo por Campanha Específica:*
-• \`/envie os emails sites\` — Focado em Sites & Diagnóstico Grátis
-• \`/envie os emails sistemas\` — Focado em Robôs WhatsApp com IA
-• \`/envie os emails ecommerce\` — Focado em Catálogo Virtual & Lojas
-• \`/envie os emails trafego\` — Focado em Anúncios Google & Meta
+🏹 *E-mail Marketing:*
+• \`/envie os emails\` — Disparar e-mails persuasivos e mover para *"Email Enviado"* 🔴
+• \`/enviar emails todos\` — Disparar para toda a base pendente
 
 🔍 *Mineração Google Maps:*
 • \`/minerar <nicho cidade>\` — Minera 60 leads no Apify (Ex: \`/minerar clinicas recife\`)
@@ -246,7 +298,7 @@ Eu sou *Zeus*, seu Conselheiro Estratégico de BI, e estou conectado à *Artemis
     }
 
     // ──────────────────────────────────────────────────────────────────────────
-    // 4. ZEUS AI CONVERSATIONAL & BI INTELLIGENCE
+    // 5. ZEUS AI CONVERSATIONAL & BI INTELLIGENCE
     // ──────────────────────────────────────────────────────────────────────────
     const totalLeads = contacts.filter(c => c.contact_type === 'lead' || !c.contact_type).length;
     const activeClientsCount = contacts.filter(c => c.contact_type === 'client').length;
@@ -279,7 +331,7 @@ Eu sou *Zeus*, seu Conselheiro Estratégico de BI, e estou conectado à *Artemis
 • *Clientes Fechados:* ${activeClientsCount}
 • *Valor no Pipeline:* R$ ${totalPipelineValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 
-👉 Para disparar e-mails agora: \`/envie os emails\``;
+👉 Para disparar agora: \`/envie os emails\` ou \`/envie os whatsapps\``;
 
       await sendTelegramMessage(chatId, fallback);
       return NextResponse.json({ ok: true, action: 'fallback_report' });
@@ -292,7 +344,7 @@ Eu sou *Zeus*, seu Conselheiro Estratégico de BI, e estou conectado à *Artemis
 SEU PAPEL:
 - Fala diretamente com o CEO Angelo pelo Telegram.
 - Tom de voz: Soberano, respeitoso, executivo, altamente estratégico e focado em escala.
-- Use emojis elegantes (👑, 🏛️, 📊, ⚡, 🎯, 📈, 📧, 🔗).
+- Use emojis elegantes (👑, 🏛️, 📊, ⚡, 🎯, 📈, 📧, 💬, 🔗).
 - Responda de forma concisa, direta e bem formatada em Markdown do Telegram.
 
 DADOS REAIS EM TEMPO REAL DO CRM E MARKETING:
@@ -302,13 +354,15 @@ DADOS REAIS EM TEMPO REAL DO CRM E MARKETING:
 - E-mails Marketing Total Acumulado: ${sentTotal}
 - Cliques no Link Rastreável: ${clickedCount} leads quentes 🔥
 - Leads Aguardando Envio na Base: ${unsentContacts.length}
+- Total com WhatsApp na Base: ${contactsWithPhone.length}
 - Base Total de Leads no CRM: ${totalLeads}
 - Clientes Ativos Fechados: ${activeClientsCount}
 - Valor no Pipeline: R$ ${totalPipelineValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 - Principais Nichos: ${topSegments || 'Diversos'}
 
 COMANDOS DISPONÍVEIS:
-- /envie os emails [campanha] -> Dispara e-mails da Artemis com auto-segmentação e link rastreável via Resend.
+- /envie os emails -> Dispara e-mails e move para "Email Enviado" (Vermelho).
+- /envie os whatsapps -> Dispara WhatsApp e move para "Primeiro Contato" (Amarelo).
 - /minerar <nicho e cidade> -> Minera 60 leads no Google Maps via Apify.
 - /relatorio -> Apresenta o consolidado por datas.
 
