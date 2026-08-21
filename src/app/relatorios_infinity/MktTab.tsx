@@ -412,7 +412,7 @@ export default function MktTab() {
               padding: '20px',
               display: 'flex',
               flexDirection: 'column',
-              justify: 'space-between'
+              justifyContent: 'space-between'
             }}>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
@@ -437,7 +437,7 @@ export default function MktTab() {
 
               <div style={{
                 display: 'flex',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 alignItems: 'center',
                 paddingTop: '14px',
                 borderTop: '1px solid rgba(255,255,255,0.06)',

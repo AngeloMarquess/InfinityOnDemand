@@ -348,7 +348,7 @@ export default function RelatoriosInfinity() {
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'evolucao' | 'briefing' | 'agent' | 'config' | 'sdr' | 'academy'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'mkt' | 'evolucao' | 'briefing' | 'agent' | 'config' | 'sdr' | 'academy'>('overview');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [carouselSlides, setCarouselSlides] = useState<Record<string, number>>({});
   const [scheduleStatus, setScheduleStatus] = useState<Record<string, { status: 'idle' | 'loading' | 'success' | 'error'; message?: string }>>({
