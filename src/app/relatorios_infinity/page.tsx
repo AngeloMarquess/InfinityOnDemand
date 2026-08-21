@@ -9,6 +9,7 @@ import AgentTab from './AgentTab';
 import FlashSDRTab from './FlashSDRTab';
 import BriefingTab from './BriefingTab';
 import AcademyAdminTab from './AcademyAdminTab';
+import MktTab from './MktTab';
 
 /* ─────────── DATA ─────────── */
 const profileData = {
@@ -682,6 +683,7 @@ export default function RelatoriosInfinity() {
     { id: 'creatives' as const, label: 'Criativos', icon: '🎨' },
     { id: 'agenda' as const, label: 'Agenda', icon: '📅' },
     { id: 'campanhas_ads' as const, label: 'Campanhas', icon: '💰' },
+    { id: 'mkt' as const, label: 'MKT Data Lake', icon: '📊' },
     { id: 'evolucao' as const, label: 'Evolução', icon: '📈' },
     { id: 'briefing' as const, label: 'Briefings', icon: '📋' },
     { id: 'agent' as const, label: 'Flash IA', icon: '⚡' },
@@ -1926,6 +1928,7 @@ export default function RelatoriosInfinity() {
         })()}
 
         {activeTab === 'campanhas_ads' && <CampanhasTab />}
+        {activeTab === 'mkt' && <MktTab />}
         {activeTab === 'evolucao' && <EvolucaoTab />}
 
         {/* ═══════════ TAB: BRIEFINGS ═══════════ */}
