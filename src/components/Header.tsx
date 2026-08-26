@@ -56,7 +56,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
 
         {/* Desktop nav */}
         <nav className="nav-desktop">
-          <Link href={`${prefix}/sobre`} style={{ padding: "8px 12px", borderRadius: "4px" }}>{t.sobre}</Link>
+          <a href="https://neuromarketing.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px" }}>Tráfego Pago</a>
           <Link href={`${prefix}/#labs`} style={{ padding: "8px 12px", borderRadius: "4px" }}>{t.labs}</Link>
           <Link href={`${prefix}/consultoria`} style={{ padding: "8px 12px", borderRadius: "4px" }}>{t.consultoria}</Link>
           <Link href={`${prefix}/ecommerce`} style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.ecommerce}</Link>
@@ -151,7 +151,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
         {/* Navigation links */}
         <nav className="mobile-menu-links">
           <Link href={prefix || '/'} onClick={closeMenu}>{t.inicio}</Link>
-          <Link href={`${prefix}/sobre`} onClick={closeMenu}>{t.sobreNos}</Link>
+          <a href="https://neuromarketing.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" onClick={closeMenu}>Tráfego Pago</a>
           <Link href={`${prefix}/#labs`} onClick={closeMenu}>{t.labs}</Link>
           <Link href={`${prefix}/consultoria`} onClick={closeMenu}>{t.consultoria}</Link>
           <Link href={`${prefix}/ecommerce`} onClick={closeMenu}>{t.ecommerce}</Link>
