@@ -37,20 +37,8 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
         zIndex: 100
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
-          <Link href={prefix || '/'} style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
-            <svg width="36" height="18" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 0 6px rgba(0, 219, 121, 0.4))', flexShrink: 0 }}>
-              <defs>
-                <linearGradient id="inf-grad-head" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#00DB79" />
-                  <stop offset="100%" stopColor="#00AAFF" />
-                </linearGradient>
-              </defs>
-              <path d="M30 10 C15 10 10 25 10 25 C10 25 15 40 30 40 C45 40 55 10 70 10 C85 10 90 25 90 25 C90 25 85 40 70 40 C55 40 45 10 30 10 Z" stroke="url(#inf-grad-head)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <div style={{ fontWeight: 800, fontSize: "20px", letterSpacing: "1px", display: "flex", gap: "6px", alignItems: "baseline", whiteSpace: "nowrap" }}>
-              <span className="text-gradient">INFINITY</span>
-              <span style={{ fontWeight: 400, fontSize: "14px", color: "var(--text-primary)", letterSpacing: "0px" }}>ONDEMAND</span>
-            </div>
+          <Link href={prefix || '/'} style={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+            <img src="/logo-infinity.png" alt="Infinity OnDemand" style={{ height: "40px", width: "auto" }} />
           </Link>
         </div>
 
@@ -95,19 +83,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
         {/* Top bar: Logo + Close button */}
         <div className="mobile-menu-topbar">
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <svg width="36" height="18" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 0 6px rgba(0, 219, 121, 0.4))' }}>
-              <defs>
-                <linearGradient id="inf-grad-mob" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#00DB79" />
-                  <stop offset="100%" stopColor="#00AAFF" />
-                </linearGradient>
-              </defs>
-              <path d="M30 10 C15 10 10 25 10 25 C10 25 15 40 30 40 C45 40 55 10 70 10 C85 10 90 25 90 25 C90 25 85 40 70 40 C55 40 45 10 30 10 Z" stroke="url(#inf-grad-mob)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <div style={{ fontWeight: 800, fontSize: "18px", letterSpacing: "1px", display: "flex", gap: "5px", alignItems: "baseline" }}>
-              <span className="text-gradient">INFINITY</span>
-              <span style={{ fontWeight: 400, fontSize: "12px", color: "var(--text-primary)" }}>ONDEMAND</span>
-            </div>
+            <img src="/logo-infinity.png" alt="Infinity OnDemand" style={{ height: "40px", width: "auto" }} />
           </div>
 
           {/* Close X button */}

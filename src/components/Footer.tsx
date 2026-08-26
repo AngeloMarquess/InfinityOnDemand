@@ -29,19 +29,7 @@ export default function Footer({ dict, locale }: { dict?: any; locale?: string }
           {/* Brand Column */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-              <svg width="44" height="22" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 0 8px rgba(0, 219, 121, 0.5))', flexShrink: 0 }}>
-                <defs>
-                  <linearGradient id="inf-grad-footer" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#00DB79" />
-                    <stop offset="100%" stopColor="#00AAFF" />
-                  </linearGradient>
-                </defs>
-                <path d="M30 10 C15 10 10 25 10 25 C10 25 15 40 30 40 C45 40 55 10 70 10 C85 10 90 25 90 25 C90 25 85 40 70 40 C55 40 45 10 30 10 Z" stroke="url(#inf-grad-footer)" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <div style={{ fontWeight: 800, fontSize: "20px", letterSpacing: "1px", display: "flex", gap: "6px", alignItems: "baseline" }}>
-                <span className="text-gradient">INFINITY</span>
-                <span style={{ fontWeight: 400, fontSize: "14px", color: "var(--text-primary)", letterSpacing: "0px" }}>ONDEMAND</span>
-              </div>
+              <img src="/logo-infinity.png" alt="Infinity OnDemand" style={{ height: "48px", width: "auto" }} />
             </div>
             <p className="text-secondary" style={{ maxWidth: "280px", fontSize: "14px", lineHeight: 1.7, marginBottom: "24px" }}>
               {t.brand}
