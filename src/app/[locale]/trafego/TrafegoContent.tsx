@@ -355,7 +355,32 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
 
           <div className="tf-loop-grid">
             <div className="tf-loop-card">
-              <div className="tf-loop-icon">🧲</div>
+              <div className="tf-loop-icon" style={{ borderColor: 'rgba(0, 223, 129, 0.4)' }}>
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="tf-loop-realistic-svg">
+                  <defs>
+                    <linearGradient id="mag-body" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#3B82F6" />
+                      <stop offset="50%" stopColor="#00DF81" />
+                      <stop offset="100%" stopColor="#00AAFF" />
+                    </linearGradient>
+                    <linearGradient id="mag-red" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#FF4D4D" />
+                      <stop offset="100%" stopColor="#B91C1C" />
+                    </linearGradient>
+                    <linearGradient id="mag-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#60A5FA" />
+                      <stop offset="100%" stopColor="#1E40AF" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M14 20 C14 36 22 50 32 50 C42 50 50 36 50 20 L40 20 C40 30 36 41 32 41 C28 41 24 30 24 20 Z" fill="url(#mag-body)" />
+                  <rect x="14" y="10" width="10" height="11" rx="3" fill="url(#mag-red)" />
+                  <rect x="15" y="11" width="3" height="9" rx="1.5" fill="#FFA5A5" opacity="0.7" />
+                  <rect x="40" y="10" width="10" height="11" rx="3" fill="url(#mag-blue)" />
+                  <rect x="41" y="11" width="3" height="9" rx="1.5" fill="#BFDBFE" opacity="0.7" />
+                  <path d="M19 4 C25 0 39 0 45 4" stroke="#00DF81" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="3 3" />
+                  <path d="M23 7 C27 4 37 4 41 7" stroke="#00AAFF" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
               <h3 className="tf-loop-title">1. Aquisição</h3>
               <p className="tf-loop-desc">
                 Atrair a atenção do público comprador exato através de criativos disruptivos, ganchos magnéticos e segmentação orientada por dados de alta intenção.
@@ -363,7 +388,28 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
             </div>
 
             <div className="tf-loop-card">
-              <div className="tf-loop-icon" style={{ color: '#00AAFF', borderColor: 'rgba(0,170,255,0.3)', background: 'rgba(0,170,255,0.1)' }}>💬</div>
+              <div className="tf-loop-icon" style={{ borderColor: 'rgba(0, 170, 255, 0.4)' }}>
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="tf-loop-realistic-svg">
+                  <defs>
+                    <linearGradient id="chat-grad-main" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#00AAFF" />
+                      <stop offset="100%" stopColor="#2563EB" />
+                    </linearGradient>
+                    <linearGradient id="chat-grad-sub" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#8B5CF6" />
+                      <stop offset="100%" stopColor="#6D28D9" />
+                    </linearGradient>
+                  </defs>
+                  <rect x="22" y="10" width="34" height="26" rx="10" fill="url(#chat-grad-sub)" />
+                  <path d="M48 36 L54 44 L44 36 Z" fill="#6D28D9" />
+                  <rect x="8" y="20" width="38" height="28" rx="12" fill="url(#chat-grad-main)" />
+                  <path d="M18 48 L12 56 L24 48 Z" fill="#2563EB" />
+                  <circle cx="20" cy="34" r="3" fill="#FFFFFF" />
+                  <circle cx="27" cy="34" r="3" fill="#00DF81" />
+                  <circle cx="34" cy="34" r="3" fill="#FFFFFF" />
+                  <path d="M50 14 L52 18 L56 20 L52 22 L50 26 L48 22 L44 20 L48 18 Z" fill="#00DF81" />
+                </svg>
+              </div>
               <h3 className="tf-loop-title">2. Engajamento</h3>
               <p className="tf-loop-desc">
                 Construir confiança imediata, quebra de objeções e interesse genuíno. O cliente passa a enxergar sua empresa como a única autoridade no seu mercado.
@@ -371,7 +417,34 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
             </div>
 
             <div className="tf-loop-card">
-              <div className="tf-loop-icon" style={{ color: '#F59E0B', borderColor: 'rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.1)' }}>📈</div>
+              <div className="tf-loop-icon" style={{ borderColor: 'rgba(245, 158, 11, 0.4)' }}>
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="tf-loop-realistic-svg">
+                  <defs>
+                    <linearGradient id="gold-front" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#FDE047" />
+                      <stop offset="50%" stopColor="#EAB308" />
+                      <stop offset="100%" stopColor="#CA8A04" />
+                    </linearGradient>
+                    <linearGradient id="gold-rim" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#CA8A04" />
+                      <stop offset="100%" stopColor="#78350F" />
+                    </linearGradient>
+                    <linearGradient id="chart-green" x1="0%" y1="100%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#00DF81" />
+                      <stop offset="100%" stopColor="#10B981" />
+                    </linearGradient>
+                  </defs>
+                  <ellipse cx="26" cy="46" rx="16" ry="7" fill="url(#gold-rim)" />
+                  <ellipse cx="26" cy="43" rx="16" ry="7" fill="url(#gold-front)" />
+                  <ellipse cx="26" cy="38" rx="16" ry="7" fill="url(#gold-rim)" />
+                  <ellipse cx="26" cy="35" rx="16" ry="7" fill="url(#gold-front)" />
+                  <ellipse cx="26" cy="30" rx="16" ry="7" fill="url(#gold-rim)" />
+                  <ellipse cx="26" cy="27" rx="16" ry="7" fill="url(#gold-front)" />
+                  <text x="26" y="31" textAnchor="middle" fill="#78350F" fontSize="12" fontWeight="900">$</text>
+                  <path d="M36 48 L46 36 L52 40 L60 20 M60 20 L50 20 M60 20 L60 30" stroke="url(#chart-green)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="50" cy="14" r="2" fill="#FDE047" />
+                </svg>
+              </div>
               <h3 className="tf-loop-title">3. Monetização</h3>
               <p className="tf-loop-desc">
                 Realizar mais vendas com ofertas de alta conversão, direcionamento rápido para WhatsApp ou páginas de checkout blindadas de alta velocidade.
@@ -379,7 +452,26 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
             </div>
 
             <div className="tf-loop-card">
-              <div className="tf-loop-icon" style={{ color: '#EC4899', borderColor: 'rgba(236,72,153,0.3)', background: 'rgba(236,72,153,0.1)' }}>🔄</div>
+              <div className="tf-loop-icon" style={{ borderColor: 'rgba(236, 72, 153, 0.4)' }}>
+                <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="tf-loop-realistic-svg">
+                  <defs>
+                    <linearGradient id="inf-loop-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#EC4899" />
+                      <stop offset="50%" stopColor="#8B5CF6" />
+                      <stop offset="100%" stopColor="#00DF81" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M20 32 C12 24 4 32 4 40 C4 48 14 52 22 44 C30 36 34 28 42 20 C50 12 60 16 60 24 C60 32 50 36 42 44 C34 52 30 60 22 60"
+                    stroke="url(#inf-loop-grad)"
+                    strokeWidth="5"
+                    strokeLinecap="round"
+                    transform="scale(0.85) translate(6, -4)"
+                  />
+                  <circle cx="16" cy="22" r="3.5" fill="#00DF81" />
+                  <circle cx="48" cy="42" r="3.5" fill="#EC4899" />
+                </svg>
+              </div>
               <h3 className="tf-loop-title">4. Retenção</h3>
               <p className="tf-loop-desc">
                 Manter os clientes comprando de forma recorrente. Remarketing inteligente, aumento de LTV (Life Time Value) e maximização do lucro por cliente.
