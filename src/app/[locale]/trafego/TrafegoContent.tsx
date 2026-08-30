@@ -475,59 +475,133 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
               </p>
             </div>
 
-            <div className="tf-method-grid">
-              <div className="tf-method-step">
-                <div className="tf-step-num">1</div>
-                <div className="tf-step-content">
-                  <h4>Diagnóstico Profundo</h4>
-                  <p>Auditoria completa da conta de anúncios atual, oferta, esteira de produtos, funil e espionagem da concorrência.</p>
+            <div className="tf-flowchart-grid">
+              
+              {/* Step 1 */}
+              <div className="tf-flow-card">
+                <div className="tf-flow-card-top">
+                  <span className="tf-flow-phase-tag">FASE 01 • ANÁLISE</span>
+                  <div className="tf-flow-step-badge">01</div>
+                </div>
+                <div>
+                  <div className="tf-flow-header-title">
+                    <span className="tf-flow-icon">🔍</span>
+                    <h4>Diagnóstico Profundo</h4>
+                  </div>
+                  <p className="tf-flow-desc">
+                    Auditoria completa da conta de anúncios, oferta, esteira de produtos, análise de concorrência e identificação imediata de vazamento de verba.
+                  </p>
+                </div>
+                <div className="tf-flow-deliverable">
+                  <span>✓ Entrega: Auditoria 360° & Plano de Ação</span>
                 </div>
               </div>
 
-              <div className="tf-method-step">
-                <div className="tf-step-num">2</div>
-                <div className="tf-step-content">
-                  <h4>Estratégia & Metas</h4>
-                  <p>Definição do público comprador, canais ideais, divisão de verba e metas calculadas de CPA (Custo por Lead) e ROAS.</p>
+              {/* Step 2 */}
+              <div className="tf-flow-card">
+                <div className="tf-flow-card-top">
+                  <span className="tf-flow-phase-tag" style={{ color: '#00DF81' }}>FASE 02 • ESTRATÉGIA</span>
+                  <div className="tf-flow-step-badge" style={{ borderColor: '#00DF81', color: '#00DF81' }}>02</div>
+                </div>
+                <div>
+                  <div className="tf-flow-header-title">
+                    <span className="tf-flow-icon">📐</span>
+                    <h4>Planejamento & Metas</h4>
+                  </div>
+                  <p className="tf-flow-desc">
+                    Definição dos canais ideais (Meta, Google, TikTok), segmentação de público comprador, divisão de orçamento e cálculo de metas de CPA e ROAS.
+                  </p>
+                </div>
+                <div className="tf-flow-deliverable" style={{ color: '#00AAFF', borderColor: 'rgba(0,170,255,0.3)', background: 'rgba(0,170,255,0.06)' }}>
+                  <span>✓ Entrega: Matriz de Canais & Metas ROAS</span>
                 </div>
               </div>
 
-              <div className="tf-method-step">
-                <div className="tf-step-num">3</div>
-                <div className="tf-step-content">
-                  <h4>Fábrica de Criativos</h4>
-                  <p>Produção contínua de anúncios estáticos, carrosséis e vídeos de alta retenção feitos para prender o scroll no primeiro segundo.</p>
+              {/* Step 3 */}
+              <div className="tf-flow-card">
+                <div className="tf-flow-card-top">
+                  <span className="tf-flow-phase-tag" style={{ color: '#F59E0B' }}>FASE 03 • PRODUÇÃO</span>
+                  <div className="tf-flow-step-badge" style={{ borderColor: '#F59E0B', color: '#F59E0B' }}>03</div>
+                </div>
+                <div>
+                  <div className="tf-flow-header-title">
+                    <span className="tf-flow-icon">🎬</span>
+                    <h4>Fábrica de Criativos</h4>
+                  </div>
+                  <p className="tf-flow-desc">
+                    Roteirização de vídeos, copywriting persuasivo e design de criativos estáticos de alto impacto projetados para reter atenção no primeiro segundo.
+                  </p>
+                </div>
+                <div className="tf-flow-deliverable" style={{ color: '#F59E0B', borderColor: 'rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.06)' }}>
+                  <span>✓ Entrega: Criativos Semanais de Alta Retenção</span>
                 </div>
               </div>
 
-              <div className="tf-method-step">
-                <div className="tf-step-num">4</div>
-                <div className="tf-step-content">
-                  <h4>Lançamento Blindado</h4>
-                  <p>Estruturação técnica impecável: testes A/B, API de conversões (CAPI), pixel e integração direta com WhatsApp e CRM.</p>
+              {/* Step 4 */}
+              <div className="tf-flow-card">
+                <div className="tf-flow-card-top">
+                  <span className="tf-flow-phase-tag" style={{ color: '#7C3AED' }}>FASE 04 • INFRA & TECH</span>
+                  <div className="tf-flow-step-badge" style={{ borderColor: '#7C3AED', color: '#A78BFA' }}>04</div>
+                </div>
+                <div>
+                  <div className="tf-flow-header-title">
+                    <span className="tf-flow-icon">🚀</span>
+                    <h4>Lançamento Blindado</h4>
+                  </div>
+                  <p className="tf-flow-desc">
+                    Estruturação técnica impecável: instalação da API de Conversões do Servidor (CAPI), pixel, rastreamento de eventos e integração nativa com seu CRM.
+                  </p>
+                </div>
+                <div className="tf-flow-deliverable" style={{ color: '#A78BFA', borderColor: 'rgba(124,58,237,0.3)', background: 'rgba(124,58,237,0.06)' }}>
+                  <span>✓ Entrega: Setup 100% CAPI + CRM Integrado</span>
                 </div>
               </div>
 
-              <div className="tf-method-step">
-                <div className="tf-step-num">5</div>
-                <div className="tf-step-content">
-                  <h4>Otimização Diária</h4>
-                  <p>Leitura diária das métricas: corte impiedoso do que não performa e injeção de verba rápida nos anúncios vencedores.</p>
+              {/* Step 5 */}
+              <div className="tf-flow-card">
+                <div className="tf-flow-card-top">
+                  <span className="tf-flow-phase-tag" style={{ color: '#00DF81' }}>FASE 05 • OTIMIZAÇÃO</span>
+                  <div className="tf-flow-step-badge" style={{ borderColor: '#00DF81', color: '#00DF81' }}>05</div>
+                </div>
+                <div>
+                  <div className="tf-flow-header-title">
+                    <span className="tf-flow-icon">⚡</span>
+                    <h4>Otimização Diária</h4>
+                  </div>
+                  <p className="tf-flow-desc">
+                    Leitura em tempo real dos números: corte rápido de anúncios ou públicos ineficientes e injeção agressiva de verba nos criativos vencedores.
+                  </p>
+                </div>
+                <div className="tf-flow-deliverable">
+                  <span>✓ Entrega: Gestão Diária & Corte de Custos</span>
                 </div>
               </div>
 
-              <div className="tf-method-step">
-                <div className="tf-step-num">6</div>
-                <div className="tf-step-content">
-                  <h4>Escala Acelerada</h4>
-                  <p>Replicação dos padrões vencedores para ampliar o alcance e volume de vendas sem perder o retorno sobre a verba.</p>
+              {/* Step 6 */}
+              <div className="tf-flow-card">
+                <div className="tf-flow-card-top">
+                  <span className="tf-flow-phase-tag" style={{ color: '#EC4899' }}>FASE 06 • ESCALA</span>
+                  <div className="tf-flow-step-badge" style={{ borderColor: '#EC4899', color: '#EC4899' }}>06</div>
+                </div>
+                <div>
+                  <div className="tf-flow-header-title">
+                    <span className="tf-flow-icon">📈</span>
+                    <h4>Escala Acelerada</h4>
+                  </div>
+                  <p className="tf-flow-desc">
+                    Multiplicação de receita: expansão horizontal e vertical de públicos, aumento de verba com segurança e maximização de LTV através de remarketing.
+                  </p>
+                </div>
+                <div className="tf-flow-deliverable" style={{ color: '#EC4899', borderColor: 'rgba(236,72,153,0.3)', background: 'rgba(236,72,153,0.06)' }}>
+                  <span>✓ Entrega: Escala Previsível & Faturamento Máximo</span>
                 </div>
               </div>
+
             </div>
 
             <div className="tf-loop-footer">
-              <span style={{ fontSize: '20px' }}>🔄</span>
-              <span>E volta ao começo. Sempre. Esse é o loop de crescimento infinito ∞</span>
+              <span style={{ fontSize: '24px' }}>🔄</span>
+              <span>Loop Contínuo de Crescimento: Os dados da Escala retroalimentam o Diagnóstico do próximo ciclo ∞</span>
             </div>
           </div>
         </div>
