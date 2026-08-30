@@ -651,60 +651,137 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
             </p>
           </div>
 
-          <div className="tf-funnel-stack">
-            <div className="tf-funnel-layer">
-              <div className="tf-funnel-left">
-                <div className="tf-funnel-badge" style={{ background: 'rgba(0, 170, 255, 0.15)', color: '#00AAFF' }}>
-                  Topo — Descoberta
-                </div>
-                <div>
-                  <div className="tf-funnel-title">Alcance Qualificado & Conteúdo</div>
-                  <div className="tf-funnel-desc">Vídeos rápidos e anúncios conceituais que encontram as pessoas certas.</div>
-                </div>
+          <div className="tf-funnel-container">
+            
+            {/* Left Column: Visual Glowing SVG Funnel */}
+            <div className="tf-funnel-visual-box">
+              <div style={{ fontSize: '11px', fontWeight: 800, color: '#00DF81', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>
+                ⚡ ARQUITETURA DO FUNIL INFINITY
               </div>
-              <div className="tf-funnel-goal">Objetivo: Ser Conhecido</div>
+
+              <svg viewBox="0 0 340 375" fill="none" xmlns="http://www.w3.org/2000/svg" className="tf-funnel-svg">
+                <defs>
+                  <linearGradient id="fn-grad-1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#00AAFF" stopOpacity="0.8" />
+                    <stop offset="100%" stopColor="#00DF81" stopOpacity="0.8" />
+                  </linearGradient>
+                  <linearGradient id="fn-grad-2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#7C3AED" stopOpacity="0.8" />
+                    <stop offset="100%" stopColor="#00AAFF" stopOpacity="0.8" />
+                  </linearGradient>
+                  <linearGradient id="fn-grad-3" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#00DF81" stopOpacity="0.9" />
+                    <stop offset="100%" stopColor="#00AAFF" stopOpacity="0.9" />
+                  </linearGradient>
+                  <linearGradient id="fn-grad-4" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#EC4899" stopOpacity="0.9" />
+                    <stop offset="100%" stopColor="#7C3AED" stopOpacity="0.9" />
+                  </linearGradient>
+                  <filter id="fn-glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+
+                {/* Level 1: Topo (Descoberta) */}
+                <path d="M20 15 L320 15 L275 85 L65 85 Z" fill="url(#fn-grad-1)" fillOpacity="0.22" stroke="#00AAFF" strokeWidth="2" filter="url(#fn-glow)" />
+                <text x="170" y="48" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="800" letterSpacing="0.8">1. TOPO — DESCOBERTA</text>
+                <text x="170" y="68" textAnchor="middle" fill="#00AAFF" fontSize="11" fontWeight="600">Tráfego Frio • Criativos • Alcance</text>
+
+                {/* Level 2: Meio (Consideração) */}
+                <path d="M70 95 L270 95 L230 165 L110 165 Z" fill="url(#fn-grad-2)" fillOpacity="0.25" stroke="#7C3AED" strokeWidth="2" filter="url(#fn-glow)" />
+                <text x="170" y="128" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="800" letterSpacing="0.8">2. MEIO — CONSIDERAÇÃO</text>
+                <text x="170" y="148" textAnchor="middle" fill="#A78BFA" fontSize="11" fontWeight="600">Remarketing • Prova Social</text>
+
+                {/* Level 3: Fundo (Conversão) */}
+                <path d="M115 175 L225 175 L195 245 L145 245 Z" fill="url(#fn-grad-3)" fillOpacity="0.35" stroke="#00DF81" strokeWidth="2.5" filter="url(#fn-glow)" />
+                <text x="170" y="208" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="800" letterSpacing="0.8">3. FUNDO — VENDA</text>
+                <text x="170" y="226" textAnchor="middle" fill="#00DF81" fontSize="11" fontWeight="700">Oferta • WhatsApp • Fechamento</text>
+
+                {/* Level 4: Pós (Retenção) */}
+                <rect x="125" y="258" width="90" height="52" rx="12" fill="url(#fn-grad-4)" fillOpacity="0.3" stroke="#EC4899" strokeWidth="2" filter="url(#fn-glow)" />
+                <text x="170" y="282" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="800">4. PÓS-VENDA</text>
+                <text x="170" y="298" textAnchor="middle" fill="#F472B6" fontSize="10" fontWeight="700">LTV & Recompra ∞</text>
+
+                {/* Flow indicator */}
+                <circle cx="170" cy="335" r="14" fill="rgba(0, 223, 129, 0.15)" stroke="#00DF81" strokeWidth="1.5" />
+                <text x="170" y="340" textAnchor="middle" fill="#00DF81" fontSize="14" fontWeight="900">↓</text>
+              </svg>
+
+              <div style={{ marginTop: '16px', textAlign: 'center', fontSize: '12px', color: '#9CA3AF' }}>
+                🔄 Cada etapa retroalimenta o aprendizado dos algoritmos
+              </div>
             </div>
 
-            <div className="tf-funnel-layer">
-              <div className="tf-funnel-left">
-                <div className="tf-funnel-badge" style={{ background: 'rgba(124, 58, 237, 0.15)', color: '#A78BFA' }}>
-                  Meio — Consideração
+            {/* Right Column: 4 Detailed Stage Cards */}
+            <div className="tf-funnel-stack">
+              <div className="tf-funnel-layer">
+                <div className="tf-funnel-left">
+                  <div className="tf-funnel-icon" style={{ background: 'rgba(0, 170, 255, 0.15)', color: '#00AAFF' }}>
+                    📢
+                  </div>
+                  <div>
+                    <div className="tf-funnel-badge" style={{ background: 'rgba(0, 170, 255, 0.15)', color: '#00AAFF' }}>
+                      Topo — Descoberta
+                    </div>
+                    <div className="tf-funnel-title">Alcance Qualificado & Criativos Magnéticos</div>
+                    <div className="tf-funnel-desc">Vídeos rápidos, criativos de alto impacto e anúncios conceituais que encontram as pessoas certas.</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="tf-funnel-title">Remarketing & Quebra de Objeções</div>
-                  <div className="tf-funnel-desc">Depoimentos, casos de sucesso, comparações e provas sociais fortes.</div>
+                <div className="tf-funnel-goal">Objetivo: Ser Conhecido</div>
+              </div>
+
+              <div className="tf-funnel-layer">
+                <div className="tf-funnel-left">
+                  <div className="tf-funnel-icon" style={{ background: 'rgba(124, 58, 237, 0.15)', color: '#A78BFA' }}>
+                    🛡️
+                  </div>
+                  <div>
+                    <div className="tf-funnel-badge" style={{ background: 'rgba(124, 58, 237, 0.15)', color: '#A78BFA' }}>
+                      Meio — Consideração
+                    </div>
+                    <div className="tf-funnel-title">Remarketing Implacável & Prova Social</div>
+                    <div className="tf-funnel-desc">Depoimentos reais, comparações, quebra de objeções e autoridade imediata que cercam o prospect.</div>
+                  </div>
+                </div>
+                <div className="tf-funnel-goal">Objetivo: Ser Confiável</div>
+              </div>
+
+              <div className="tf-funnel-layer" style={{ borderColor: 'rgba(0, 223, 129, 0.4)', background: 'rgba(0, 223, 129, 0.04)' }}>
+                <div className="tf-funnel-left">
+                  <div className="tf-funnel-icon" style={{ background: 'rgba(0, 223, 129, 0.15)', color: '#00DF81' }}>
+                    🎯
+                  </div>
+                  <div>
+                    <div className="tf-funnel-badge" style={{ background: 'rgba(0, 223, 129, 0.15)', color: '#00DF81' }}>
+                      Fundo — Conversão
+                    </div>
+                    <div className="tf-funnel-title">Oferta Irresistível & Fechamento no WhatsApp</div>
+                    <div className="tf-funnel-desc">Páginas ultra-rápidas, senso de urgência, formulários otimizados e direcionamento direto para o comercial.</div>
+                  </div>
+                </div>
+                <div className="tf-funnel-goal" style={{ background: '#00DF81', color: '#060913', fontWeight: 800 }}>
+                  Objetivo: Ser Escolhido
                 </div>
               </div>
-              <div className="tf-funnel-goal">Objetivo: Ser Confiável</div>
+
+              <div className="tf-funnel-layer">
+                <div className="tf-funnel-left">
+                  <div className="tf-funnel-icon" style={{ background: 'rgba(236, 72, 153, 0.15)', color: '#F472B6' }}>
+                    🔄
+                  </div>
+                  <div>
+                    <div className="tf-funnel-badge" style={{ background: 'rgba(236, 72, 153, 0.15)', color: '#F472B6' }}>
+                      Pós — Retenção
+                    </div>
+                    <div className="tf-funnel-title">Recompra, Upsell & LTV Máximo</div>
+                    <div className="tf-funnel-desc">Campanhas exclusivas para clientes da base para gerar receita recorrente sem gastar com novo CPA.</div>
+                  </div>
+                </div>
+                <div className="tf-funnel-goal">Objetivo: Ser Lembrado</div>
+              </div>
             </div>
 
-            <div className="tf-funnel-layer" style={{ borderColor: 'rgba(0, 223, 129, 0.4)' }}>
-              <div className="tf-funnel-left">
-                <div className="tf-funnel-badge" style={{ background: 'rgba(0, 223, 129, 0.15)', color: '#00DF81' }}>
-                  Fundo — Conversão
-                </div>
-                <div>
-                  <div className="tf-funnel-title">Oferta Irresistível & Fechamento</div>
-                  <div className="tf-funnel-desc">Páginas ultra-rápidas, formulários otimizados e direcionamento pro WhatsApp.</div>
-                </div>
-              </div>
-              <div className="tf-funnel-goal" style={{ background: '#00DF81', color: '#060913', fontWeight: 800 }}>
-                Objetivo: Ser Escolhido
-              </div>
-            </div>
-
-            <div className="tf-funnel-layer">
-              <div className="tf-funnel-left">
-                <div className="tf-funnel-badge" style={{ background: 'rgba(236, 72, 153, 0.15)', color: '#F472B6' }}>
-                  Pós — Retenção
-                </div>
-                <div>
-                  <div className="tf-funnel-title">Recompra, Upsell & LTV</div>
-                  <div className="tf-funnel-desc">Campanhas exclusivas para base existente para gerar receita sem gastar com novo CPA.</div>
-                </div>
-              </div>
-              <div className="tf-funnel-goal">Objetivo: Ser Lembrado</div>
-            </div>
           </div>
 
           {/* Metrics Part */}
