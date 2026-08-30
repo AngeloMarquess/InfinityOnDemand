@@ -170,6 +170,36 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
       a: es
         ? 'Recibes un dashboard ejecutivo en tiempo real accesible 24/7, además de reuniones periódicas de alineación estratégica.'
         : 'Você recebe um Dashboard Executivo ao vivo no nosso portal, disponível 24/7, onde acompanha cada centavo investido, custo por lead, vendas geradas e retorno sobre o investimento (ROAS) em tempo real.'
+    },
+    {
+      q: es ? '¿Qué es la API de Conversiones (CAPI) y por qué es obligatoria?' : 'O que é a API de Conversões (CAPI) e por que ela é obrigatória?',
+      a: es
+        ? 'El pixel tradicional de navegador pierde hasta el 40% de los datos debido a bloqueadores y restricciones de iOS. Con la API de Conversiones del servidor, rastreamos el 100% de las ventas y leads, alimentando el algoritmo con máxima precisión.'
+        : 'O pixel tradicional de navegador perde até 40% dos dados por causa de bloqueadores de anúncios e privacidade do iOS. Com a API de Conversões direto no servidor (CAPI), enviamos 100% dos eventos reais para o Meta e Google, fazendo o algoritmo encontrar clientes muito mais baratos.'
+    },
+    {
+      q: es ? '¿Cómo funciona el proceso de onboarding después de contratar?' : 'Como funciona o onboarding após eu fechar com a Infinity?',
+      a: es
+        ? 'En las primeras 48 horas realizamos la auditoría completa, creamos el grupo dedicado en WhatsApp, alineamos los accesos y comenzamos la producción de los primeros criativos estratégicos.'
+        : 'Nas primeiras 48 horas realizamos a auditoria completa de contas, criamos o grupo exclusivo de atendimento no WhatsApp, configuramos acessos/pixels e iniciamos a produção dos primeiros criativos e páginas da estratégia.'
+    },
+    {
+      q: es ? '¿Atienden a empresas de cualquier segmento o tamaño?' : 'Vocês atendem empresas de qualquer nicho ou tamanho?',
+      a: es
+        ? 'Atendemos e-commerce, clínicas, prestadores de servicios, B2B, infoproductores y empresas locales con facturación a partir de R$ 15k/mes o que tengan presupuesto validado para anuncios.'
+        : 'Atendemos empresas de serviços, clínicas, comércios locais, e-commerces, SaaS e negócios B2B que já possuem produto/serviço validado e buscam previsibilidade e escala com tráfego profissional.'
+    },
+    {
+      q: es ? '¿Hay permanencia obligatoria o contrato a largo plazo?' : 'Existe fidelidade ou contrato de longo prazo?',
+      a: es
+        ? 'Trabajamos con contratos mensuales sin trabas abusivas. Mantenemos a nuestros clientes por los resultados y el ROI generado mes a mes.'
+        : 'Não prendemos clientes com cláusulas abusivas de fidelidade forçada. Trabalhamos com ciclos mensais renováveis porque acreditamos que a nossa retenção deve vir do lucro e do retorno que colocamos no seu bolso.'
+    },
+    {
+      q: es ? '¿Cómo se utiliza la Inteligencia Artificial en mis campañas?' : 'Como a Inteligência Artificial é usada nas minhas campanhas?',
+      a: es
+        ? 'Utilizamos IA para análisis predictivo de audiencias, pruebas de variaciones de copy a gran escala y optimización en tiempo real de pujas y creativos.'
+        : 'Usamos IA proprietária e modelos generativos para analisar padrões de conversão do seu mercado, gerar dezenas de variações de criativos/copy em minutos e prever quais canais entregarão o menor custo por cliente.'
     }
   ];
 
@@ -1076,6 +1106,89 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================
+          SECTION: AGENDAMENTO DE CONSULTORIA (GOOGLE CALENDAR)
+          ============================================================ */}
+      <section id="agenda" className="tf-calendar-section">
+        <div className="tf-container">
+          <div className="tf-calendar-card">
+            
+            {/* Left side: Context & Perks */}
+            <div>
+              <div className="tf-google-cal-badge">
+                <span>📅 Google Calendar Oficial</span>
+              </div>
+
+              <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 42px)', fontWeight: 900, color: '#FFF', marginTop: '16px', marginBottom: '14px', lineHeight: 1.15 }}>
+                Agende uma <span className="tf-gradient-text">Sessão Estratégica de 30 Minutos</span>
+              </h2>
+
+              <p style={{ fontSize: '15px', color: '#9CA3AF', lineHeight: 1.6 }}>
+                Escolha o melhor dia e horário na nossa agenda oficial do Google para uma reunião individual via Google Meet com um estrategista sênior da Infinity.
+              </p>
+
+              <div className="tf-calendar-perks">
+                <div className="tf-perk-item">
+                  <div className="tf-perk-icon">🎯</div>
+                  <div>
+                    <strong>Diagnóstico 100% Personalizado:</strong> Análise ao vivo da sua conta, concorrência e gargalos de vendas.
+                  </div>
+                </div>
+
+                <div className="tf-perk-item">
+                  <div className="tf-perk-icon">🗺️</div>
+                  <div>
+                    <strong>Roadmap de Escala:</strong> Plano de ação com canais recomendados, previsão de verba e projeção de ROAS.
+                  </div>
+                </div>
+
+                <div className="tf-perk-item">
+                  <div className="tf-perk-icon">💡</div>
+                  <div>
+                    <strong>Sem Custo e Sem Compromisso:</strong> Uma conversa direta e prática com quem realmente entende de retorno sobre investimento.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side: Calendar Booking CTA Box */}
+            <div className="tf-calendar-right-box">
+              <div style={{ width: '64px', height: '64px', borderRadius: '18px', background: 'rgba(66, 133, 244, 0.15)', border: '1px solid rgba(66, 133, 244, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px' }}>
+                🗓️
+              </div>
+
+              <div>
+                <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#FFF', marginBottom: '6px' }}>
+                  Consultoria Estratégica Online
+                </h3>
+                <p style={{ fontSize: '13px', color: '#9CA3AF' }}>
+                  Vagas limitadas por semana conforme disponibilidade de agenda.
+                </p>
+              </div>
+
+              <div style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(0, 223, 129, 0.08)', border: '1px solid rgba(0, 223, 129, 0.2)', fontSize: '13px', color: '#00DF81', fontWeight: 700 }}>
+                ⚡ Reunião de 30 minutos via Google Meet
+              </div>
+
+              <a
+                href="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ2ckk4GlQIVW6rTUIkTwWzgRNeCkktFgdPYYZ1sn9L7hyPYV-N-bM6TeME9bBMPOTZUtcGoxDeI"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="tf-btn-primary"
+                style={{ width: '100%', boxSizing: 'border-box' }}
+              >
+                <span>Abrir Agenda e Escolher Horário ➔</span>
+              </a>
+
+              <div style={{ fontSize: '11px', color: '#6B7280' }}>
+                Sincronizado automaticamente com o Google Calendar
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
