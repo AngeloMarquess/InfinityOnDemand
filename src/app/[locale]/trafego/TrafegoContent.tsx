@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -28,8 +28,9 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
   // FAQ State
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  // Reviews Carousel State
+  // Reviews Carousel State & Auto-play
   const [reviewIdx, setReviewIdx] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
   const reviews = [
     {
@@ -81,6 +82,15 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
       avatarBg: 'linear-gradient(135deg, #EC4899, #8B5CF6)',
     },
   ];
+
+  // Auto-play reviews carousel every 3.5s (pauses on hover)
+  useEffect(() => {
+    if (isHovered) return;
+    const interval = setInterval(() => {
+      setReviewIdx((prev) => (prev >= reviews.length - 2 ? 0 : prev + 1));
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [isHovered, reviews.length]);
 
   // Dynamic ROAS calculation
   const calcResults = useMemo(() => {
@@ -882,7 +892,11 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
             </div>
 
             {/* Testimonials Carousel */}
-            <div className="tf-carousel-wrapper">
+            <div
+              className="tf-carousel-wrapper"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
               <div
                 className="tf-carousel-track"
                 style={{
@@ -917,6 +931,27 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
               <div className="tf-carousel-controls">
                 <div className="tf-trustindex-badge">
                   <span>🛡️ Certificado: Google Verified Reviews</span>
+                </div>
+
+                {/* Carousel Dots */}
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  {Array.from({ length: reviews.length - 1 }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setReviewIdx(i)}
+                      aria-label={`Slide ${i + 1}`}
+                      style={{
+                        width: reviewIdx === i ? '20px' : '8px',
+                        height: '8px',
+                        borderRadius: '4px',
+                        backgroundColor: reviewIdx === i ? '#00DF81' : 'rgba(255,255,255,0.2)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        padding: 0,
+                      }}
+                    />
+                  ))}
                 </div>
 
                 <div style={{ display: 'flex', gap: '10px' }}>
