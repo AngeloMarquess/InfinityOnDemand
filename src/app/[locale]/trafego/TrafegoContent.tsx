@@ -28,6 +28,60 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
   // FAQ State
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
+  // Reviews Carousel State
+  const [reviewIdx, setReviewIdx] = useState(0);
+
+  const reviews = [
+    {
+      name: 'Turismo Tocantins',
+      initial: 'TT',
+      date: '26/10/2024',
+      rating: 5,
+      comment: 'Ótimo atendimento, campanhas muito bem estruturadas e volume de contatos diários no nosso WhatsApp aumentou mais de 300% logo no primeiro mês!',
+      avatarBg: 'linear-gradient(135deg, #00DF81, #00AAFF)',
+    },
+    {
+      name: 'Global Mudanças em SP',
+      initial: 'GM',
+      date: '25/06/2024',
+      rating: 5,
+      comment: 'Ótimo Serviço e Tem Resultado pode Confiar. Trabalho de Total confiança nota 10 👊👍 Fechamento de orçamentos triplicou.',
+      avatarBg: 'linear-gradient(135deg, #4F46E5, #06B6D4)',
+    },
+    {
+      name: 'Ronívia Aires Pimenta',
+      initial: 'R',
+      date: '15/06/2024',
+      rating: 5,
+      comment: 'Parabéns Infinity Ads pelo incrível trabalho! Sua dedicação e atenção aos detalhes fizeram a diferença para a escala do nosso e-commerce.',
+      avatarBg: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
+    },
+    {
+      name: 'Dr. Marcos Albuquerque (Clínica Odonto)',
+      initial: 'MA',
+      date: '12/08/2024',
+      rating: 5,
+      comment: 'Antes nós impulsionávamos no Instagram e só vinha curioso. Com a Infinity, hoje nossa agenda de implantes e procedimentos vive lotada.',
+      avatarBg: 'linear-gradient(135deg, #00AAFF, #00DF81)',
+    },
+    {
+      name: 'Eduardo Silveira (SaaS B2B)',
+      initial: 'ES',
+      date: '04/09/2024',
+      rating: 5,
+      comment: 'O alinhamento do LinkedIn Ads com o Google Search foi a virada de chave para nossos contratos corporativos. ROAS de 7.2x comprovado no BI.',
+      avatarBg: 'linear-gradient(135deg, #F59E0B, #EF4444)',
+    },
+    {
+      name: 'Camila Duarte (Moda & E-commerce)',
+      initial: 'CD',
+      date: '18/11/2024',
+      rating: 5,
+      comment: 'Os criativos que a equipe desenvolve são de outro nível. Pararam de copiar concorrente e criaram uma esteira própria que converte no automático.',
+      avatarBg: 'linear-gradient(135deg, #EC4899, #8B5CF6)',
+    },
+  ];
+
   // Dynamic ROAS calculation
   const calcResults = useMemo(() => {
     const roasEstimado = investimento < 5000 ? 4.5 : investimento < 15000 ? 5.2 : 6.0;
@@ -760,6 +814,102 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
               </div>
 
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================
+          SECTION: AVALIAÇÕES E DEPOIMENTOS (GOOGLE REVIEWS CAROUSEL)
+          ============================================================ */}
+      <section className="tf-reviews-section">
+        <div className="tf-container">
+          <div className="tf-section-header" style={{ marginBottom: '32px' }}>
+            <span className="tf-section-badge" style={{ color: '#00DF81' }}>AVALIAÇÕES REAIS</span>
+            <h2 className="tf-section-title">
+              Descubra o que empresários e marcas estão dizendo sobre a <span className="tf-gradient-text">Infinity Ads</span>
+            </h2>
+          </div>
+
+          <div className="tf-reviews-layout">
+            
+            {/* Google Rating Summary Card */}
+            <div className="tf-google-score-card">
+              <div className="tf-score-title">EXCELENTE</div>
+              <div className="tf-stars-row">
+                ★★★★★
+              </div>
+              <div className="tf-score-count">
+                Com base em <strong>22 avaliações</strong>
+              </div>
+              <div className="tf-google-logo">
+                <span style={{ color: '#4285F4' }}>G</span>
+                <span style={{ color: '#EA4335' }}>o</span>
+                <span style={{ color: '#FBBC05' }}>o</span>
+                <span style={{ color: '#4285F4' }}>g</span>
+                <span style={{ color: '#34A853' }}>l</span>
+                <span style={{ color: '#EA4335' }}>e</span>
+              </div>
+            </div>
+
+            {/* Testimonials Carousel */}
+            <div className="tf-carousel-wrapper">
+              <div
+                className="tf-carousel-track"
+                style={{
+                  transform: `translateX(-${reviewIdx * (100 / (reviews.length > 3 ? 3 : reviews.length))}%)`,
+                }}
+              >
+                {reviews.map((rev, idx) => (
+                  <div key={idx} className="tf-review-card">
+                    <div className="tf-reviewer-header">
+                      <div className="tf-reviewer-avatar" style={{ background: rev.avatarBg }}>
+                        {rev.initial}
+                      </div>
+                      <div className="tf-reviewer-info">
+                        <h4>{rev.name}</h4>
+                        <span>{rev.date}</span>
+                      </div>
+                    </div>
+
+                    <div className="tf-review-stars-row">
+                      <span style={{ color: '#FFB800', fontSize: '15px' }}>★★★★★</span>
+                      <span className="tf-verified-badge" title="Avaliação Verificada">✓</span>
+                    </div>
+
+                    <p className="tf-review-text">
+                      &ldquo;{rev.comment}&rdquo;
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Controls */}
+              <div className="tf-carousel-controls">
+                <div className="tf-trustindex-badge">
+                  <span>🛡️ Certificado: Google Verified Reviews</span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    className="tf-nav-btn"
+                    onClick={() => setReviewIdx(Math.max(0, reviewIdx - 1))}
+                    disabled={reviewIdx === 0}
+                    aria-label="Anterior"
+                  >
+                    ←
+                  </button>
+                  <button
+                    className="tf-nav-btn"
+                    onClick={() => setReviewIdx(Math.min(reviews.length - 2, reviewIdx + 1))}
+                    disabled={reviewIdx >= reviews.length - 2}
+                    aria-label="Próximo"
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

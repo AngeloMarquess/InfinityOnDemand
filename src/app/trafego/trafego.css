@@ -952,3 +952,227 @@
   box-shadow: 0 16px 40px rgba(37, 211, 102, 0.6);
   color: #FFFFFF;
 }
+
+/* ============================================
+   REVIEWS & TESTIMONIALS CAROUSEL (GOOGLE STYLE)
+   ============================================ */
+
+.tf-reviews-section {
+  padding: 100px 0;
+  background: #060913;
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-reviews-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 36px;
+  align-items: center;
+  margin-top: 48px;
+}
+
+@media (max-width: 992px) {
+  .tf-reviews-layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+/* Google Summary Score Card */
+.tf-google-score-card {
+  background: rgba(11, 15, 25, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 32px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+.tf-score-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: 0.5px;
+}
+
+.tf-stars-row {
+  display: flex;
+  gap: 4px;
+  color: #FFB800;
+  font-size: 18px;
+}
+
+.tf-score-count {
+  font-size: 12px;
+  color: #9CA3AF;
+}
+
+.tf-google-logo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-top: 4px;
+}
+
+/* Carousel Container */
+.tf-carousel-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-carousel-track {
+  display: flex;
+  gap: 20px;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tf-review-card {
+  min-width: 320px;
+  max-width: 360px;
+  flex: 0 0 calc(33.333% - 14px);
+  background: rgba(17, 24, 39, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+  .tf-review-card {
+    flex: 0 0 calc(50% - 10px);
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 640px) {
+  .tf-review-card {
+    flex: 0 0 100%;
+    min-width: 100%;
+  }
+}
+
+.tf-review-card:hover {
+  border-color: rgba(0, 223, 129, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+.tf-reviewer-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.tf-reviewer-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00DF81, #00AAFF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #060913;
+  font-size: 16px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.tf-reviewer-info h4 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.tf-reviewer-info span {
+  font-size: 12px;
+  color: #9CA3AF;
+}
+
+.tf-review-stars-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tf-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #0084FF;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.tf-review-text {
+  font-size: 14px;
+  color: #D1D5DB;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.tf-carousel-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.tf-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tf-nav-btn:hover:not(:disabled) {
+  background: #00DF81;
+  color: #060913;
+  border-color: #00DF81;
+}
+
+.tf-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.tf-trustindex-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(0, 223, 129, 0.1);
+  border: 1px solid rgba(0, 223, 129, 0.3);
+  color: #00DF81;
+  font-size: 12px;
+  font-weight: 700;
+}
+
