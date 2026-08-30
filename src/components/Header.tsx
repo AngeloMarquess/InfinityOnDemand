@@ -44,7 +44,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
 
         {/* Desktop nav */}
         <nav className="nav-desktop">
-          <a href="https://neuromarketing.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px" }}>Tráfego Pago</a>
+          <Link href={`${prefix}/trafego`} style={{ padding: "8px 12px", borderRadius: "4px", color: "#00DF81", fontWeight: 700 }}>{t.trafego || 'Tráfego Pago'}</Link>
           <Link href={`${prefix}/#labs`} style={{ padding: "8px 12px", borderRadius: "4px" }}>{t.labs}</Link>
           <Link href={`${prefix}/consultoria`} style={{ padding: "8px 12px", borderRadius: "4px" }}>{t.consultoria}</Link>
           <Link href={`${prefix}/ecommerce`} style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.ecommerce}</Link>
@@ -102,7 +102,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
         {/* CTA Buttons */}
         <div className="mobile-menu-cta">
           <a
-            href="https://wa.me/558193997207?text=Ol%C3%A1!%20Quero%20testar%20as%20solu%C3%A7%C3%B5es%20da%20Infinity%20OnDemand."
+            href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Quero%20testar%20as%20solu%C3%A7%C3%B5es%20da%20Infinity%20OnDemand."
             target="_blank"
             rel="noopener noreferrer"
             onClick={closeMenu}
@@ -127,7 +127,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
         {/* Navigation links */}
         <nav className="mobile-menu-links">
           <Link href={prefix || '/'} onClick={closeMenu}>{t.inicio}</Link>
-          <a href="https://neuromarketing.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" onClick={closeMenu}>Tráfego Pago</a>
+          <Link href={`${prefix}/trafego`} onClick={closeMenu} style={{ color: "#00DF81", fontWeight: 700 }}>{t.trafego || 'Tráfego Pago'}</Link>
           <Link href={`${prefix}/#labs`} onClick={closeMenu}>{t.labs}</Link>
           <Link href={`${prefix}/consultoria`} onClick={closeMenu}>{t.consultoria}</Link>
           <Link href={`${prefix}/ecommerce`} onClick={closeMenu}>{t.ecommerce}</Link>

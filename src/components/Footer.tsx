@@ -77,7 +77,7 @@ export default function Footer({ dict, locale }: { dict?: any; locale?: string }
               <li><a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.infinityCRM}</a></li>
               <li><Link href={`${prefix}/delivery`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.infinityDelivery}</Link></li>
               <li><a href="#consulting" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.cloudDevops}</a></li>
-              <li><a href="#consulting" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.growthMarketing}</a></li>
+              <li><Link href={`${prefix}/trafego`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.growthMarketing}</Link></li>
             </ul>
           </div>
 

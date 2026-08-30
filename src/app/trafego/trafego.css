@@ -1,0 +1,954 @@
+/* ============================================
+   TRÁFEGO PAGO PAGE — Infinity Growth Scoped CSS
+   ============================================ */
+
+.tf-page {
+  background-color: #060913;
+  color: #F3F4F6;
+  font-family: var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Animations */
+@keyframes tf-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+@keyframes tf-pulse-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.08); }
+}
+
+@keyframes tf-gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes tf-spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Container */
+.tf-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Hero Section */
+.tf-hero {
+  position: relative;
+  min-height: 90vh;
+  padding: 140px 0 100px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 10%, rgba(0, 223, 129, 0.12) 0%, rgba(0, 170, 255, 0.08) 35%, transparent 70%),
+              radial-gradient(circle at 90% 80%, rgba(0, 170, 255, 0.06) 0%, transparent 50%),
+              #060913;
+}
+
+.tf-hero-glow-1 {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(0, 223, 129, 0.15) 0%, rgba(0, 170, 255, 0.1) 40%, transparent 70%);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 1;
+  animation: tf-pulse-glow 8s ease-in-out infinite;
+}
+
+.tf-hero-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 48px;
+  align-items: center;
+}
+
+@media (max-width: 992px) {
+  .tf-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+}
+
+/* Badges */
+.tf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(0, 223, 129, 0.08);
+  border: 1px solid rgba(0, 223, 129, 0.3);
+  color: #00DF81;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  box-shadow: 0 0 25px rgba(0, 223, 129, 0.15);
+}
+
+.tf-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00DF81;
+  box-shadow: 0 0 10px #00DF81;
+  animation: tf-pulse-glow 2s infinite;
+}
+
+/* Typography */
+.tf-title-hero {
+  font-size: clamp(34px, 5.2vw, 62px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  margin-bottom: 24px;
+  color: #FFFFFF;
+}
+
+.tf-gradient-text {
+  background: linear-gradient(135deg, #00DF81 0%, #00AAFF 50%, #70E1FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tf-subtitle {
+  font-size: clamp(16px, 1.8vw, 20px);
+  line-height: 1.6;
+  color: #9CA3AF;
+  margin-bottom: 36px;
+  max-width: 620px;
+}
+
+@media (max-width: 992px) {
+  .tf-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* CTAs */
+.tf-cta-group {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+@media (max-width: 992px) {
+  .tf-cta-group {
+    justify-content: center;
+  }
+}
+
+.tf-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 32px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #00DF81 0%, #00AAFF 100%);
+  color: #060913;
+  font-weight: 800;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 30px rgba(0, 223, 129, 0.35);
+  border: none;
+  cursor: pointer;
+}
+
+.tf-btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 14px 40px rgba(0, 223, 129, 0.5);
+  color: #000;
+}
+
+.tf-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 28px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.tf-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(0, 170, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Trust Stats under hero */
+.tf-hero-trust {
+  display: flex;
+  gap: 32px;
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 992px) {
+  .tf-hero-trust {
+    justify-content: center;
+  }
+}
+
+.tf-trust-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tf-trust-value {
+  font-size: 26px;
+  font-weight: 900;
+  color: #FFFFFF;
+}
+
+.tf-trust-label {
+  font-size: 12px;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Hero Interactive Card / Visual */
+.tf-hero-card {
+  background: rgba(11, 15, 25, 0.85);
+  border: 1px solid rgba(0, 223, 129, 0.25);
+  border-radius: 24px;
+  padding: 32px;
+  position: relative;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 223, 129, 0.1);
+  overflow: hidden;
+}
+
+.tf-hero-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00DF81, #00AAFF, transparent);
+}
+
+/* Scientific Infinity Loop Section */
+.tf-section {
+  padding: 100px 0;
+  position: relative;
+}
+
+.tf-section-header {
+  text-align: center;
+  max-width: 820px;
+  margin: 0 auto 64px;
+}
+
+.tf-section-badge {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #00AAFF;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+
+.tf-section-title {
+  font-size: clamp(28px, 3.8vw, 46px);
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  color: #FFFFFF;
+  margin-bottom: 16px;
+}
+
+.tf-section-subtitle {
+  font-size: 18px;
+  color: #9CA3AF;
+  line-height: 1.6;
+}
+
+/* Loop 4-Card Grid */
+.tf-loop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+}
+
+@media (max-width: 1024px) {
+  .tf-loop-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .tf-loop-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tf-loop-card {
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 30px 24px;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(12px);
+}
+
+.tf-loop-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0, 223, 129, 0.4);
+  box-shadow: 0 16px 40px rgba(0, 223, 129, 0.12);
+  background: rgba(17, 24, 39, 0.95);
+}
+
+.tf-loop-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  background: rgba(0, 223, 129, 0.1);
+  border: 1px solid rgba(0, 223, 129, 0.2);
+  color: #00DF81;
+}
+
+.tf-loop-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 10px;
+}
+
+.tf-loop-desc {
+  font-size: 14px;
+  color: #9CA3AF;
+  line-height: 1.6;
+}
+
+/* Pain Points: Por que a maioria queima verba */
+.tf-pain-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 992px) {
+  .tf-pain-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .tf-pain-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tf-pain-card {
+  background: rgba(11, 15, 25, 0.85);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 20px;
+  padding: 32px 26px;
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.tf-pain-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 223, 129, 0.5);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+}
+
+.tf-pain-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #EF4444;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.tf-pain-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+.tf-pain-text {
+  font-size: 15px;
+  color: #9CA3AF;
+  line-height: 1.6;
+}
+
+/* O Método INFINITY ∞ Roadmap (6 Passos) */
+.tf-method-container {
+  background: rgba(11, 15, 25, 0.9);
+  border: 1px solid rgba(0, 223, 129, 0.2);
+  border-radius: 28px;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+@media (max-width: 768px) {
+  .tf-method-container {
+    padding: 28px 18px;
+  }
+}
+
+.tf-method-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 36px;
+}
+
+@media (max-width: 992px) {
+  .tf-method-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .tf-method-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tf-method-step {
+  background: rgba(17, 24, 39, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  padding: 28px 22px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  transition: all 0.3s ease;
+}
+
+.tf-method-step:hover {
+  background: rgba(17, 24, 39, 0.95);
+  border-color: #00DF81;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 223, 129, 0.15);
+}
+
+.tf-step-num {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0, 223, 129, 0.15), rgba(0, 170, 255, 0.15));
+  border: 2px solid #00DF81;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: #00DF81;
+  flex-shrink: 0;
+}
+
+.tf-step-content h4 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 6px;
+}
+
+.tf-step-content p {
+  font-size: 14px;
+  color: #9CA3AF;
+  line-height: 1.5;
+}
+
+.tf-loop-footer {
+  margin-top: 36px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  background: rgba(0, 223, 129, 0.12);
+  border: 1px solid rgba(0, 223, 129, 0.3);
+  color: #00DF81;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+
+/* Onde a gente joga (Canais) */
+.tf-channels-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 992px) {
+  .tf-channels-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .tf-channels-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tf-channel-card {
+  background: rgba(11, 15, 25, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tf-channel-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0, 170, 255, 0.4);
+  box-shadow: 0 16px 40px rgba(0, 170, 255, 0.12);
+}
+
+.tf-channel-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tf-channel-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.tf-channel-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.tf-channel-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #00AAFF;
+  text-transform: uppercase;
+}
+
+.tf-channel-desc {
+  font-size: 14px;
+  color: #9CA3AF;
+  line-height: 1.6;
+}
+
+/* Funil Completo */
+.tf-funnel-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.tf-funnel-layer {
+  background: rgba(11, 15, 25, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .tf-funnel-layer {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+}
+
+.tf-funnel-layer:hover {
+  border-color: #00DF81;
+  background: rgba(17, 24, 39, 0.9);
+  transform: scale(1.01);
+}
+
+.tf-funnel-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.tf-funnel-badge {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.tf-funnel-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.tf-funnel-desc {
+  font-size: 14px;
+  color: #9CA3AF;
+}
+
+.tf-funnel-goal {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(0, 223, 129, 0.1);
+  border: 1px solid rgba(0, 223, 129, 0.3);
+  color: #00DF81;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* O que a gente mede (Metrics) */
+.tf-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .tf-metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .tf-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.tf-metric-card {
+  background: rgba(11, 15, 25, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 24px 18px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.tf-metric-card:hover {
+  border-color: #00AAFF;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 170, 255, 0.15);
+}
+
+.tf-metric-acronym {
+  font-size: 32px;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: -1px;
+  margin-bottom: 6px;
+}
+
+.tf-metric-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #00DF81;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tf-metric-desc {
+  font-size: 12px;
+  color: #9CA3AF;
+  line-height: 1.4;
+}
+
+/* Interactive ROAS Calculator */
+.tf-calc-wrapper {
+  background: radial-gradient(circle at top right, rgba(0, 170, 255, 0.1) 0%, transparent 60%),
+              rgba(11, 15, 25, 0.95);
+  border: 1px solid rgba(0, 223, 129, 0.3);
+  border-radius: 28px;
+  padding: 48px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+  margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+  .tf-calc-wrapper {
+    padding: 28px 20px;
+  }
+}
+
+.tf-calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+@media (max-width: 992px) {
+  .tf-calc-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.tf-slider-group {
+  margin-bottom: 24px;
+}
+
+.tf-slider-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+.tf-slider-val {
+  font-size: 18px;
+  font-weight: 900;
+  color: #00DF81;
+}
+
+.tf-range-input {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  -webkit-appearance: none;
+  accent-color: #00DF81;
+}
+
+.tf-calc-result-box {
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(0, 223, 129, 0.25);
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+}
+
+.tf-result-item {
+  margin-bottom: 20px;
+}
+
+.tf-result-title {
+  font-size: 13px;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.tf-result-number {
+  font-size: 38px;
+  font-weight: 900;
+  color: #00DF81;
+  letter-spacing: -1px;
+}
+
+/* Diagnostic Application Form */
+.tf-form-card {
+  background: rgba(11, 15, 25, 0.95);
+  border: 1px solid rgba(0, 223, 129, 0.35);
+  border-radius: 28px;
+  padding: 48px;
+  max-width: 680px;
+  margin: 0 auto;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7), 0 0 50px rgba(0, 223, 129, 0.12);
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .tf-form-card {
+    padding: 32px 20px;
+  }
+}
+
+.tf-input-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.tf-input-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #D1D5DB;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tf-input-field {
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.tf-input-field:focus {
+  border-color: #00DF81;
+  background: rgba(0, 223, 129, 0.04);
+  box-shadow: 0 0 0 3px rgba(0, 223, 129, 0.15);
+}
+
+.tf-select-field {
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: #0E1424;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.tf-select-field:focus {
+  border-color: #00DF81;
+}
+
+/* FAQ Accordion */
+.tf-faq-list {
+  max-width: 820px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tf-faq-item {
+  background: rgba(11, 15, 25, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.tf-faq-item:hover {
+  border-color: rgba(0, 223, 129, 0.3);
+}
+
+.tf-faq-question {
+  width: 100%;
+  padding: 22px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tf-faq-answer {
+  padding: 0 24px 22px;
+  font-size: 15px;
+  color: #9CA3AF;
+  line-height: 1.6;
+}
+
+/* Floating WhatsApp Widget */
+.tf-float-whatsapp {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #25D366;
+  color: #FFFFFF;
+  padding: 14px 22px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 15px;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: tf-pulse-glow 3s infinite;
+}
+
+.tf-float-whatsapp:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 16px 40px rgba(37, 211, 102, 0.6);
+  color: #FFFFFF;
+}
