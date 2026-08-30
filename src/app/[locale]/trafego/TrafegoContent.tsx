@@ -733,9 +733,21 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
               </div>
 
               <div className="tf-metric-card">
+                <div className="tf-metric-acronym" style={{ color: '#70E1FF' }}>CPC</div>
+                <div className="tf-metric-name" style={{ color: '#70E1FF' }}>Custo por Clique</div>
+                <div className="tf-metric-desc">Quanto custa trazer um visitante qualificado para sua página.</div>
+              </div>
+
+              <div className="tf-metric-card">
                 <div className="tf-metric-acronym" style={{ color: '#00DF81' }}>CPA</div>
                 <div className="tf-metric-name">Custo por Aquisição</div>
                 <div className="tf-metric-desc">Quanto custa cada lead qualificado e cada novo cliente pagante.</div>
+              </div>
+
+              <div className="tf-metric-card">
+                <div className="tf-metric-acronym" style={{ color: '#10B981' }}>CR %</div>
+                <div className="tf-metric-name" style={{ color: '#10B981' }}>Taxa de Conversão</div>
+                <div className="tf-metric-desc">% de pessoas que entram na sua página e fecham negócio.</div>
               </div>
 
               <div className="tf-metric-card">
@@ -745,9 +757,27 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
               </div>
 
               <div className="tf-metric-card">
+                <div className="tf-metric-acronym" style={{ color: '#FBBF24' }}>ROI</div>
+                <div className="tf-metric-name" style={{ color: '#FBBF24' }}>Retorno de Lucro</div>
+                <div className="tf-metric-desc">Lucro real da sua empresa após abater todos os custos operacionais.</div>
+              </div>
+
+              <div className="tf-metric-card">
+                <div className="tf-metric-acronym" style={{ color: '#8B5CF6' }}>CAC</div>
+                <div className="tf-metric-name" style={{ color: '#8B5CF6' }}>Custo por Cliente</div>
+                <div className="tf-metric-desc">Investimento total dividido pelo número de clientes conquistados.</div>
+              </div>
+
+              <div className="tf-metric-card">
                 <div className="tf-metric-acronym" style={{ color: '#EC4899' }}>LTV</div>
                 <div className="tf-metric-name" style={{ color: '#EC4899' }}>Valor do Cliente</div>
                 <div className="tf-metric-desc">Quanto lucro líquido cada cliente deixa ao longo do relacionamento.</div>
+              </div>
+
+              <div className="tf-metric-card">
+                <div className="tf-metric-acronym" style={{ color: '#F43F5E' }}>RR %</div>
+                <div className="tf-metric-name" style={{ color: '#F43F5E' }}>Taxa de Recompra</div>
+                <div className="tf-metric-desc">% de clientes recorrentes sem custo de novo anúncio.</div>
               </div>
             </div>
           </div>
