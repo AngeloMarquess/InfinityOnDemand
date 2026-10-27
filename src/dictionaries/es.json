@@ -14,7 +14,8 @@
     "inicio": "Inicio",
     "sobreNos": "Sobre nosotros",
     "testeAgora": "Probar ahora",
-    "login": "Login"
+    "login": "Login",
+    "market": "Market"
   },
   "footer": {
     "brand": "Innovación, tecnología y rendimiento. Ayudamos a empresas a escalar mediante soluciones de software de vanguardia y consultoría estratégica.",
@@ -47,7 +48,6 @@
     "chartTitle": "Crecimiento de Ventas\nMensual",
     "chartGrowth": "+248% vs mes anterior",
     "campanhaAtiva": "Campaña Activa",
-
     "labsTitle": "Infinity Labs",
     "labsSubtitle": "Nuestro núcleo de investigación y desarrollo. Probamos tecnologías emergentes para crear soluciones prácticas para tu e-commerce.",
     "labsCard1Title": "Agentes de I.A. Autónomos",
@@ -59,12 +59,10 @@
     "labsCard3Title": "Landing Pages Autónomas",
     "labsCard3Desc": "I.A. que analiza tu negocio, entiende el nicho y genera landing pages de alta conversión automáticamente — del copy al diseño, sin intervención humana.",
     "labsCard3Status": "Estado: En desarrollo",
-
     "crmBadge": "Plataforma Propietaria",
     "crmTitle": "Infinity CRM",
     "crmDesc": "Acelera tus ventas y gestiona tu relación con el cliente a través de nuestro CRM inteligente, creado dentro de Infinity Labs con enfoque en alta conversión y análisis de datos.",
     "crmBtn": "Acceder a Plataforma CRM",
-
     "deliveryBadge": "Plataforma SaaS Multi-Tenant",
     "deliveryTitle": "Infinity Delivery OS",
     "deliveryDesc": "El sistema definitivo para operaciones de delivery y pizzerías. Una infraestructura robusta, comercializada en modelo SaaS, con front-end reactivo de punta y panel administrativo 100% integrado al Punto de Venta.",
@@ -77,7 +75,6 @@
     "deliveryFeat4Title": "Alto Rendimiento",
     "deliveryFeat4Desc": "Panel SPA enfocado en optimización, ideal para operaciones con alto volumen de cupones, tasas y clientes concurrentes.",
     "deliveryBtn": "Explorar Infinity Delivery",
-
     "ecomBadge": "Fábrica de Tiendas Virtuales",
     "ecomTitle": "Desarrollo de E-commerce",
     "ecomDesc": "Creamos ecosistemas de ventas online escalables, seguros y optimizados para máxima conversión. De la arquitectura al diseño, nuestra fábrica entrega tiendas B2B y B2C preparadas para dominar el mercado.",
@@ -85,7 +82,6 @@
     "ecomFeat2": "Diseño UX/UI Enfocado en Maximización de Ventas",
     "ecomFeat3": "Integraciones Complejas con ERPs y Pasarelas de Pago",
     "ecomBtn": "Ver Soluciones de E-commerce",
-
     "consultingTitle": "Consultoría Especializada",
     "consultCard1Title": "Tráfico Pago / Performance",
     "consultCard1Desc": "Optimización rigurosa de CAC (Costo de Adquisición) y ROAS en campañas multicanal, potenciando tus ventas con automatización y datos.",
@@ -93,14 +89,12 @@
     "consultCard2Desc": "Ingeniería completa de sistemas de Delivery / SaaS de alto nivel, con aprovisionamiento cloud inteligente y escalable.",
     "consultCard3Title": "Implementación de CRM B2B",
     "consultCard3Desc": "Setup avanzado de CRMs como HubSpot y plataformas propias integradas, organizando el embudo de ventas de tu operación comercial.",
-
     "flashTitle": "Habla con",
     "flashName": "Flash",
     "flashSubtitle": "Nuestro Consultor de Ventas con I.A.",
     "flashDesc": "Resuelve todas tus dudas en tiempo real por WhatsApp. Flash es nuestro SDR inteligente que entiende tus necesidades y arma la mejor propuesta para tu negocio —",
     "flash247": "24h al día, 7 días a la semana",
     "flashBtn": "Conversar con Flash",
-
     "contactTitle": "¿Listo para escalar?",
     "contactSubtitle": "Habla con nuestros ingenieros y consultores.",
     "contactNome": "Nombre Completo",
@@ -113,7 +107,6 @@
     "contactSuccess": "¡Mensaje enviado!",
     "contactSuccessDesc": "Nos pondremos en contacto pronto.",
     "contactSuccessBtn": "Enviar otro",
-
     "blogBadge": "Blog",
     "blogTitle": "Insights del",
     "blogTitleAccent": "Infinity Blog",
