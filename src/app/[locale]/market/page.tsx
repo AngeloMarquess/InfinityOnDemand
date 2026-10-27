@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import MarketHeader from '@/components/MarketHeader';
 import MarketFooter from '@/components/MarketFooter';
+import MarketJourneyCarousel from '@/components/MarketJourneyCarousel';
 import {
   Store,
   Smartphone,
@@ -973,6 +974,9 @@ export default async function MarketHomePage({
 
         </div>
       </section>
+
+      {/* ================= JOURNEY CAROUSEL SECTION ================= */}
+      <MarketJourneyCarousel locale={locale} />
 
       {/* ================= FAQ SECTION ================= */}
       <section style={{ padding: '80px 24px', backgroundColor: '#0F172A', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
