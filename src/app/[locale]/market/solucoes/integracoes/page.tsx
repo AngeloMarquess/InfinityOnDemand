@@ -83,7 +83,7 @@ export default async function SolucaoIntegracoesPage({
 
               <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '32px' }}>
                 <a
-                  href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Gostaria%20de%20saber%20sobre%20a%20integra%C3%A7%C3%A3o%20com%20meu%20ERP."
+                  href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Gostaria%20de%20saber%20sobre%20a%20integra%C3%A7%C3%A3o%20com%20meu%20ERP."
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ backgroundColor: '#A855F7', color: '#fff', padding: '16px 28px', borderRadius: '12px', fontWeight: 800, fontSize: '15px', textDecoration: 'none', boxShadow: '0 8px 24px rgba(168, 85, 247, 0.3)', display: 'inline-flex', alignItems: 'center', gap: '10px' }}
@@ -120,7 +120,7 @@ export default async function SolucaoIntegracoesPage({
           <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#fff', marginBottom: '16px' }}>Zero retrabalho para sua equipe de TI</h2>
           <p style={{ fontSize: '15px', color: '#94A3B8', marginBottom: '28px' }}>Nossa equipe técnica cuida do conector e do mapeamento de campos com total segurança.</p>
           <a
-            href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Quero%20falar%20com%20um%20especialista%20sobre%20integra%C3%A7%C3%A3o%20ERP."
+            href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Quero%20falar%20com%20um%20especialista%20sobre%20integra%C3%A7%C3%A3o%20ERP."
             target="_blank"
             rel="noopener noreferrer"
             style={{ backgroundColor: '#A855F7', color: '#fff', padding: '16px 32px', borderRadius: '12px', fontWeight: 800, fontSize: '15px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px' }}

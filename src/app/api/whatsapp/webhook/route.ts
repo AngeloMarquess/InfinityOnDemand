@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
       
       // If this is the 3rd request (asked 2 times in history)
       if (userRequests.length >= 2) {
-        const ownerPhone = '5581971027939'; // User's requested phone
+        const ownerPhone = '5581981280719'; // User's requested phone
         const notification = `🚨 *HAND-OFF FLASH*\n\nO cliente *${contactName}* (+${from}) pediu atendimento humano pela ${userRequests.length + 1}ª vez.\n\n*Última mensagem:* "${messageText}"\n\nAbra o painel para assumir: https://flash.infinityondemand.com.br/relatorios_infinity`;
         
         await sendWhatsAppMessage(ownerPhone, notification);

@@ -295,7 +295,7 @@ export default function FlashSDRTab() {
             </div>
             <button 
               onClick={async () => {
-                const to = prompt('Digite o número para teste (ex: 5581971027939)');
+                const to = prompt('Digite o número para teste (ex: 5581981280719)');
                 if (!to) return;
                 try {
                   const res = await fetch(`/api/whatsapp/test-delivery?to=${to}`);

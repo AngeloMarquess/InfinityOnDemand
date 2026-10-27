@@ -134,7 +134,7 @@ export default async function MarketHomePage({
               {/* CTAs */}
               <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '36px' }}>
                 <a
-                  href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Quero%20conhecer%20o%20Infinity%20Market%20para%20meu%20supermercado."
+                  href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Quero%20conhecer%20o%20Infinity%20Market%20para%20meu%20supermercado."
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -822,7 +822,7 @@ export default async function MarketHomePage({
               </div>
 
               <a
-                href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Vi%20o%20case%20da%20OxeeGo%20e%20quero%20uma%20solu%C3%A7%C3%A3o%20semelhante%20para%20o%20meu%20mercado."
+                href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Vi%20o%20case%20da%20OxeeGo%20e%20quero%20uma%20solu%C3%A7%C3%A3o%20semelhante%20para%20o%20meu%20mercado."
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -1058,7 +1058,7 @@ export default async function MarketHomePage({
           </p>
 
           <a
-            href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20uma%20demonstra%C3%A7%C3%A3o%20do%20Infinity%20Market."
+            href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20uma%20demonstra%C3%A7%C3%A3o%20do%20Infinity%20Market."
             target="_blank"
             rel="noopener noreferrer"
             style={{

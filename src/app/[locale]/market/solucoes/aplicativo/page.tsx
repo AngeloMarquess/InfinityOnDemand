@@ -109,7 +109,7 @@ export default async function SolucaoAplicativoPage({
 
               <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '32px' }}>
                 <a
-                  href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Quero%20um%20aplicativo%20pr%C3%B3prio%20para%20o%20meu%20supermercado."
+                  href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Quero%20um%20aplicativo%20pr%C3%B3prio%20para%20o%20meu%20supermercado."
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -271,7 +271,7 @@ export default async function SolucaoAplicativoPage({
             Nossa equipe cuida de toda a publicação nas lojas e do cadastro inicial do catálogo de produtos.
           </p>
           <a
-            href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Quero%20publicar%20o%20aplicativo%20do%20meu%20supermercado."
+            href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Quero%20publicar%20o%20aplicativo%20do%20meu%20supermercado."
             target="_blank"
             rel="noopener noreferrer"
             style={{

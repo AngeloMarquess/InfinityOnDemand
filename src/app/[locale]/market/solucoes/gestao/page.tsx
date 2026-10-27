@@ -109,7 +109,7 @@ export default async function SolucaoGestaoPage({
 
               <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '32px' }}>
                 <a
-                  href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Quero%20uma%20demonstra%C3%A7%C3%A3o%20do%20Painel%20de%20Gest%C3%A3o%20do%20Infinity%20Market."
+                  href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Quero%20uma%20demonstra%C3%A7%C3%A3o%20do%20Painel%20de%20Gest%C3%A3o%20do%20Infinity%20Market."
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -276,7 +276,7 @@ export default async function SolucaoGestaoPage({
             Agende uma demonstração guiada e conheça todas as telas administrativas e operacionais.
           </p>
           <a
-            href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20uma%20demonstra%C3%A7%C3%A3o%20do%20Painel%20de%20Gest%C3%A3o."
+            href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20uma%20demonstra%C3%A7%C3%A3o%20do%20Painel%20de%20Gest%C3%A3o."
             target="_blank"
             rel="noopener noreferrer"
             style={{

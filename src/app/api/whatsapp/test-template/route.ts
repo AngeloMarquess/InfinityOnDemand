@@ -4,7 +4,7 @@ const WHATSAPP_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN || process.env.META_USE
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
 export async function GET(request: NextRequest) {
-  const to = request.nextUrl.searchParams.get('to') || '5581971027939';
+  const to = request.nextUrl.searchParams.get('to') || '5581981280719';
   const template = request.nextUrl.searchParams.get('template') || 'flash_prospeccao';
   const variable = request.nextUrl.searchParams.get('var') || 'Teste Restaurante';
 

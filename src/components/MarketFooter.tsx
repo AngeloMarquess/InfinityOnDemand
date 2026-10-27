@@ -51,7 +51,7 @@ export default function MarketFooter({ locale = 'pt' }: { locale?: string }) {
           </div>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <a
-              href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20uma%20demonstra%C3%A7%C3%A3o%20do%20Infinity%20Market."
+              href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20uma%20demonstra%C3%A7%C3%A3o%20do%20Infinity%20Market."
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -243,7 +243,7 @@ export default function MarketFooter({ locale = 'pt' }: { locale?: string }) {
             <Link href={`${prefix}/ecommerce`} style={{ color: '#64748B', textDecoration: 'none' }}>
               E-commerce Customizado
             </Link>
-            <a href="https://wa.me/5581971027939" target="_blank" rel="noopener noreferrer" style={{ color: '#00DF81', textDecoration: 'none', fontWeight: 600 }}>
+            <a href="https://wa.me/5581981280719" target="_blank" rel="noopener noreferrer" style={{ color: '#00DF81', textDecoration: 'none', fontWeight: 600 }}>
               Suporte & Comercial
             </a>
           </div>

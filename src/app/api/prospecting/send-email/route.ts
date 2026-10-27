@@ -292,7 +292,7 @@ function buildProspectingEmail(name: string, bodyText: string, pillar: string, c
                 <p style="color: #94a3b8; font-size: 13px; margin: 0; line-height: 1.5;">
                   <strong style="color: #ffffff; font-size: 14px;">Angelo Marques</strong><br />
                   CEO & Fundador | Infinity On Demand<br />
-                  <span style="color: #10b981;">(81) 97102-7939 (WhatsApp)</span>
+                  <span style="color: #10b981;">(81) 98128-0719 (WhatsApp)</span>
                 </p>
               </div>
               <p style="color: #64748b; font-size: 11px; text-align: center; margin: 28px 0 0;">

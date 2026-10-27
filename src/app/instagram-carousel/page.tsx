@@ -194,7 +194,7 @@ export default function InstagramCarousel() {
 
             <div className="flex items-center gap-6 bg-white/5 px-10 py-6 rounded-full border border-white/10 backdrop-blur-md">
               <span className="text-4xl">💬</span>
-              <span className="text-[32px] text-white font-semibold">WhatsApp: <span className="text-[#00DB79]">(81) 97102-7939</span></span>
+              <span className="text-[32px] text-white font-semibold">WhatsApp: <span className="text-[#00DB79]">(81) 98128-0719</span></span>
             </div>
             <div className="mt-6">
               <span className="text-[28px] text-gray-400 font-medium">Falar direto com <b>Angelo Marques</b></span>

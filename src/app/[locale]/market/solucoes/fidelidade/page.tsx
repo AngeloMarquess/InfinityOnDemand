@@ -70,7 +70,7 @@ export default async function SolucaoFidelidadePage({
 
               <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '32px' }}>
                 <a
-                  href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Quero%20criar%20um%20Clube%20de%20Assinaturas%20para%20o%20meu%20supermercado."
+                  href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Quero%20criar%20um%20Clube%20de%20Assinaturas%20para%20o%20meu%20supermercado."
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ backgroundColor: '#A855F7', color: '#fff', padding: '16px 28px', borderRadius: '12px', fontWeight: 800, fontSize: '15px', textDecoration: 'none', boxShadow: '0 8px 24px rgba(168, 85, 247, 0.3)', display: 'inline-flex', alignItems: 'center', gap: '10px' }}
@@ -118,7 +118,7 @@ export default async function SolucaoFidelidadePage({
           <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#fff', marginBottom: '16px' }}>Garanta receita previsível todo mês</h2>
           <p style={{ fontSize: '15px', color: '#94A3B8', marginBottom: '28px' }}>Veja como implantar a esteira de assinaturas em seu supermercado.</p>
           <a
-            href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Quero%20conhecer%20o%20m%C3%B3dulo%20de%20Assinaturas."
+            href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Quero%20conhecer%20o%20m%C3%B3dulo%20de%20Assinaturas."
             target="_blank"
             rel="noopener noreferrer"
             style={{ backgroundColor: '#A855F7', color: '#fff', padding: '16px 32px', borderRadius: '12px', fontWeight: 800, fontSize: '15px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px' }}

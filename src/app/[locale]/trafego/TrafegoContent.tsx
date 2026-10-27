@@ -142,10 +142,10 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
       const msg = encodeURIComponent(
         `Olá, equipe Infinity OnDemand! Gostaria de receber meu Diagnóstico de Tráfego Gratuito.\n\n*Nome:* ${nome}\n*Empresa:* ${empresa || 'Minha Empresa'}\n*Investimento Previsto:* R$ ${investimento}/mês\n*Principal Objetivo:* ${gargalo || 'Aumentar vendas e leads'}`
       );
-      window.open(`https://wa.me/5581971027939?text=${msg}`, '_blank');
+      window.open(`https://wa.me/5581981280719?text=${msg}`, '_blank');
     } catch {
       alert('Houve um erro ao processar. Vamos te redirecionar diretamente para o WhatsApp.');
-      window.open('https://wa.me/5581971027939', '_blank');
+      window.open('https://wa.me/5581981280719', '_blank');
     }
     setIsSubmitting(false);
   };
@@ -1279,7 +1279,7 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
                   Estamos abrindo a conversa no WhatsApp para iniciar a sua análise com nosso time sênior.
                 </p>
                 <a
-                  href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Acabei%20de%20solicitar%20o%20diagn%C3%B3stico%20de%20tr%C3%A1fego%20no%20site."
+                  href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Acabei%20de%20solicitar%20o%20diagn%C3%B3stico%20de%20tr%C3%A1fego%20no%20site."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="tf-btn-primary"
@@ -1505,7 +1505,7 @@ export default function TrafegoContent({ dict, locale }: { dict?: any; locale?: 
           FLOATING WHATSAPP CTA
           ============================================================ */}
       <a
-        href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Gostaria%20de%20saber%20mais%20sobre%20a%20gest%C3%A3o%20de%20tr%C3%A1fego%20da%20Infinity."
+        href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Gostaria%20de%20saber%20mais%20sobre%20a%20gest%C3%A3o%20de%20tr%C3%A1fego%20da%20Infinity."
         target="_blank"
         rel="noopener noreferrer"
         className="tf-float-whatsapp"

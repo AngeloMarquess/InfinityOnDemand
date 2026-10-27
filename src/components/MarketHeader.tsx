@@ -612,7 +612,7 @@ export default function MarketHeader({ locale = 'pt' }: MarketHeaderProps) {
           {/* Action CTAs */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <a
-              href="https://wa.me/5581971027939?text=Ol%C3%A1%2C+gostaria+de+conhecer+o+Infinity+Market+para+meu+supermercado."
+              href="https://wa.me/5581981280719?text=Ol%C3%A1%2C+gostaria+de+conhecer+o+Infinity+Market+para+meu+supermercado."
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -825,7 +825,7 @@ export default function MarketHeader({ locale = 'pt' }: MarketHeaderProps) {
           {/* CTA Mobile */}
           <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
             <a
-              href="https://wa.me/5581971027939?text=Ol%C3%A1%2C+gostaria+de+conhecer+o+Infinity+Market+para+meu+supermercado."
+              href="https://wa.me/5581981280719?text=Ol%C3%A1%2C+gostaria+de+conhecer+o+Infinity+Market+para+meu+supermercado."
               target="_blank"
               rel="noopener noreferrer"
               style={{

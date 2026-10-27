@@ -109,7 +109,7 @@ export default async function SolucaoEntregasPage({
 
               <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '32px' }}>
                 <a
-                  href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Quero%20conhecer%20o%20m%C3%B3dulo%20de%20Entregas%20do%20Infinity%20Market."
+                  href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Quero%20conhecer%20o%20m%C3%B3dulo%20de%20Entregas%20do%20Infinity%20Market."
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -281,7 +281,7 @@ export default async function SolucaoEntregasPage({
             Fale com nossos consultores e veja como calcular a economia exata de frete da sua região.
           </p>
           <a
-            href="https://wa.me/5581971027939?text=Ol%C3%A1!%20Quero%20conhecer%20a%20solu%C3%A7%C3%A3o%20de%20Entregas%20do%20Infinity%20Market."
+            href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Quero%20conhecer%20a%20solu%C3%A7%C3%A3o%20de%20Entregas%20do%20Infinity%20Market."
             target="_blank"
             rel="noopener noreferrer"
             style={{
