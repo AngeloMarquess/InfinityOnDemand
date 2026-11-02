@@ -28,7 +28,8 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const host = request.headers.get('host') || '';
 
-  // Interceptar subdomínio forms.infinityondemand.com.br
+  // ── SUBDOMÍNIO EXCLUSIVO DE FORMULÁRIOS INTERATIVOS ──
+  // forms.infinityondemand.com.br serve o funil de captura interativo (/f)
   if (host.includes('forms.infinityondemand.com.br')) {
     // Arquivos estáticos e Next.js internals
     if (
@@ -49,20 +50,14 @@ export function middleware(request: NextRequest) {
       return NextResponse.rewrite(new URL('/forms/precos', request.url));
     }
 
-    // Rota direta de forms
-    if (pathname === '/forms' || pathname.startsWith('/forms/')) {
-      return NextResponse.next();
-    }
-
-    // Se o usuário acessar /f/slug ou qualquer slug no subdomínio de forms (ex: /sobre, /ecommerce, /testes, etc.)
-    // NUNCA deve cair no site principal da Infinity (home/sobre).
-    // O subdomínio forms é 100% isolado e serve o funil de formulário correspondente:
+    // Raiz ou qualquer slug (ex: /trafego, /e-commerce-moda, /mercado, etc.)
+    // Redireciona/reescreve internamente para o runtime do funil (/f)
     const slug = pathname.replace(/^\//, '').replace(/^f\//, '');
-    const formUrl = new URL('/forms', request.url);
+    const funnelUrl = new URL('/f', request.url);
     if (slug) {
-      formUrl.searchParams.set('form', slug);
+      funnelUrl.searchParams.set('slug', slug);
     }
-    return NextResponse.rewrite(formUrl);
+    return NextResponse.rewrite(funnelUrl);
   }
 
   // Skip API routes, static files, Next.js internals, and public assets
@@ -75,7 +70,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Skip non-localized routes (admin panels, dashboards, etc.)
+  // Skip non-localized routes (landing de forms na home, admin panels, dashboards, /f)
   if (nonLocalizedRoutes.some(route => pathname.startsWith(route))) {
     return NextResponse.next();
   }

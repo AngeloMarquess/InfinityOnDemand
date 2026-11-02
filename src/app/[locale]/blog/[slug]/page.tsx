@@ -124,7 +124,14 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
 
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const shareText = post?.title || '';
-  const formatDate = (d: string) => new Date(d).toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' });
+  const formatDate = (d?: string | null) => {
+    if (!d) return new Date().toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' });
+    const parsed = new Date(d);
+    if (isNaN(parsed.getTime()) || parsed.getFullYear() <= 1970) {
+      return new Date().toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+    return parsed.toLocaleDateString(dateLocale, { day: '2-digit', month: 'long', year: 'numeric' });
+  };
 
   if (loading) {
     return (

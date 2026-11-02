@@ -123,7 +123,14 @@ export default function BlogPage() {
     setTimeout(() => setSubSuccess(false), 5000);
   };
 
-  const formatDate = (d: string) => new Date(d).toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' });
+  const formatDate = (d?: string | null) => {
+    if (!d) return new Date().toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' });
+    const parsed = new Date(d);
+    if (isNaN(parsed.getTime()) || parsed.getFullYear() <= 1970) {
+      return new Date().toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+    return parsed.toLocaleDateString(dateLocale, { day: '2-digit', month: 'short', year: 'numeric' });
+  };
 
   return (
     <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-primary)' }}>
@@ -194,7 +201,14 @@ export default function BlogPage() {
                 onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
               >
                 <div style={{ height: '220px', overflow: 'hidden', position: 'relative' }}>
-                  <img src={post.cover_url || '/blog_ai.png'} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }} />
+                  <img
+                    src={post.cover_url || '/blog_ai.png'}
+                    alt={post.title}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/blog_ai.png';
+                    }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
+                  />
                   {post.blog_categories && (
                     <div style={{ position: 'absolute', top: '16px', left: '16px', padding: '6px 12px', backgroundColor: post.blog_categories.color, borderRadius: '6px', fontSize: '11px', fontWeight: 700, color: post.blog_categories.text_color, letterSpacing: '0.5px', textTransform: 'uppercase' }}>{post.blog_categories.name}</div>
                   )}

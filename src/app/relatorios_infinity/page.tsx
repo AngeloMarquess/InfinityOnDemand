@@ -350,6 +350,8 @@ export default function RelatoriosInfinity() {
   const [loginLoading, setLoginLoading] = useState(false);
 
   const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'mkt' | 'evolucao' | 'briefing' | 'agent' | 'config' | 'sdr' | 'academy' | 'formularios'>('overview');
+  const [socialSubTab, setSocialSubTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda'>('overview');
+  const [selectedSocialNetwork, setSelectedSocialNetwork] = useState<'instagram' | 'facebook' | 'tiktok' | 'pinterest'>('instagram');
   const tabNavRef = React.useRef<HTMLDivElement>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [carouselSlides, setCarouselSlides] = useState<Record<string, number>>({});
@@ -684,14 +686,8 @@ export default function RelatoriosInfinity() {
   };
 
   const tabs = [
-    { id: 'overview' as const, label: 'Visão Geral', icon: '📊' },
+    { id: 'overview' as const, label: 'Visão Social Media', icon: '📱' },
     { id: 'formularios' as const, label: 'Formulários & Leads', icon: '📋' },
-    { id: 'content' as const, label: 'Análise de Conteúdo', icon: '📝' },
-    { id: 'timing' as const, label: 'Horários & Tendências', icon: '⏱️' },
-    { id: 'actions' as const, label: 'Plano de Ação', icon: '🎯' },
-    { id: 'campaign' as const, label: 'Campanha', icon: '🚀' },
-    { id: 'creatives' as const, label: 'Criativos', icon: '🎨' },
-    { id: 'agenda' as const, label: 'Agenda', icon: '📅' },
     { id: 'campanhas_ads' as const, label: 'Campanhas', icon: '💰' },
     { id: 'mkt' as const, label: 'MKT Data Lake', icon: '📊' },
     { id: 'evolucao' as const, label: 'Evolução', icon: '📈' },

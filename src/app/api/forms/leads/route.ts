@@ -1,110 +1,89 @@
 import { NextResponse } from 'next/server';
+import { getAllLeads, updateLeadStatus } from '@/lib/forms-storage';
 import { getServerSupabase } from '@/lib/supabase';
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const formSlug = searchParams.get('form_slug');
-    const status = searchParams.get('status');
+    const formSlug = searchParams.get('form_slug') || undefined;
+    const clientId = searchParams.get('client_id') || undefined;
+    const status = searchParams.get('status') || undefined;
 
-    const supabase = getServerSupabase();
+    // Buscar do storage persistente local
+    let leads = getAllLeads(formSlug, clientId);
 
-    let query = supabase
-      .from('crm_form_submissions')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (formSlug && formSlug !== 'all') {
-      query = query.eq('form_slug', formSlug);
+    // Se houver conexão com Supabase, mesclar com dados do Supabase
+    try {
+      const supabase = getServerSupabase();
+      let query = supabase.from('crm_form_submissions').select('*').order('created_at', { ascending: false });
+      if (formSlug && formSlug !== 'all') {
+        query = query.eq('form_slug', formSlug);
+      }
+      const { data: dbLeads } = await query;
+      if (dbLeads && dbLeads.length > 0) {
+        // Unificar sem duplicar por id
+        const existingIds = new Set(leads.map((l) => l.id));
+        for (const dl of dbLeads) {
+          if (!existingIds.has(dl.id)) {
+            leads.push(dl);
+          }
+        }
+      }
+    } catch (e) {
+      // Ignora erro do Supabase se tabela não existir
     }
 
     if (status && status !== 'all') {
-      query = query.eq('status', status);
-    }
-
-    const { data: leads, error } = await query;
-
-    if (error) {
-      console.error('Erro ao buscar leads:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      leads = leads.filter((l) => l.status === status);
     }
 
     // Calcular estatísticas agregadas
-    const totalLeads = leads?.length || 0;
-    
-    // Nichos
+    const totalLeads = leads.length;
     const nichoCounts: Record<string, number> = {};
     const faturamentoCounts: Record<string, number> = {};
     const situacaoCounts: Record<string, number> = {};
-    const tipoMarcaCounts: Record<string, number> = {};
-    const canaisCounts: Record<string, number> = {};
-
     let highQualifiedCount = 0;
 
-    leads?.forEach((l) => {
-      if (l.lead_score >= 75) highQualifiedCount++;
-
-      // Nicho
-      const n = l.nicho || 'Não especificado';
+    leads.forEach((l) => {
+      if ((l.lead_score || 0) >= 75) highQualifiedCount++;
+      const n = l.nicho || 'Geral';
       nichoCounts[n] = (nichoCounts[n] || 0) + 1;
 
-      // Faturamento
       const f = l.faturamento || 'Não informado';
       faturamentoCounts[f] = (faturamentoCounts[f] || 0) + 1;
-
-      // Situação
-      const s = l.situacao || 'Outro';
-      situacaoCounts[s] = (situacaoCounts[s] || 0) + 1;
-
-      // Tipo Marca
-      const tm = l.tipo_marca || 'Não informado';
-      tipoMarcaCounts[tm] = (tipoMarcaCounts[tm] || 0) + 1;
-
-      // Canais
-      const c = l.canais_venda || 'Outro';
-      canaisCounts[c] = (canaisCounts[c] || 0) + 1;
     });
 
     return NextResponse.json({
-      success: true,
-      total_leads: totalLeads,
-      high_qualified_leads: highQualifiedCount,
-      qualification_rate: totalLeads > 0 ? Math.round((highQualifiedCount / totalLeads) * 100) : 0,
+      leads,
       stats: {
+        totalLeads,
+        highQualifiedCount,
+        qualificationRate: totalLeads > 0 ? Math.round((highQualifiedCount / totalLeads) * 100) : 0,
         nichos: nichoCounts,
-        faturamento: faturamentoCounts,
-        situacao: situacaoCounts,
-        tipo_marca: tipoMarcaCounts,
-        canais: canaisCounts,
+        faturamentos: faturamentoCounts,
       },
-      leads: leads || [],
     });
   } catch (err: any) {
-    console.error('Erro geral em leads API:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('Erro em GET /api/forms/leads:', err);
+    return NextResponse.json({ leads: [], stats: null, error: err.message });
   }
 }
 
 export async function PATCH(req: Request) {
   try {
-    const body = await req.json();
-    const { id, status } = body;
-
+    const { id, status } = await req.json();
     if (!id || !status) {
-      return NextResponse.json({ error: 'id e status são obrigatórios' }, { status: 400 });
+      return NextResponse.json({ error: 'ID e status são obrigatórios' }, { status: 400 });
     }
 
-    const supabase = getServerSupabase();
-    const { data, error } = await supabase
-      .from('crm_form_submissions')
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single();
+    updateLeadStatus(id, status);
 
-    if (error) throw error;
+    try {
+      const supabase = getServerSupabase();
+      await supabase.from('crm_form_submissions').update({ status }).eq('id', id);
+    } catch (e) {}
 
-    return NextResponse.json({ success: true, lead: data });
+    return NextResponse.json({ success: true });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

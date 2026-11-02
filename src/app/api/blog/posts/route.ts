@@ -47,6 +47,9 @@ export async function GET(request: Request) {
           .single();
 
         if (post) {
+          if (!post.published_at || new Date(post.published_at).getFullYear() <= 1970) {
+            post.published_at = post.created_at || '2026-03-20T12:00:00Z';
+          }
           // Increment views
           await supabase.from('blog_posts').update({ views: (post.views || 0) + 1 }).eq('id', post.id);
           return NextResponse.json(post, { headers: cors() });
@@ -90,7 +93,13 @@ export async function GET(request: Request) {
 
       const res = await query;
       if (res.data && res.data.length > 0) {
-        dbPosts = res.data;
+        dbPosts = res.data.map((p) => {
+          let pub = p.published_at;
+          if (!pub || new Date(pub).getFullYear() <= 1970) {
+            pub = p.created_at || '2026-03-20T12:00:00Z';
+          }
+          return { ...p, published_at: pub };
+        });
         dbCount = res.count || res.data.length;
       }
     }
