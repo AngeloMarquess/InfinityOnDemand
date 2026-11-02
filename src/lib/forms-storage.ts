@@ -446,43 +446,6 @@ export function getAllLeads(formSlug?: string, clientId?: string): LeadSubmissio
   return list;
 }
 
-export function saveLeadSubmission(lead: Omit<LeadSubmission, 'id' | 'created_at'>): LeadSubmission {
-  const store = ensureStorage();
-  const fullLead: LeadSubmission = {
-    ...lead,
-    id: `lead-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-    created_at: new Date().toISOString(),
-  };
-
-  store.leads.unshift(fullLead);
-  saveStorage(store);
-  return fullLead;
-}
-
-export function updateLeadStatus(id: string, status: LeadSubmission['status']): boolean {
-  const store = ensureStorage();
-  const lead = store.leads.find((l) => l.id === id);
-  if (lead) {
-    lead.status = status;
-    saveStorage(store);
-    return true;
-  }
-  return false;
-}
-
-
-export function getAllLeads(filterFormSlug?: string, filterClientId?: string): LeadSubmission[] {
-  const store = ensureStorage();
-  let result = store.leads;
-  if (filterFormSlug && filterFormSlug !== 'all') {
-    result = result.filter((l) => l.form_slug.toLowerCase() === filterFormSlug.toLowerCase());
-  }
-  if (filterClientId && filterClientId !== 'all') {
-    result = result.filter((l) => l.client_id === filterClientId);
-  }
-  return result;
-}
-
 export function saveLead(lead: LeadSubmission): LeadSubmission {
   const store = ensureStorage();
   const newLead: LeadSubmission = {
@@ -496,11 +459,19 @@ export function saveLead(lead: LeadSubmission): LeadSubmission {
   return newLead;
 }
 
-export function updateLeadStatus(id: string, newStatus: LeadSubmission['status']): boolean {
+export function saveLeadSubmission(lead: Omit<LeadSubmission, 'id' | 'created_at'>): LeadSubmission {
+  return saveLead({
+    ...lead,
+    id: `lead-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    created_at: new Date().toISOString(),
+  });
+}
+
+export function updateLeadStatus(id: string, status: LeadSubmission['status']): boolean {
   const store = ensureStorage();
   const lead = store.leads.find((l) => l.id === id);
   if (lead) {
-    lead.status = newStatus;
+    lead.status = status;
     saveStorage(store);
     return true;
   }
