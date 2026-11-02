@@ -126,7 +126,7 @@ function DynamicFormFunnel() {
         style={{
           minHeight: '100vh',
           backgroundColor: '#050814',
-          color: primaryColor,
+          color: '#00DF81',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -430,7 +430,7 @@ function DynamicFormFunnel() {
                 <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', lineHeight: '1.3', marginBottom: '6px' }}>
                   {currentQuestion.title}
                   {currentQuestion.required && (
-                    <span style={{ color: primaryColor, marginLeft: '6px' }} title="Obrigatória">*</span>
+                    <span style={{ color: '#00DF81', marginLeft: '6px' }} title="Obrigatória">*</span>
                   )}
                 </h1>
                 {currentQuestion.helper && (
@@ -487,7 +487,7 @@ function DynamicFormFunnel() {
               {/* TIPO: CAIXAS DE SELEÇÃO (MÚLTIPLAS OPÇÕES - MARCAR 2, 3 OU MAIS) */}
               {currentQuestion.type === 'checkbox' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <p style={{ fontSize: '11px', color: primaryColor, fontWeight: 700, margin: 0, textTransform: 'uppercase' }}>
+                  <p style={{ fontSize: '11px', color: '#00DF81', fontWeight: 700, margin: 0, textTransform: 'uppercase' }}>
                     ✓ Você pode selecionar múltiplas opções:
                   </p>
                   {(currentQuestion.options || []).map((opt, oIdx) => {
@@ -656,7 +656,7 @@ function DynamicFormFunnel() {
                   </div>
                 ) : (
                   <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: primaryColor, fontWeight: 800 }}>R$</span>
+                    <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#00DF81', fontWeight: 800 }}>R$</span>
                     <input
                       type="text"
                       autoFocus
@@ -851,7 +851,7 @@ function DynamicFormFunnel() {
           {/* ════════ TELA DE OBRIGADO (THANK YOU PAGE CONFIGURÁVEL) ════════ */}
           {isCompleted && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '20px', padding: '10px 0' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 14px', borderRadius: '20px', backgroundColor: 'rgba(0, 223, 129, 0.15)', border: '1px solid rgba(0, 223, 129, 0.3)', color: primaryColor, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 14px', borderRadius: '20px', backgroundColor: 'rgba(0, 223, 129, 0.15)', border: '1px solid rgba(0, 223, 129, 0.3)', color: '#00DF81', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}>
                 <span>✓</span> Concluído com Sucesso
               </div>
 
@@ -951,7 +951,7 @@ export default function FormsRuntimePage() {
           style={{
             minHeight: '100vh',
             backgroundColor: '#050814',
-            color: primaryColor,
+            color: '#00DF81',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
