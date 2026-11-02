@@ -68,6 +68,10 @@ export interface FormItem {
   minScoreForScheduling?: number;
   schedulingDays?: string[];
   schedulingTimes?: string[];
+  phases?: string[];
+  qualifyingQuestionId?: string;
+  qualifyingOptions?: string[];
+  disqualifiedMessage?: string;
 }
 
 export interface LeadSubmission {
@@ -136,6 +140,182 @@ const INITIAL_CLIENTS: ClientTenant[] = [
 ];
 
 const INITIAL_FORMS: FormItem[] = [
+  {
+    id: 'form-diagnostico',
+    title: 'Diagnóstico Estratégico de Escala & E-commerce',
+    slug: 'diagnostico',
+    tenantType: 'infinity',
+    clientName: 'Infinity on Demand',
+    niche: 'E-commerce & Vendas Online',
+    whatsappDestination: '5581981280719',
+    sendToWhatsapp: true,
+    thankYouTitle: 'Diagnóstico Aprovado!',
+    thankYouMessage: 'Nossa equipe entrará em contato para confirmar sua reunião e apresentar o plano de escala.',
+    autoRedirectSeconds: 3,
+    status: 'Ativo',
+    primaryColor: '#00DF81',
+    brandName: 'INFINITY ON DEMAND',
+    enableScheduling: true,
+    phases: ['SOBRE VOCÊ', 'SUA EMPRESA', 'SUA OPERAÇÃO', 'QUALIFICAÇÃO', 'AGENDAMENTO'],
+    qualifyingQuestionId: 'q9',
+    qualifyingOptions: [
+      'De 5 a 10 mil por mês',
+      'De 10 a 25 mil por mês',
+      'De 25 a 50 mil no mês',
+      'De 50 a 100 mil no mês',
+      'Acima de 100 mil no mês',
+    ],
+    disqualifiedMessage: 'Obrigado! Como sua operação está no início / você é colaborador, nossa equipe entrará em contato diretamente com você pelo WhatsApp para apresentar o diagnóstico.',
+    created_at: '2026-03-01T10:00:00.000Z',
+    updated_at: '2026-03-01T10:00:00.000Z',
+    questions: [
+      // 1 a 3: SOBRE VOCÊ
+      {
+        id: 'q1',
+        title: 'Para começarmos, me diz seu nome.',
+        helper: 'Seu nome será usado pra personalizar o diagnóstico.',
+        type: 'text',
+        required: true,
+        phase: 'SOBRE VOCÊ',
+      },
+      {
+        id: 'q2',
+        title: 'Show, {nome}! Qual seu WhatsApp?',
+        helper: 'Precisamos do número para agendarmos o diagnóstico.',
+        type: 'phone',
+        required: true,
+        phase: 'SOBRE VOCÊ',
+      },
+      {
+        id: 'q3',
+        title: 'Qual seu e-mail?',
+        helper: 'Vamos te enviar o link da reunião por lá.',
+        type: 'email',
+        required: true,
+        phase: 'SOBRE VOCÊ',
+      },
+      // 4 a 7: SUA EMPRESA
+      {
+        id: 'q4',
+        title: 'Excelente, {nome}. Qual o nome da sua empresa?',
+        helper: 'Nome da marca ou operação que você lidera.',
+        type: 'text',
+        required: true,
+        phase: 'SUA EMPRESA',
+      },
+      {
+        id: 'q5',
+        title: 'A {empresa} já possui uma loja virtual que vende para todo o Brasil?',
+        type: 'select',
+        options: [
+          'Já possuo uma loja virtual',
+          'Não possuo loja virtual',
+        ],
+        required: true,
+        phase: 'SUA EMPRESA',
+      },
+      {
+        id: 'q6_site',
+        title: 'Qual o link do site?',
+        helper: 'Ex: suaempresa.com.br',
+        type: 'text',
+        required: false,
+        phase: 'SUA EMPRESA',
+      },
+      {
+        id: 'q6_meta',
+        title: 'Seu objetivo é criar uma loja virtual própria?',
+        type: 'select',
+        options: [
+          'Sim, quero começar o quanto antes',
+          'Ainda estou amadurecendo a ideia',
+        ],
+        required: false,
+        phase: 'SUA EMPRESA',
+      },
+      {
+        id: 'q7',
+        title: 'Qual o Instagram da {empresa}?',
+        helper: 'Ex: @suaempresa',
+        type: 'text',
+        required: true,
+        phase: 'SUA EMPRESA',
+      },
+      // 8 e 9: SUA OPERAÇÃO
+      {
+        id: 'q8',
+        title: 'Hoje a {empresa} vende através de quais canais?',
+        type: 'select',
+        options: [
+          'Apenas na Loja física',
+          'Física + Instagram',
+          'Apenas no WhatsApp',
+          'Apenas no Marketplace',
+        ],
+        required: true,
+        phase: 'SUA OPERAÇÃO',
+      },
+      {
+        id: 'q9',
+        title: 'Sua operação está faturando quanto em média?',
+        type: 'select',
+        options: [
+          'Ainda não faturamos',
+          'Até 5 mil por mês',
+          'De 5 a 10 mil por mês',
+          'De 10 a 25 mil por mês',
+          'De 25 a 50 mil no mês',
+          'De 50 a 100 mil no mês',
+          'Acima de 100 mil no mês',
+        ],
+        required: true,
+        phase: 'SUA OPERAÇÃO',
+      },
+      // 10 a 12: QUALIFICAÇÃO
+      {
+        id: 'q10',
+        title: 'Qual nicho melhor descreve o seu negócio?',
+        type: 'select',
+        options: [
+          'Vestuário (roupas e calçados)',
+          'Bolsas e Acessórios',
+          'Joias/Semijoias',
+          'Saúde e Beleza',
+          'Casa e Decoração',
+          'Mercado Pet',
+          'Alimentos e Bebidas',
+          'Eletrônicos',
+          'Outro',
+        ],
+        required: true,
+        phase: 'QUALIFICAÇÃO',
+      },
+      {
+        id: 'q11',
+        title: 'Qual seu nível de urgência para começar a vender para todo o Brasil?',
+        type: 'select',
+        options: [
+          'Ainda este mês',
+          'No próximo mês',
+          'Estou apenas pesquisando',
+        ],
+        required: true,
+        phase: 'QUALIFICAÇÃO',
+      },
+      {
+        id: 'q12',
+        title: 'Você possui sócios?',
+        type: 'select',
+        options: [
+          'Não, sou o único proprietário',
+          'Sim, tenho um ou mais sócios',
+          'Sou colaborador',
+        ],
+        required: true,
+        phase: 'QUALIFICAÇÃO',
+      },
+    ],
+  },
   {
     id: 'form-angelo',
     title: 'Diagnóstico com Angelo Marques',
@@ -260,6 +440,16 @@ function ensureStorage(): StorageSchema {
         const parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.forms) && parsed.forms.length > 0) {
           // Garante que o form 'angelo' esteja mesclado
+          const hasDiag = parsed.forms.some((f: FormItem) => f.slug === 'diagnostico');
+          if (!hasDiag) {
+            parsed.forms.unshift(INITIAL_FORMS[0]);
+          } else {
+            // Atualiza o diagnostico para garantir os ultimos campos
+            const diagIdx = parsed.forms.findIndex((f: FormItem) => f.slug === 'diagnostico');
+            if (diagIdx >= 0) {
+              parsed.forms[diagIdx] = { ...INITIAL_FORMS[0], ...parsed.forms[diagIdx], questions: INITIAL_FORMS[0].questions, phases: INITIAL_FORMS[0].phases, primaryColor: '#00DF81' };
+            }
+          }
           const hasAngelo = parsed.forms.some((f: FormItem) => f.slug === 'angelo');
           if (!hasAngelo) {
             parsed.forms.unshift(INITIAL_FORMS[0]);
@@ -364,6 +554,23 @@ export async function syncStorageWithSupabase(): Promise<void> {
             mergedForms.push(cf);
           }
         }
+        // Garante que o form diagnostico principal esteja no topo e atualizado
+        const diagForm = INITIAL_FORMS[0];
+        const existingDiagIdx = mergedForms.findIndex((mf) => mf.slug === 'diagnostico' || mf.id === 'form-diagnostico');
+        if (existingDiagIdx >= 0) {
+          mergedForms[existingDiagIdx] = {
+            ...diagForm,
+            ...mergedForms[existingDiagIdx],
+            questions: diagForm.questions,
+            phases: diagForm.phases,
+            primaryColor: '#00DF81',
+            status: 'Ativo',
+          };
+          const [dItem] = mergedForms.splice(existingDiagIdx, 1);
+          mergedForms.unshift(dItem);
+        } else {
+          mergedForms.unshift(diagForm);
+        }
         currentStore.forms = mergedForms;
         if (parsed.clients) {
           currentStore.clients = parsed.clients;
@@ -388,8 +595,12 @@ export function getAllForms(): FormItem[] {
 
 export function getFormBySlug(slug: string): FormItem | undefined {
   const store = ensureStorage();
-  const cleanSlug = slug.toLowerCase().trim();
-  return store.forms.find((f) => f.slug.toLowerCase().trim() === cleanSlug);
+  const cleanSlug = (slug || 'diagnostico').toLowerCase().trim();
+  let found = store.forms.find((f) => f.slug.toLowerCase().trim() === cleanSlug);
+  if (!found && (cleanSlug === 'diagnostico' || cleanSlug === 'principal' || cleanSlug === 'forms' || cleanSlug === '')) {
+    found = store.forms.find((f) => f.slug === 'diagnostico');
+  }
+  return found || store.forms[0];
 }
 
 export function saveOrUpdateForm(form: FormItem): FormItem {

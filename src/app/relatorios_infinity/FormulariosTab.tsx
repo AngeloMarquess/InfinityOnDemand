@@ -54,6 +54,11 @@ interface FormItem {
   primaryColor?: string;
   backgroundImageUrl?: string;
   created_at?: string;
+  phases?: string[];
+  qualifyingQuestionId?: string;
+  qualifyingOptions?: string[];
+  disqualifiedMessage?: string;
+  enableScheduling?: boolean;
 }
 
 interface FormLead {
@@ -99,6 +104,18 @@ export default function FormulariosTab() {
   const [createSuccess, setCreateSuccess] = useState('');
   const [isCustomNiche, setIsCustomNiche] = useState(false);
   const [customNicheInput, setCustomNicheInput] = useState('');
+  const [newPhaseInput, setNewPhaseInput] = useState('');
+  const DEFAULT_PHASES = ['SOBRE VOCÊ', 'SUA EMPRESA', 'QUALIFICAÇÃO', 'AGENDAMENTO', 'DIAGNÓSTICO'];
+
+  const handleAddNewPhase = () => {
+    const trimmed = newPhaseInput.trim().toUpperCase();
+    if (!trimmed) return;
+    const current = formDraft.phases || DEFAULT_PHASES;
+    if (!current.includes(trimmed)) {
+      setFormDraft((prev) => ({ ...prev, phases: [...(prev.phases || DEFAULT_PHASES), trimmed] }));
+    }
+    setNewPhaseInput('');
+  };
 
   // Formulário em rascunho (criação ou edição)
   const defaultDraft: FormItem = {
@@ -1642,6 +1659,103 @@ https://forms.infinityondemand.com.br/${f.slug}`);
                 {/* ══ ABA 3: WHITE-LABEL (MARCA, LOGO, CORES & FUNDO) ══ */}
                 {modalTab === 'visual' && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ backgroundColor: 'rgba(0, 223, 129, 0.05)', border: '1px solid rgba(0, 223, 129, 0.35)', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                        <div>
+                          <div style={{ fontSize: '15px', fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span>📅</span> Agendamento Inteligente para Leads Qualificados (Arcus)
+                          </div>
+                          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.65)', margin: '4px 0 0' }}>
+                            Se o lead responder que fatura mais de R$ 5 mil (ou critério que você escolher), o formulário abre a agenda de reunião. Se for menor, direciona para o WhatsApp!
+                          </p>
+                        </div>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: 800, color: formDraft.enableScheduling !== false ? '#00DF81' : 'rgba(255,255,255,0.5)' }}>
+                          <input
+                            type="checkbox"
+                            checked={formDraft.enableScheduling !== false}
+                            onChange={(e) => setFormDraft(prev => ({ ...prev, enableScheduling: e.target.checked }))}
+                          />
+                          {formDraft.enableScheduling !== false ? '✓ Agendamento Ativo' : '✕ Desativado'}
+                        </label>
+                      </div>
+
+                      {formDraft.enableScheduling !== false && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                          <div>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#00DF81', marginBottom: '6px', textTransform: 'uppercase' }}>
+                              Pergunta Chave que Define a Qualificação (ex: Faturamento):
+                            </label>
+                            <select
+                              value={formDraft.qualifyingQuestionId || ''}
+                              onChange={(e) => setFormDraft(prev => ({ ...prev, qualifyingQuestionId: e.target.value, qualifyingOptions: [] }))}
+                              style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontSize: '13px', outline: 'none' }}
+                            >
+                              <option value="">Selecione a pergunta filtro...</option>
+                              {formDraft.questions.map((q, qI) => (
+                                <option key={q.id} value={q.id}>
+                                  Etapa #{qI + 1}: {q.title}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {(() => {
+                            const selectedQ = formDraft.questions.find(q => q.id === formDraft.qualifyingQuestionId);
+                            if (selectedQ && selectedQ.options && selectedQ.options.length > 0) {
+                              const activeQualOptions = formDraft.qualifyingOptions || [];
+                              return (
+                                <div>
+                                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, color: '#fff', marginBottom: '6px', textTransform: 'uppercase' }}>
+                                    Quais respostas APROVAM para Agendar Reunião?
+                                  </label>
+                                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>
+                                    {selectedQ.options.map((opt, optI) => {
+                                      const isChecked = activeQualOptions.includes(opt);
+                                      return (
+                                        <label key={optI} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', borderRadius: '8px', backgroundColor: isChecked ? 'rgba(0,223,129,0.15)' : 'rgba(255,255,255,0.03)', border: isChecked ? '1px solid #00DF81' : '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', fontSize: '12px' }}>
+                                          <input
+                                            type="checkbox"
+                                            checked={isChecked}
+                                            onChange={(e) => {
+                                              let updated: string[];
+                                              if (e.target.checked) {
+                                                updated = [...activeQualOptions, opt];
+                                              } else {
+                                                updated = activeQualOptions.filter(o => o !== opt);
+                                              }
+                                              setFormDraft(prev => ({ ...prev, qualifyingOptions: updated }));
+                                            }}
+                                          />
+                                          <span style={{ color: isChecked ? '#00DF81' : '#fff', fontWeight: isChecked ? 800 : 500 }}>{opt}</span>
+                                        </label>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })()}
+
+                          <div>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', marginBottom: '6px', textTransform: 'uppercase' }}>
+                              Mensagem para Leads Menores / Não Qualificados (Sem Agendamento):
+                            </label>
+                            <input
+                              type="text"
+                              value={formDraft.disqualifiedMessage || ''}
+                              onChange={(e) => setFormDraft(prev => ({ ...prev, disqualifiedMessage: e.target.value }))}
+                              placeholder="Ex: Obrigado! Faremos contato com você diretamente pelo WhatsApp para apresentar o diagnóstico."
+                              style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '13px', outline: 'none' }}
+                            />
+                            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', margin: '4px 0 0' }}>
+                              Quem responder faturamento menor pula a agenda e é direcionado direto ao WhatsApp com a triagem.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
                     <div style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '16px' }}>
                       <h4 style={{ fontSize: '14px', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>
                         Personalização White-Label da Marca do Cliente

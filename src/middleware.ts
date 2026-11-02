@@ -54,9 +54,7 @@ export function middleware(request: NextRequest) {
     // Redireciona/reescreve internamente para o runtime do funil (/f)
     const slug = pathname.replace(/^\//, '').replace(/^f\//, '');
     const funnelUrl = new URL('/f', request.url);
-    if (slug) {
-      funnelUrl.searchParams.set('slug', slug);
-    }
+    funnelUrl.searchParams.set('slug', slug || 'diagnostico');
     return NextResponse.rewrite(funnelUrl);
   }
 

@@ -44,6 +44,10 @@ interface FormItem {
   backgroundImageUrl?: string;
   backgroundStyle?: string;
   enableScheduling?: boolean;
+  phases?: string[];
+  qualifyingQuestionId?: string;
+  qualifyingOptions?: string[];
+  disqualifiedMessage?: string;
 }
 
 // Calcular os próximos 3 dias úteis a partir de hoje
@@ -83,13 +87,13 @@ function DynamicFormFunnel() {
       resolvedSlug = lastPart;
     }
   }
-  const slug = resolvedSlug || 'e-commerce-moda';
+  const slug = resolvedSlug || 'diagnostico';
   const utmSource = searchParams?.get('utm_source') || '';
   const utmMedium = searchParams?.get('utm_medium') || '';
   const utmCampaign = searchParams?.get('utm_campaign') || '';
 
   const [form, setForm] = useState<FormItem | null>(null);
-  const primaryColor: string = form?.primaryColor || '#FF5500'; // Estilo vibrante Arcus / Infinity
+  const primaryColor: string = form?.primaryColor || '#00DF81'; // Estilo vibrante Arcus / Infinity
   const [loadingForm, setLoadingForm] = useState(true);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
@@ -101,7 +105,7 @@ function DynamicFormFunnel() {
   const [leadCompany, setLeadCompany] = useState('');
 
   // Agendamento Inteligente Arcus
-  const [schedulingPhase, setSchedulingPhase] = useState<'none' | 'date' | 'time'>('none');
+  const [schedulingPhase, setSchedulingPhase] = useState<'none' | 'date' | 'time' | 'disqualified'>('none');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
 
@@ -130,7 +134,34 @@ function DynamicFormFunnel() {
     fetchForm();
   }, [slug]);
 
-  const questions = form?.questions || [];
+  // Interpolação dinâmica de variáveis ({nome}, %nome%, {empresa}, %empresa%)
+  function interpolateVariables(str: string, name: string, comp: string): string {
+    if (!str) return '';
+    const cleanName = name?.trim() || 'você';
+    const cleanCompany = comp?.trim() || 'sua empresa';
+    return str
+      .replace(/\{nome\}|%nome%|%%nome%%|anfelo/gi, cleanName)
+      .replace(/\{empresa\}|%empresa%|%%empresa%%|asdasd/gi, cleanCompany)
+      .replace(/%%/g, cleanName)
+      .replace(/%\s/g, `${cleanCompany} `);
+  }
+
+  // Filtragem dinâmica de perguntas (Branching condicional da Q6)
+  const rawQuestions = form?.questions || [];
+  const questions = useMemo(() => {
+    if (!rawQuestions || rawQuestions.length === 0) return [];
+    const q5Ans = answers['q5'] || '';
+    return rawQuestions.filter((q) => {
+      if (q.id === 'q6_site') {
+        return q5Ans === 'Já possuo uma loja virtual';
+      }
+      if (q.id === 'q6_meta') {
+        return q5Ans === 'Não possuo loja virtual';
+      }
+      return true;
+    });
+  }, [rawQuestions, answers]);
+
   const currentQuestion = questions[currentStepIndex];
   const totalQuestions = questions.length;
 
@@ -174,9 +205,29 @@ function DynamicFormFunnel() {
 
   // Verificar se o lead é qualificado para agendamento
   const checkIsQualified = (currentAnswers: Record<string, any>) => {
-    // Se o form desabilitou agendamento explicitamente
     if (form?.enableScheduling === false) return false;
-    // Agendamento habilitado por padrão para todos os leads qualificados
+
+    // 1. Verificar se é colaborador (Q12)
+    const socioVal = String(currentAnswers['q12'] || '');
+    if (socioVal.toLowerCase().includes('colaborador')) {
+      return false;
+    }
+
+    // 2. Verificar Faturamento (Q9 ou qualifyingQuestionId)
+    const qualQId = form?.qualifyingQuestionId || 'q9';
+    const fatVal = String(currentAnswers[qualQId] || currentAnswers['q9'] || '');
+    if (fatVal) {
+      if (form?.qualifyingOptions && form.qualifyingOptions.length > 0) {
+        if (!form.qualifyingOptions.includes(fatVal)) {
+          return false;
+        }
+      } else {
+        if (fatVal.includes('Ainda não') || fatVal.includes('Até 5 mil')) {
+          return false;
+        }
+      }
+    }
+
     return true;
   };
 
@@ -221,7 +272,7 @@ function DynamicFormFunnel() {
       if (checkIsQualified(answers)) {
         setSchedulingPhase('date');
       } else {
-        await handleFinalSubmit();
+        setSchedulingPhase('disqualified');
       }
     } else {
       setCurrentStepIndex((prev) => prev + 1);
@@ -234,7 +285,7 @@ function DynamicFormFunnel() {
       setSchedulingPhase('date');
       return;
     }
-    if (schedulingPhase === 'date') {
+    if (schedulingPhase === 'date' || schedulingPhase === 'disqualified') {
       setSchedulingPhase('none');
       return;
     }
@@ -260,7 +311,7 @@ function DynamicFormFunnel() {
         if (checkIsQualified(updatedAnswers)) {
           setSchedulingPhase('date');
         } else {
-          handleFinalSubmit(updatedAnswers);
+          setSchedulingPhase('disqualified');
         }
       } else {
         setCurrentStepIndex((prev) => prev + 1);
@@ -567,14 +618,14 @@ function DynamicFormFunnel() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
               <div>
                 <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', lineHeight: '1.3', marginBottom: '8px' }}>
-                  {currentQuestion.title}
+                  {interpolateVariables(currentQuestion.title, leadName, leadCompany)}
                   {currentQuestion.required && (
                     <span style={{ color: primaryColor, marginLeft: '6px' }} title="Obrigatória">*</span>
                   )}
                 </h1>
                 {currentQuestion.helper && (
                   <p style={{ fontSize: '14px', color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
-                    {currentQuestion.helper}
+                    {interpolateVariables(currentQuestion.helper, leadName, leadCompany)}
                   </p>
                 )}
               </div>
@@ -695,7 +746,15 @@ function DynamicFormFunnel() {
                     autoFocus
                     value={answers[currentQuestion.id] || ''}
                     onChange={(e) => {
-                      setAnswers((prev) => ({ ...prev, [currentQuestion.id]: e.target.value }));
+                      const val = e.target.value;
+                      setAnswers((prev) => ({ ...prev, [currentQuestion.id]: val }));
+                      const lowerTitle = currentQuestion.title.toLowerCase();
+                      if (lowerTitle.includes('nome') && !lowerTitle.includes('empresa')) {
+                        setLeadName(val);
+                      }
+                      if (lowerTitle.includes('empresa') || lowerTitle.includes('marca')) {
+                        setLeadCompany(val);
+                      }
                       if (validationError) setValidationError('');
                     }}
                     onKeyDown={(e) => {
@@ -1008,6 +1067,86 @@ function DynamicFormFunnel() {
             </div>
           )}
 
+          {/* ════════ LEAD MENOR / COLABORADOR: AVISO E CONTATO DIRETO NO WHATSAPP ════════ */}
+          {!isCompleted && schedulingPhase === 'disqualified' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '22px', textAlign: 'center' }}>
+              <div
+                style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '50%',
+                  backgroundColor: `${primaryColor}22`,
+                  color: primaryColor,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '28px',
+                  margin: '0 auto',
+                  border: `1px solid ${primaryColor}55`,
+                }}
+              >
+                💬
+              </div>
+
+              <div>
+                <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', lineHeight: '1.3', marginBottom: '10px' }}>
+                  Obrigado pelo seu tempo, {leadName || 'você'}!
+                </h1>
+                <p style={{ fontSize: '15px', color: '#CBD5E1', margin: 0, lineHeight: 1.6 }}>
+                  {form?.disqualifiedMessage || `Com base nas informações da ${leadCompany || 'sua empresa'}, nossa equipe especializada entrará em contato diretamente com você pelo WhatsApp para apresentar o diagnóstico personalizado e te orientar nos próximos passos.`}
+                </p>
+              </div>
+
+              <div style={{ paddingTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => handleFinalSubmit(answers)}
+                  disabled={submitting}
+                  style={{
+                    width: '100%',
+                    padding: '16px 28px',
+                    borderRadius: '14px',
+                    background: '#25D366',
+                    color: '#fff',
+                    fontWeight: 800,
+                    fontSize: '15px',
+                    border: 'none',
+                    cursor: submitting ? 'wait' : 'pointer',
+                    boxShadow: '0 8px 24px rgba(37, 211, 102, 0.35)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <span>💬 {submitting ? 'Abrindo WhatsApp...' : 'Falar no WhatsApp com nossa Equipe →'}</span>
+                </button>
+              </div>
+
+              {/* Botão Voltar */}
+              <div style={{ display: 'flex', justifyContent: 'flex-start', paddingTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={handlePrevStep}
+                  disabled={submitting}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.06)',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
+                    color: 'rgba(255, 255, 255, 0.85)',
+                    padding: '12px 20px',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                  }}
+                >
+                  ← Voltar
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* ════════ AGENDAMENTO INTELIGENTE: ETAPA DE ESCOLHA DE DATA ════════ */}
           {!isCompleted && schedulingPhase === 'date' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
@@ -1238,7 +1377,7 @@ export default function FormsRuntimePage() {
           style={{
             minHeight: '100vh',
             backgroundColor: '#050814',
-            color: '#FF5500',
+            color: '#00DF81',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

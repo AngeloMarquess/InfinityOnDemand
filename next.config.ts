@@ -41,7 +41,7 @@ const nextConfig: NextConfig = {
             value: 'forms.infinityondemand.com.br',
           },
         ],
-        destination: '/forms',
+        destination: '/f?slug=diagnostico',
       },
     ];
   },
