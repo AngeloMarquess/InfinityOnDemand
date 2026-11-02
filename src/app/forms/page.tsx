@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-export default function FormsPage() {
+function FormsContent() {
   const searchParams = useSearchParams();
 
   // Coleta automática de UTMs de Tráfego Pago
@@ -612,5 +612,13 @@ export default function FormsPage() {
         Infinity On Demand • Diagnóstico Empresarial Seguro © 2026
       </footer>
     </div>
+  );
+}
+
+export default function FormsPage() {
+  return (
+    <React.Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#070B18', color: '#00DB79', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Carregando formulário...</div>}>
+      <FormsContent />
+    </React.Suspense>
   );
 }
