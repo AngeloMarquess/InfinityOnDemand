@@ -339,6 +339,23 @@ export async function syncStorageWithSupabase(): Promise<void> {
       const text = await data.text();
       const parsed = JSON.parse(text);
       if (parsed && Array.isArray(parsed.forms) && parsed.forms.length > 0) {
+        // Normalizar IDs legados para os UUIDs oficiais do CRM
+        parsed.forms.forEach((f: any) => {
+          if (f.clientId === 'client-1' || f.clientName?.toLowerCase().includes('cactus')) {
+            f.clientId = '962f688c-c1b8-4136-8b5c-030e427c23c1';
+          } else if (f.clientId === 'client-2' || f.clientName?.toLowerCase().includes('elys')) {
+            f.clientId = 'f384667a-92c0-4287-a84b-c6536b11e944';
+          }
+        });
+        if (parsed.leads) {
+          parsed.leads.forEach((l: any) => {
+            if (l.client_id === 'client-1' || l.client_name?.toLowerCase().includes('cactus')) {
+              l.client_id = '962f688c-c1b8-4136-8b5c-030e427c23c1';
+            } else if (l.client_id === 'client-2' || l.client_name?.toLowerCase().includes('elys')) {
+              l.client_id = 'f384667a-92c0-4287-a84b-c6536b11e944';
+            }
+          });
+        }
         // Mesclar com memória sem perder novos
         const currentStore = ensureStorage();
         const mergedForms = [...parsed.forms];
