@@ -10,6 +10,7 @@ import FlashSDRTab from './FlashSDRTab';
 import BriefingTab from './BriefingTab';
 import AcademyAdminTab from './AcademyAdminTab';
 import MktTab from './MktTab';
+import FormulariosTab from './FormulariosTab';
 
 /* ─────────── DATA ─────────── */
 const profileData = {
@@ -348,7 +349,8 @@ export default function RelatoriosInfinity() {
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'mkt' | 'evolucao' | 'briefing' | 'agent' | 'config' | 'sdr' | 'academy'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'mkt' | 'evolucao' | 'briefing' | 'agent' | 'config' | 'sdr' | 'academy' | 'formularios'>('overview');
+  const tabNavRef = React.useRef<HTMLDivElement>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [carouselSlides, setCarouselSlides] = useState<Record<string, number>>({});
   const [scheduleStatus, setScheduleStatus] = useState<Record<string, { status: 'idle' | 'loading' | 'success' | 'error'; message?: string }>>({
@@ -676,6 +678,7 @@ export default function RelatoriosInfinity() {
 
   const tabs = [
     { id: 'overview' as const, label: 'Visão Geral', icon: '📊' },
+    { id: 'formularios' as const, label: 'Formulários & Leads', icon: '📋' },
     { id: 'content' as const, label: 'Análise de Conteúdo', icon: '📝' },
     { id: 'timing' as const, label: 'Horários & Tendências', icon: '⏱️' },
     { id: 'actions' as const, label: 'Plano de Ação', icon: '🎯' },
@@ -829,41 +832,109 @@ export default function RelatoriosInfinity() {
         </div>
       </header>
 
-      {/* ── Tab Navigation ── */}
-      <nav className="tab-nav" style={{
-        display: 'flex', gap: '4px', padding: '12px 16px',
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
-        backgroundColor: 'rgba(8,9,11,0.6)',
-        backdropFilter: 'blur(10px)',
+      {/* ── Tab Navigation Bar with Chevrons & Responsive Scroll ── */}
+      <div className="tab-nav-wrapper" style={{
         position: 'sticky', top: '69px', zIndex: 99,
-        overflowX: 'auto',
-        WebkitOverflowScrolling: 'touch',
-        scrollbarWidth: 'none',
+        backgroundColor: 'rgba(8,9,11,0.85)',
+        backdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        display: 'flex', alignItems: 'center',
+        padding: '0 8px',
       }}>
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }}
-            style={{
-              padding: '10px 16px',
-              borderRadius: '10px',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: 600,
-              fontFamily: 'inherit',
-              transition: 'all 0.2s',
-              display: 'flex', alignItems: 'center', gap: '6px',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-              color: activeTab === tab.id ? '#fff' : 'rgba(255,255,255,0.4)',
-              backgroundColor: activeTab === tab.id ? 'rgba(0,219,121,0.15)' : 'transparent',
-            }}
-          >
-            <span>{tab.icon}</span> {tab.label}
-          </button>
-        ))}
-      </nav>
+        {/* Scroll Left Button */}
+        <button
+          onClick={() => tabNavRef.current?.scrollBy({ left: -260, behavior: 'smooth' })}
+          title="Rolar abas para a esquerda"
+          aria-label="Rolar para esquerda"
+          style={{
+            background: 'linear-gradient(90deg, rgba(8,9,11,0.95) 60%, rgba(8,9,11,0))',
+            border: 'none',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '22px',
+            lineHeight: 1,
+            padding: '12px 14px 12px 6px',
+            cursor: 'pointer',
+            height: '100%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 2,
+            transition: 'color 0.2s, transform 0.15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#00DB79'; e.currentTarget.style.transform = 'scale(1.15)'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.transform = 'scale(1)'; }}
+        >
+          ‹
+        </button>
+
+        <nav
+          ref={tabNavRef}
+          className="tab-nav"
+          onWheel={(e) => {
+            if (e.deltaY !== 0) {
+              e.currentTarget.scrollLeft += e.deltaY;
+            }
+          }}
+          style={{
+            display: 'flex', gap: '6px', padding: '10px 4px',
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            flex: 1,
+            scrollBehavior: 'smooth',
+          }}
+        >
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={(e) => {
+                setActiveTab(tab.id);
+                setMobileMenuOpen(false);
+                e.currentTarget.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+              }}
+              style={{
+                padding: '9px 15px',
+                borderRadius: '10px',
+                border: activeTab === tab.id ? '1px solid rgba(0,219,121,0.35)' : '1px solid rgba(255,255,255,0.05)',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: 600,
+                fontFamily: 'inherit',
+                transition: 'all 0.2s',
+                display: 'flex', alignItems: 'center', gap: '7px',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                color: activeTab === tab.id ? '#fff' : 'rgba(255,255,255,0.5)',
+                backgroundColor: activeTab === tab.id ? 'rgba(0,219,121,0.14)' : 'rgba(255,255,255,0.02)',
+                boxShadow: activeTab === tab.id ? '0 0 16px rgba(0,219,121,0.15)' : 'none',
+              }}
+            >
+              <span>{tab.icon}</span> {tab.label}
+            </button>
+          ))}
+        </nav>
+
+        {/* Scroll Right Button */}
+        <button
+          onClick={() => tabNavRef.current?.scrollBy({ left: 260, behavior: 'smooth' })}
+          title="Rolar abas para a direita"
+          aria-label="Rolar para direita"
+          style={{
+            background: 'linear-gradient(270deg, rgba(8,9,11,0.95) 60%, rgba(8,9,11,0))',
+            border: 'none',
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '22px',
+            lineHeight: 1,
+            padding: '12px 6px 12px 14px',
+            cursor: 'pointer',
+            height: '100%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 2,
+            transition: 'color 0.2s, transform 0.15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#00DB79'; e.currentTarget.style.transform = 'scale(1.15)'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.transform = 'scale(1)'; }}
+        >
+          ›
+        </button>
+      </div>
 
       {/* ── Mobile Dropdown Menu (visible only on small screens when toggled) ── */}
       {mobileMenuOpen && (
@@ -908,17 +979,34 @@ export default function RelatoriosInfinity() {
 
       {/* ── Responsive CSS ── */}
       <style>{`
-        .tab-nav::-webkit-scrollbar { display: none; }
+        .tab-nav {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(0, 219, 121, 0.4) rgba(255, 255, 255, 0.03);
+        }
+        .tab-nav::-webkit-scrollbar {
+          height: 5px;
+        }
+        .tab-nav::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.02);
+          border-radius: 999px;
+        }
+        .tab-nav::-webkit-scrollbar-thumb {
+          background: rgba(0, 219, 121, 0.35);
+          border-radius: 999px;
+        }
+        .tab-nav::-webkit-scrollbar-thumb:hover {
+          background: #00DB79;
+        }
         @media (max-width: 768px) {
           .mobile-menu-btn { display: flex !important; }
-          .tab-nav { display: none !important; }
+          .tab-nav-wrapper { display: none !important; }
           .mobile-dropdown { display: block !important; }
         }
         @media (min-width: 769px) {
           .mobile-dropdown { display: none !important; }
           .mobile-menu-btn { display: none !important; }
           header { padding: 24px 48px !important; }
-          .tab-nav { padding: 16px 48px !important; top: 93px !important; }
+          .tab-nav-wrapper { top: 93px !important; padding: 0 32px !important; }
           main { padding: 40px 48px !important; }
           footer { padding: 24px 48px !important; }
         }
@@ -1928,6 +2016,7 @@ export default function RelatoriosInfinity() {
         })()}
 
         {activeTab === 'campanhas_ads' && <CampanhasTab />}
+        {activeTab === 'formularios' && <FormulariosTab />}
         {activeTab === 'mkt' && <MktTab />}
         {activeTab === 'evolucao' && <EvolucaoTab />}
 

@@ -31,6 +31,20 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: '/',
+        has: [
+          {
+            type: 'host',
+            value: 'forms.infinityondemand.com.br',
+          },
+        ],
+        destination: '/forms',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

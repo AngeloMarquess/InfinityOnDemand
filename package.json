@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "deploy": "bash deploy.sh"
+    "deploy": "bash deploy.sh",
+    "start:forms": "next start -p 4001"
   },
   "dependencies": {
     "@splinetool/react-spline": "^4.1.0",
