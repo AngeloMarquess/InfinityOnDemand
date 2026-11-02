@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getAllClients, saveClient } from '@/lib/forms-storage';
+import { getAllClients, saveClient, syncStorageWithSupabase } from '@/lib/forms-storage';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    await syncStorageWithSupabase();
     const clients = getAllClients();
     return NextResponse.json({ clients });
   } catch (err: any) {
@@ -12,6 +13,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    await syncStorageWithSupabase();
     const body = await req.json();
     if (!body.company) {
       return NextResponse.json({ error: 'Nome da empresa é obrigatório' }, { status: 400 });
@@ -23,3 +25,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+

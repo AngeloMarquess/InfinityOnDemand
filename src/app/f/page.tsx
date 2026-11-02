@@ -29,12 +29,19 @@ interface FormItem {
   tenantType: 'infinity' | 'client';
   clientName?: string;
   niche: string;
-  whatsappDestination: string;
+  whatsappDestination?: string;
   sendToWhatsapp: boolean;
   thankYouTitle: string;
   thankYouMessage: string;
   autoRedirectSeconds: number;
   questions: FormQuestion[];
+  brandName?: string;
+  brandLogoUrl?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  backgroundColor?: string;
+  backgroundImageUrl?: string;
+  backgroundStyle?: string;
 }
 
 function DynamicFormFunnel() {

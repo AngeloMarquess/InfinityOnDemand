@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { getAllLeads, updateLeadStatus } from '@/lib/forms-storage';
+import { getAllLeads, updateLeadStatus, syncStorageWithSupabase } from '@/lib/forms-storage';
 import { getServerSupabase } from '@/lib/supabase';
 
 export async function GET(req: Request) {
   try {
+    await syncStorageWithSupabase();
     const { searchParams } = new URL(req.url);
     const formSlug = searchParams.get('form_slug') || undefined;
     const clientId = searchParams.get('client_id') || undefined;

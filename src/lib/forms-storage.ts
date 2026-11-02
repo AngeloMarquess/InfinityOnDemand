@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { getServerSupabase } from './supabase';
 
 export interface FormQuestion {
   id: string;
@@ -29,6 +30,9 @@ export interface ClientTenant {
   phone: string;
   email?: string;
   niche: string;
+  logoUrl?: string;
+  primaryColor?: string;
+  backgroundImageUrl?: string;
   created_at: string;
 }
 
@@ -50,6 +54,14 @@ export interface FormItem {
   questions: FormQuestion[];
   created_at: string;
   updated_at: string;
+  // ── CUSTOMIZAÇÃO VISUAL WHITE-LABEL (MARCA, LOGO, CORES, FUNDO) ──
+  brandName?: string;
+  brandLogoUrl?: string;
+  primaryColor?: string; // ex: #00e599, #3b82f6, #ec4899, #eab308, #a855f7
+  secondaryColor?: string;
+  backgroundColor?: string;
+  backgroundImageUrl?: string;
+  backgroundStyle?: 'infinity-waves' | 'custom-image' | 'dark-gradient' | 'minimal';
 }
 
 export interface LeadSubmission {
@@ -82,6 +94,7 @@ interface StorageSchema {
 
 const DATA_DIR = path.join(process.cwd(), 'src', 'data');
 const DATA_FILE = path.join(DATA_DIR, 'forms-database.json');
+const TMP_DATA_FILE = path.join('/tmp', 'forms-database.json');
 
 const INITIAL_CLIENTS: ClientTenant[] = [
   {
@@ -91,6 +104,7 @@ const INITIAL_CLIENTS: ClientTenant[] = [
     phone: '5581981280719',
     email: 'contato@cactuscalorosos.com.br',
     niche: 'Moda & Vestuário',
+    primaryColor: '#10b981',
     created_at: '2026-03-01T10:00:00.000Z',
   },
   {
@@ -100,6 +114,7 @@ const INITIAL_CLIENTS: ClientTenant[] = [
     phone: '5581981280719',
     email: 'contato@elyscalheirosjoias.com.br',
     niche: 'Joias & Semijoias',
+    primaryColor: '#eab308',
     created_at: '2026-03-05T10:00:00.000Z',
   },
   {
@@ -109,11 +124,39 @@ const INITIAL_CLIENTS: ClientTenant[] = [
     phone: '5581981280719',
     email: 'contato@saojosemercados.com.br',
     niche: 'Supermercados & Varejo',
+    primaryColor: '#3b82f6',
     created_at: '2026-03-10T10:00:00.000Z',
   },
 ];
 
 const INITIAL_FORMS: FormItem[] = [
+  {
+    id: 'form-angelo',
+    title: 'Diagnóstico com Angelo Marques',
+    slug: 'angelo',
+    tenantType: 'infinity',
+    clientName: 'Angelo Marques',
+    niche: 'Consultoria de Tecnologia & Estratégia Digital',
+    whatsappDestination: '5581981280719',
+    sendToWhatsapp: true,
+    thankYouTitle: 'Diagnóstico Registrado!',
+    thankYouMessage: 'Angelo Marques e a equipe Infinity entrarão em contato direto no seu WhatsApp.',
+    autoRedirectSeconds: 4,
+    status: 'Ativo',
+    primaryColor: '#00e599',
+    brandName: 'ANGELO MARQUES • INFINITY',
+    created_at: '2026-03-01T10:00:00.000Z',
+    updated_at: '2026-03-01T10:00:00.000Z',
+    questions: [
+      { id: 'qa1', title: 'Para começarmos, me diz seu nome completo.', helper: 'Usado para personalizar a apresentação.', type: 'text', required: true },
+      { id: 'qa2', title: 'Qual seu WhatsApp comercial com DDD?', helper: 'Receba o diagnóstico detalhado por lá.', type: 'phone', required: true },
+      { id: 'qa3', title: 'Qual é o nome da sua marca ou empresa?', helper: 'Nome da operação que você lidera.', type: 'text', required: true },
+      { id: 'qa4', title: 'Qual é o seu melhor e-mail corporativo ou pessoal?', helper: 'Enviaremos o resumo executivo formal.', type: 'email', required: true },
+      { id: 'qa5', title: 'Qual é a situação atual da sua empresa?', type: 'select', options: ['Tenho negócio e quero desenvolver uma nova solução digital', 'Quero escalar vendas através de tráfego pago & IA', 'Preciso automatizar processos de atendimento e CRM', 'Quero consultoria personalizada diretamente com Angelo'], required: true },
+      { id: 'qa6', title: 'Qual a média do seu faturamento mensal atual?', type: 'currency', options: ['Até R$ 5.000', 'R$ 5.000 a R$ 15.000', 'R$ 15.000 a R$ 50.000', 'R$ 50.000 a R$ 100.000', 'Acima de R$ 100.000'], required: true },
+      { id: 'qa7', title: 'Quanto você pretende investir mensalmente em crescimento e tecnologia?', type: 'currency', options: ['R$ 1.500 a R$ 3.000', 'R$ 3.000 a R$ 7.000', 'R$ 7.000 a R$ 15.000', 'Acima de R$ 15.000'], required: true },
+    ],
+  },
   {
     id: 'form-ecommerce-moda',
     title: 'Diagnóstico E-commerce 7 Dias',
@@ -126,6 +169,8 @@ const INITIAL_FORMS: FormItem[] = [
     thankYouMessage: 'Nosso especialista já foi notificado e vai continuar o atendimento com você no WhatsApp.',
     autoRedirectSeconds: 4,
     status: 'Ativo',
+    primaryColor: '#00e599',
+    brandName: 'INFINITY ON DEMAND',
     created_at: '2026-03-01T10:00:00.000Z',
     updated_at: '2026-03-01T10:00:00.000Z',
     questions: [
@@ -135,7 +180,8 @@ const INITIAL_FORMS: FormItem[] = [
       { id: 'q4', title: 'Quais nichos melhor definem o seu catálogo? (Pode marcar mais de um)', helper: 'Selecione todas as opções que você vende.', type: 'checkbox', options: ['Moda Feminina', 'Moda Masculina', 'Calçados', 'Bolsas e Acessórios', 'Joias e Semijoias', 'Decoração & Casa'], required: true },
       { id: 'q5', title: 'Qual a média do seu faturamento mensal atual?', type: 'currency', options: ['Até R$ 5.000', 'R$ 5.000 a R$ 15.000', 'R$ 15.000 a R$ 50.000', 'R$ 50.000 a R$ 100.000', 'Acima de R$ 100.000'], required: true },
       { id: 'q6', title: 'Quais canais de venda sua empresa utiliza hoje? (Marque todos)', type: 'checkbox', options: ['Loja Física Própria', 'Instagram Direct / Stories', 'WhatsApp Direto', 'Mercado Livre / Shopee', 'Site / Loja Virtual'], required: true },
-      { id: 'q7', title: 'Nome da sua marca / empresa e melhor e-mail:', helper: 'Enviaremos o resumo executivo formal.', type: 'email', required: true },
+      { id: 'q7', title: 'Qual é o nome da sua marca ou empresa?', helper: 'Usado na formalização do projeto.', type: 'text', required: true },
+      { id: 'q8', title: 'Qual é o seu melhor e-mail corporativo ou pessoal?', helper: 'Enviaremos o resumo executivo formal.', type: 'email', required: true },
     ],
   },
   {
@@ -150,16 +196,19 @@ const INITIAL_FORMS: FormItem[] = [
     thankYouMessage: 'Vamos analisar seu nicho e apresentar o plano de escala de vendas no WhatsApp.',
     autoRedirectSeconds: 4,
     status: 'Ativo',
+    primaryColor: '#00e599',
+    brandName: 'INFINITY ON DEMAND',
     created_at: '2026-03-02T10:00:00.000Z',
     updated_at: '2026-03-02T10:00:00.000Z',
     questions: [
       { id: 'qt1', title: 'Qual é o seu nome completo?', type: 'text', required: true },
       { id: 'qt2', title: 'Qual o seu WhatsApp comercial com DDD?', type: 'phone', required: true },
       { id: 'qt3', title: 'Qual é a sua empresa ou marca?', type: 'text', required: true },
-      { id: 'qt4', title: 'Qual o nicho do seu produto ou serviço?', type: 'select', options: ['Moda & Vestuário', 'Supermercados & Varejo', 'Joias & Acessórios', 'Restaurantes & Food', 'Serviços B2B', 'Clínica / Saúde', 'Outro Nicho'], required: true },
-      { id: 'qt5', title: 'Quanto você fatura hoje por mês?', type: 'currency', options: ['Ainda não faturo', 'Até R$ 10 mil', 'R$ 10 a R$ 30 mil', 'R$ 30 a R$ 100 mil', 'Acima de R$ 100 mil'], required: true },
-      { id: 'qt6', title: 'Quanto você pretende investir mensalmente em anúncios no Meta Ads / Google?', type: 'currency', options: ['R$ 1.000 a R$ 2.500', 'R$ 2.500 a R$ 5.000', 'R$ 5.000 a R$ 10.000', 'Acima de R$ 10.000'], required: true },
-      { id: 'qt7', title: 'Quais plataformas você quer anunciar? (Pode marcar mais de uma)', type: 'checkbox', options: ['Instagram e Facebook (Meta Ads)', 'Google Ads & Pesquisa', 'TikTok Ads', 'Campanhas diretas para WhatsApp'], required: true },
+      { id: 'qt4', title: 'Qual o seu melhor e-mail corporativo ou pessoal?', helper: 'Enviaremos o plano de métricas por e-mail.', type: 'email', required: true },
+      { id: 'qt5', title: 'Qual o nicho do seu produto ou serviço?', type: 'select', options: ['Moda & Vestuário', 'Supermercados & Varejo', 'Joias & Acessórios', 'Restaurantes & Food', 'Serviços B2B', 'Clínica / Saúde', 'Outro Nicho'], required: true },
+      { id: 'qt6', title: 'Quanto você fatura hoje por mês?', type: 'currency', options: ['Ainda não faturo', 'Até R$ 10 mil', 'R$ 10 a R$ 30 mil', 'R$ 30 a R$ 100 mil', 'Acima de R$ 100 mil'], required: true },
+      { id: 'qt7', title: 'Quanto você pretende investir mensalmente em anúncios no Meta Ads / Google?', type: 'currency', options: ['R$ 1.000 a R$ 2.500', 'R$ 2.500 a R$ 5.000', 'R$ 5.000 a R$ 10.000', 'Acima de R$ 10.000'], required: true },
+      { id: 'qt8', title: 'Quais plataformas você quer anunciar? (Pode marcar mais de uma)', type: 'checkbox', options: ['Instagram e Facebook (Meta Ads)', 'Google Ads & Pesquisa', 'TikTok Ads', 'Campanhas diretas para WhatsApp'], required: true },
     ],
   },
   {
@@ -174,56 +223,136 @@ const INITIAL_FORMS: FormItem[] = [
     thankYouMessage: 'Nossa equipe de engenharia para varejo entrará em contato em instantes.',
     autoRedirectSeconds: 4,
     status: 'Ativo',
+    primaryColor: '#3b82f6',
+    brandName: 'INFINITY RETAIL & SYSTEMS',
     created_at: '2026-03-05T10:00:00.000Z',
     updated_at: '2026-03-05T10:00:00.000Z',
     questions: [
       { id: 'qm1', title: 'Nome do responsável e nome do Supermercado / Hortifrúti:', type: 'text', required: true },
       { id: 'qm2', title: 'WhatsApp comercial com DDD:', type: 'phone', required: true },
-      { id: 'qm3', title: 'Quantos caixas / PDVs de atendimento sua loja possui?', type: 'number', required: true },
-      { id: 'qm4', title: 'Quais módulos sua operação necessita? (Marque todos necessários)', type: 'checkbox', options: ['Frente de Caixa (PDV Rápido)', 'Controle de Hortifrúti & Validade', 'Integração com Balanças', 'App e Web Delivery Próprio', 'Separação de Pedidos (Picking)'], required: true },
+      { id: 'qm3', title: 'Qual é o seu melhor e-mail?', type: 'email', required: true },
+      { id: 'qm4', title: 'Quantos caixas / PDVs de atendimento sua loja possui?', type: 'number', required: true },
+      { id: 'qm5', title: 'Quais módulos sua operação necessita? (Marque todos necessários)', type: 'checkbox', options: ['Frente de Caixa (PDV Rápido)', 'Controle de Hortifrúti & Validade', 'Integração com Balanças', 'App e Web Delivery Próprio', 'Separação de Pedidos (Picking)'], required: true },
     ],
   },
 ];
 
+// Cache em memória compartilhado durante o ciclo de vida do worker
+let memoryStore: StorageSchema | null = null;
+
 function ensureStorage(): StorageSchema {
-  try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-    if (!fs.existsSync(DATA_FILE)) {
-      const initial: StorageSchema = {
-        clients: INITIAL_CLIENTS,
-        forms: INITIAL_FORMS,
-        leads: [],
-      };
-      fs.writeFileSync(DATA_FILE, JSON.stringify(initial, null, 2), 'utf-8');
-      return initial;
-    }
-    const raw = fs.readFileSync(DATA_FILE, 'utf-8');
-    const parsed = JSON.parse(raw);
-    return {
-      clients: parsed.clients || INITIAL_CLIENTS,
-      forms: parsed.forms || INITIAL_FORMS,
-      leads: parsed.leads || [],
-    };
-  } catch (err) {
-    console.error('Erro ao ler forms-database.json:', err);
-    return {
-      clients: INITIAL_CLIENTS,
-      forms: INITIAL_FORMS,
-      leads: [],
-    };
+  if (memoryStore) {
+    return memoryStore;
   }
+
+  // Tenta ler do diretório src/data (local) ou /tmp (serverless Vercel)
+  const pathsToTry = [DATA_FILE, TMP_DATA_FILE];
+  for (const p of pathsToTry) {
+    try {
+      if (fs.existsSync(p)) {
+        const raw = fs.readFileSync(p, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.forms) && parsed.forms.length > 0) {
+          // Garante que o form 'angelo' esteja mesclado
+          const hasAngelo = parsed.forms.some((f: FormItem) => f.slug === 'angelo');
+          if (!hasAngelo) {
+            parsed.forms.unshift(INITIAL_FORMS[0]);
+          }
+          memoryStore = {
+            clients: parsed.clients || INITIAL_CLIENTS,
+            forms: parsed.forms || INITIAL_FORMS,
+            leads: parsed.leads || [],
+          };
+          return memoryStore;
+        }
+      }
+    } catch (e) {
+      // Ignora erro e tenta próximo
+    }
+  }
+
+  // Fallback inicial
+  memoryStore = {
+    clients: INITIAL_CLIENTS,
+    forms: INITIAL_FORMS,
+    leads: [],
+  };
+
+  saveStorage(memoryStore);
+  return memoryStore;
 }
 
 function saveStorage(data: StorageSchema) {
+  memoryStore = data;
+
+  // 1. Tenta gravar no caminho local (src/data/forms-database.json)
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
   } catch (err) {
-    console.error('Erro ao salvar forms-database.json:', err);
+    // Se for read-only (ex: Vercel lambda), grava em /tmp
+    try {
+      fs.writeFileSync(TMP_DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (tmpErr) {
+      // Ignora
+    }
+  }
+
+  // 2. Persistência assíncrona no Supabase Storage para persistir através de todos os lambdas da Vercel
+  try {
+    const supabase = getServerSupabase();
+    const jsonStr = JSON.stringify(data);
+    supabase.storage
+      .from('campaign-images')
+      .upload('infinity-forms-state.json', Buffer.from(jsonStr), {
+        contentType: 'application/json',
+        upsert: true,
+      })
+      .then(() => {})
+      .catch(() => {});
+  } catch (e) {
+    // Silencia se supabase storage não configurado
+  }
+}
+
+// ── Sincronização inicial com Supabase Storage se disponível ──
+let hasAttemptedSupabaseRestore = false;
+export async function syncStorageWithSupabase(): Promise<void> {
+  if (hasAttemptedSupabaseRestore) return;
+  hasAttemptedSupabaseRestore = true;
+
+  try {
+    const supabase = getServerSupabase();
+    const { data, error } = await supabase.storage
+      .from('campaign-images')
+      .download('infinity-forms-state.json');
+
+    if (!error && data) {
+      const text = await data.text();
+      const parsed = JSON.parse(text);
+      if (parsed && Array.isArray(parsed.forms) && parsed.forms.length > 0) {
+        // Mesclar com memória sem perder novos
+        const currentStore = ensureStorage();
+        const mergedForms = [...parsed.forms];
+        for (const cf of currentStore.forms) {
+          if (!mergedForms.some((mf) => mf.id === cf.id || mf.slug === cf.slug)) {
+            mergedForms.push(cf);
+          }
+        }
+        currentStore.forms = mergedForms;
+        if (parsed.clients) {
+          currentStore.clients = parsed.clients;
+        }
+        if (parsed.leads && parsed.leads.length > currentStore.leads.length) {
+          currentStore.leads = parsed.leads;
+        }
+        memoryStore = currentStore;
+      }
+    }
+  } catch (e) {
+    // Silencia
   }
 }
 
@@ -236,12 +365,15 @@ export function getAllForms(): FormItem[] {
 
 export function getFormBySlug(slug: string): FormItem | undefined {
   const store = ensureStorage();
-  return store.forms.find((f) => f.slug.toLowerCase() === slug.toLowerCase());
+  const cleanSlug = slug.toLowerCase().trim();
+  return store.forms.find((f) => f.slug.toLowerCase().trim() === cleanSlug);
 }
 
 export function saveOrUpdateForm(form: FormItem): FormItem {
   const store = ensureStorage();
-  const existingIdx = store.forms.findIndex((f) => f.id === form.id || f.slug === form.slug);
+  const existingIdx = store.forms.findIndex(
+    (f) => f.id === form.id || f.slug.toLowerCase() === form.slug.toLowerCase()
+  );
   const now = new Date().toISOString();
 
   if (existingIdx >= 0) {
@@ -265,7 +397,7 @@ export function saveOrUpdateForm(form: FormItem): FormItem {
 export function deleteForm(id: string): boolean {
   const store = ensureStorage();
   const initialLen = store.forms.length;
-  store.forms = store.forms.filter((f) => f.id !== id);
+  store.forms = store.forms.filter((f) => f.id !== id && f.slug !== id);
   if (store.forms.length !== initialLen) {
     saveStorage(store);
     return true;
@@ -284,7 +416,10 @@ export function saveClient(client: ClientTenant): ClientTenant {
   const store = ensureStorage();
   const existingIdx = store.clients.findIndex((c) => c.id === client.id);
   if (existingIdx >= 0) {
-    store.clients[existingIdx] = client;
+    store.clients[existingIdx] = {
+      ...store.clients[existingIdx],
+      ...client,
+    };
   } else {
     store.clients.unshift({
       ...client,
@@ -297,6 +432,44 @@ export function saveClient(client: ClientTenant): ClientTenant {
 }
 
 // ── Leads ──
+
+export function getAllLeads(formSlug?: string, clientId?: string): LeadSubmission[] {
+  const store = ensureStorage();
+  let list = [...store.leads];
+
+  if (formSlug && formSlug !== 'all') {
+    list = list.filter((l) => l.form_slug.toLowerCase() === formSlug.toLowerCase());
+  }
+  if (clientId && clientId !== 'all') {
+    list = list.filter((l) => l.client_id === clientId);
+  }
+  return list;
+}
+
+export function saveLeadSubmission(lead: Omit<LeadSubmission, 'id' | 'created_at'>): LeadSubmission {
+  const store = ensureStorage();
+  const fullLead: LeadSubmission = {
+    ...lead,
+    id: `lead-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    created_at: new Date().toISOString(),
+  };
+
+  store.leads.unshift(fullLead);
+  saveStorage(store);
+  return fullLead;
+}
+
+export function updateLeadStatus(id: string, status: LeadSubmission['status']): boolean {
+  const store = ensureStorage();
+  const lead = store.leads.find((l) => l.id === id);
+  if (lead) {
+    lead.status = status;
+    saveStorage(store);
+    return true;
+  }
+  return false;
+}
+
 
 export function getAllLeads(filterFormSlug?: string, filterClientId?: string): LeadSubmission[] {
   const store = ensureStorage();

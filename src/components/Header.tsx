@@ -287,7 +287,27 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
             {otherFlag}
           </Link>
 
-          <Link href="#contact" className="btn-primary" style={{ padding: "8px 16px", color: "#fff" }}>{t.contato}</Link>
+          <a
+            href="https://helpdesk.infinityondemand.com.br/cliente/login"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary"
+            style={{
+              padding: "8px 18px",
+              color: "#fff",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              textDecoration: "none",
+              fontWeight: 700
+            }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Área do Cliente</span>
+          </a>
         </nav>
 
         {/* Hamburger button */}
@@ -418,7 +438,25 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
           </div>
 
           <Link href="/relatorios_infinity" onClick={closeMenu}>{t.analytics}</Link>
-          <Link href="#contact" onClick={closeMenu}>{t.contato}</Link>
+          <a
+            href="https://helpdesk.infinityondemand.com.br/cliente/login"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeMenu}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              color: "#00DF81",
+              fontWeight: 700
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Área do Cliente</span>
+          </a>
         </nav>
 
         {/* Mobile Language Switcher */}
