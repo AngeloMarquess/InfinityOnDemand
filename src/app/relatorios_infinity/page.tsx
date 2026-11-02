@@ -367,6 +367,13 @@ export default function RelatoriosInfinity() {
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
+  // Scroll tab nav to the very beginning on mount
+  useEffect(() => {
+    if (tabNavRef.current) {
+      tabNavRef.current.scrollLeft = 0;
+    }
+  }, []);
+
   // Check auth on mount
   useEffect(() => {
     const session = localStorage.getItem('analytics_session');
