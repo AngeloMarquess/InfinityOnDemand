@@ -130,7 +130,11 @@
     "consultCard5Title": "Sistemas para Mercados & Varejo",
     "consultCard5Desc": "Engenharia para varejo e hortifrútis: PDV ágil, balanças, controle de estoque e plataforma própria de delivery sem taxas de intermediários.",
     "consultCard6Title": "Fábrica de E-commerces",
-    "consultCard6Desc": "Desenvolvimento de lojas virtuais de alta conversão com checkout fluido, integrações com ERP e arquitetura pronta para escalar faturamento."
+    "consultCard6Desc": "Desenvolvimento de lojas virtuais de alta conversão com checkout fluido, integrações com ERP e arquitetura pronta para escalar faturamento.",
+    "consultCard7Title": "Criação de Sites & Landing Pages",
+    "consultCard7Desc": "Desenvolvimento de sites modernos, landing pages de alta conversão e portais corporativos ultrarrápidos e responsivos.",
+    "consultCard8Title": "Assistentes Virtuais & Chat IA",
+    "consultCard8Desc": "Agentes inteligentes de atendimento 24/7 para WhatsApp e Web, tirando dúvidas em tempo real e qualificando clientes."
   },
   "blogPage": {
     "searchPlaceholder": "🔍 Buscar artigos...",

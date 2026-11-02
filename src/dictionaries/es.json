@@ -130,7 +130,11 @@
     "consultCard5Title": "Sistemas para Supermercados",
     "consultCard5Desc": "Ingeniería para retail y mercados: POS ágil, balanzas, control de inventario y delivery propio sin comisiones.",
     "consultCard6Title": "Fábrica de E-commerce",
-    "consultCard6Desc": "Desarrollo de tiendas online de alto rendimiento con checkout rápido, integraciones ERP y arquitectura escalable."
+    "consultCard6Desc": "Desarrollo de tiendas online de alto rendimiento con checkout rápido, integraciones ERP y arquitectura escalable.",
+    "consultCard7Title": "Creación de Sitios & Landing Pages",
+    "consultCard7Desc": "Desarrollo de sitios web corporativos modernos, landing pages de alta conversión y portales optimizados para móviles.",
+    "consultCard8Title": "Asistentes Virtuales & Chat IA",
+    "consultCard8Desc": "Agentes inteligentes de atención 24/7 para WhatsApp y web, respondiendo dudas en tiempo real y calificando clientes."
   },
   "blogPage": {
     "searchPlaceholder": "🔍 Buscar artículos...",

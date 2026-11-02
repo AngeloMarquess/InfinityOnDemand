@@ -1598,14 +1598,74 @@ https://forms.infinityondemand.com.br/${f.slug}`);
 
                         <div>
                           <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', marginBottom: '6px', textTransform: 'uppercase' }}>
-                            URL da Logo do Cliente (PNG Transparente):
+                            Logo da Marca (Upload da Máquina ou URL):
                           </label>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap' }}>
+                            <label style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              backgroundColor: 'rgba(0, 223, 129, 0.15)',
+                              border: '1px solid #00DF81',
+                              color: '#00DF81',
+                              padding: '7px 12px',
+                              borderRadius: '8px',
+                              fontSize: '12px',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                            }}>
+                              📁 Pegar Arquivo da Máquina
+                              <input
+                                type="file"
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  if (file.size > 3 * 1024 * 1024) {
+                                    alert('A imagem é muito grande. Escolha uma imagem de até 3MB.');
+                                    return;
+                                  }
+                                  const reader = new FileReader();
+                                  reader.onload = () => {
+                                    if (typeof reader.result === 'string') {
+                                      setFormDraft((prev) => ({ ...prev, brandLogoUrl: reader.result as string }));
+                                    }
+                                  };
+                                  reader.readAsDataURL(file);
+                                }}
+                              />
+                            </label>
+
+                            {formDraft.brandLogoUrl && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                <img
+                                  src={formDraft.brandLogoUrl}
+                                  alt="Logo do cliente"
+                                  style={{ height: '26px', maxWidth: '70px', objectFit: 'contain' }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setFormDraft((prev) => ({ ...prev, brandLogoUrl: '' }))}
+                                  style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#f87171', padding: '2px 6px', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 700 }}
+                                >
+                                  ✕ Remover
+                                </button>
+                              </div>
+                            )}
+                          </div>
                           <input
                             type="text"
-                            placeholder="https://exemplo.com/logo.png ou /logo.png"
-                            value={formDraft.brandLogoUrl || ''}
-                            onChange={(e) => setFormDraft((prev) => ({ ...prev, brandLogoUrl: e.target.value }))}
-                            style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '13px', outline: 'none' }}
+                            placeholder="Ou cole a URL direta: https://exemplo.com/logo.png"
+                            value={formDraft.brandLogoUrl?.startsWith('data:') ? '✓ Arquivo da máquina carregado (salvo)' : (formDraft.brandLogoUrl || '')}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              if (val !== '✓ Arquivo da máquina carregado (salvo)') {
+                                setFormDraft((prev) => ({ ...prev, brandLogoUrl: val }));
+                              }
+                            }}
+                            style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '12px', outline: 'none' }}
                           />
                         </div>
                       </div>
@@ -1632,7 +1692,7 @@ https://forms.infinityondemand.com.br/${f.slug}`);
                               style={{
                                 width: '32px', height: '32px', borderRadius: '50%',
                                 backgroundColor: c.hex,
-                                border: formDraft.primaryColor === c.hex ? '3px solid #fff' : '2px solid transparent',
+                                border: (formDraft.primaryColor || '').toLowerCase() === c.hex.toLowerCase() ? '3px solid #fff' : '2px solid transparent',
                                 cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
                               }}
                               title={c.name}
@@ -1641,27 +1701,113 @@ https://forms.infinityondemand.com.br/${f.slug}`);
 
                           <input
                             type="color"
-                            value={formDraft.primaryColor || '#00DF81'}
+                            value={/^#[0-9A-Fa-f]{6}$/.test(formDraft.primaryColor || '') ? formDraft.primaryColor : '#00DF81'}
                             onChange={(e) => setFormDraft((prev) => ({ ...prev, primaryColor: e.target.value }))}
-                            style={{ width: '36px', height: '36px', borderRadius: '8px', border: 'none', cursor: 'pointer', background: 'none' }}
+                            style={{ width: '36px', height: '36px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', background: 'none' }}
+                            title="Seletor visual de cor"
                           />
-                          <span style={{ fontSize: '12px', fontWeight: 700, color: formDraft.primaryColor || '#00DF81' }}>
-                            {formDraft.primaryColor || '#00DF81'}
-                          </span>
+
+                          {/* Campo para digitar livremente a cor HEX */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(255,255,255,0.06)', padding: '5px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)' }}>
+                            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', fontWeight: 700 }}>HEX:</span>
+                            <input
+                              type="text"
+                              placeholder="#00DF81"
+                              value={formDraft.primaryColor || ''}
+                              onChange={(e) => {
+                                let val = e.target.value.trim();
+                                if (val && !val.startsWith('#') && !val.startsWith('rgb')) {
+                                  val = '#' + val;
+                                }
+                                setFormDraft((prev) => ({ ...prev, primaryColor: val }));
+                              }}
+                              style={{
+                                width: '90px',
+                                background: 'transparent',
+                                border: 'none',
+                                color: formDraft.primaryColor || '#00DF81',
+                                fontWeight: 800,
+                                fontSize: '13px',
+                                outline: 'none',
+                                fontFamily: 'monospace',
+                                textTransform: 'uppercase',
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
 
                       {/* Imagem de Fundo Customizada */}
                       <div>
                         <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', marginBottom: '6px', textTransform: 'uppercase' }}>
-                          Imagem de Fundo Customizada (opcional - deixe vazio para usar Ondas Neon Infinity):
+                          Imagem de Fundo Customizada (Upload da Máquina ou URL - Opcional):
                         </label>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap' }}>
+                          <label style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            color: '#fff',
+                            padding: '7px 12px',
+                            borderRadius: '8px',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                          }}>
+                            🖼️ Pegar Fundo da Máquina
+                            <input
+                              type="file"
+                              accept="image/*"
+                              style={{ display: 'none' }}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                if (file.size > 4 * 1024 * 1024) {
+                                  alert('A imagem de fundo é muito grande. Escolha uma imagem de até 4MB.');
+                                  return;
+                                }
+                                const reader = new FileReader();
+                                reader.onload = () => {
+                                  if (typeof reader.result === 'string') {
+                                    setFormDraft((prev) => ({ ...prev, backgroundImageUrl: reader.result as string }));
+                                  }
+                                };
+                                reader.readAsDataURL(file);
+                              }}
+                            />
+                          </label>
+
+                          {formDraft.backgroundImageUrl && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(255,255,255,0.05)', padding: '4px 8px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                              <img
+                                src={formDraft.backgroundImageUrl}
+                                alt="Preview fundo"
+                                style={{ width: '38px', height: '24px', objectFit: 'cover', borderRadius: '4px' }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setFormDraft((prev) => ({ ...prev, backgroundImageUrl: '' }))}
+                                style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#f87171', padding: '2px 6px', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 700 }}
+                              >
+                                ✕ Remover
+                              </button>
+                            </div>
+                          )}
+                        </div>
                         <input
                           type="text"
-                          placeholder="https://exemplo.com/fundo-loja.jpg ou URL de imagem do cliente"
-                          value={formDraft.backgroundImageUrl || ''}
-                          onChange={(e) => setFormDraft((prev) => ({ ...prev, backgroundImageUrl: e.target.value }))}
-                          style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '13px', outline: 'none' }}
+                          placeholder="Ou cole a URL direta de fundo: https://exemplo.com/fundo-loja.jpg"
+                          value={formDraft.backgroundImageUrl?.startsWith('data:') ? '✓ Arquivo da máquina carregado (salvo)' : (formDraft.backgroundImageUrl || '')}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val !== '✓ Arquivo da máquina carregado (salvo)') {
+                              setFormDraft((prev) => ({ ...prev, backgroundImageUrl: val }));
+                            }
+                          }}
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '12px', outline: 'none' }}
                         />
                       </div>
                     </div>

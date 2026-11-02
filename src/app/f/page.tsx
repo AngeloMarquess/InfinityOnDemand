@@ -294,7 +294,9 @@ function DynamicFormFunnel() {
       style={{
         minHeight: '100vh',
         width: '100vw',
-        backgroundImage: form?.backgroundImageUrl ? `url('${form.backgroundImageUrl}')` : "url('/forms-bg.jpg')",
+        backgroundImage: form?.backgroundImageUrl
+          ? (form.backgroundImageUrl.startsWith('data:') ? `url(${form.backgroundImageUrl})` : `url('${form.backgroundImageUrl}')`)
+          : "url('/forms-bg.jpg')",
         backgroundPosition: 'center center',
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
@@ -357,6 +359,9 @@ function DynamicFormFunnel() {
           <img
             src={form?.brandLogoUrl || '/logo-infinity.png'}
             alt={form?.brandName || 'Infinity On Demand'}
+            onError={(e) => {
+              (e.target as any).src = '/logo-infinity.png';
+            }}
             style={{
               height: '46px',
               width: 'auto',
