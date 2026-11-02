@@ -21,6 +21,7 @@ export interface FormQuestion {
   required: boolean;
   minOptions?: number;
   maxOptions?: number;
+  phase?: string; // ex: 'SOBRE VOCÊ', 'SUA EMPRESA', 'QUALIFICAÇÃO', 'AGENDAMENTO'
 }
 
 export interface ClientTenant {
@@ -62,6 +63,11 @@ export interface FormItem {
   backgroundColor?: string;
   backgroundImageUrl?: string;
   backgroundStyle?: 'infinity-waves' | 'custom-image' | 'dark-gradient' | 'minimal';
+  // ── AGENDAMENTO INTELIGENTE (ESTILO ARCUS) ──
+  enableScheduling?: boolean;
+  minScoreForScheduling?: number;
+  schedulingDays?: string[];
+  schedulingTimes?: string[];
 }
 
 export interface LeadSubmission {
@@ -476,4 +482,30 @@ export function updateLeadStatus(id: string, status: LeadSubmission['status']): 
     return true;
   }
   return false;
+}
+
+
+export function calculateLeadScore(answers: Record<string, any>): number {
+  let score = 50;
+  const answersStr = JSON.stringify(answers).toLowerCase();
+
+  if (answersStr.includes('100k') || answersStr.includes('500k') || answersStr.includes('milhão') || answersStr.includes('milhao') || answersStr.includes('acima de 50')) {
+    score += 30;
+  } else if (answersStr.includes('30k') || answersStr.includes('50k') || answersStr.includes('20k')) {
+    score += 20;
+  }
+
+  if (answersStr.includes('imediato') || answersStr.includes('o mais rápido') || answersStr.includes('urgente') || answersStr.includes('sócio') || answersStr.includes('proprietário') || answersStr.includes('diretor')) {
+    score += 15;
+  }
+
+  if (answersStr.includes('@') && (answersStr.includes('9') || answersStr.includes('whatsapp'))) {
+    score += 10;
+  }
+
+  return Math.min(100, Math.max(10, score));
+}
+
+export function saveSubmission(lead: any): LeadSubmission {
+  return saveLeadSubmission(lead);
 }
