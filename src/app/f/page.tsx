@@ -46,7 +46,16 @@ interface FormItem {
 
 function DynamicFormFunnel() {
   const searchParams = useSearchParams();
-  const slug = searchParams?.get('slug') || searchParams?.get('form') || 'e-commerce-moda';
+  // Obter o slug por parâmetro de busca (?slug=xxx) OU diretamente pela URL (/f/xxx ou /xxx)
+  let resolvedSlug = searchParams?.get('slug') || searchParams?.get('form') || '';
+  if (!resolvedSlug && typeof window !== 'undefined') {
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    const lastPart = parts[parts.length - 1];
+    if (lastPart && lastPart !== 'f') {
+      resolvedSlug = lastPart;
+    }
+  }
+  const slug = resolvedSlug || 'e-commerce-moda';
   const utmSource = searchParams?.get('utm_source') || '';
   const utmMedium = searchParams?.get('utm_medium') || '';
   const utmCampaign = searchParams?.get('utm_campaign') || '';
@@ -435,7 +444,7 @@ function DynamicFormFunnel() {
                 <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', lineHeight: '1.3', marginBottom: '6px' }}>
                   {currentQuestion.title}
                   {currentQuestion.required && (
-                    <span style={{ color: '#00DF81', marginLeft: '6px' }} title="Obrigatória">*</span>
+                    <span style={{ color: form?.primaryColor || primaryColor, marginLeft: '6px' }} title="Obrigatória">*</span>
                   )}
                 </h1>
                 {currentQuestion.helper && (
@@ -837,13 +846,8 @@ function DynamicFormFunnel() {
                     style={{
                       padding: '14px 28px',
                       borderRadius: '12px',
-                      background: 'linear-gradient(90deg, #00DF81 0%, #00c972 100%)',
-                      color: '#070B18',
-                      fontWeight: 800,
-                      fontSize: '13px',
-                      border: 'none',
-                      cursor: submitting ? 'wait' : 'pointer',
-                      boxShadow: '0 4px 16px rgba(0, 223, 129, 0.3)',
+                      background: form?.primaryColor || primaryColor,
+                      boxShadow: `0 4px 16px ${(form?.primaryColor || primaryColor)}66`,
                     }}
                   >
                     {submitting ? 'Enviando...' : (currentStepIndex >= totalQuestions - 1 ? 'Finalizar e Enviar →' : 'Continuar →')}
@@ -856,7 +860,7 @@ function DynamicFormFunnel() {
           {/* ════════ TELA DE OBRIGADO (THANK YOU PAGE CONFIGURÁVEL) ════════ */}
           {isCompleted && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '20px', padding: '10px 0' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 14px', borderRadius: '20px', backgroundColor: 'rgba(0, 223, 129, 0.15)', border: '1px solid rgba(0, 223, 129, 0.3)', color: '#00DF81', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 14px', borderRadius: '20px', backgroundColor: `${form?.primaryColor || primaryColor}25`, border: `1px solid ${form?.primaryColor || primaryColor}50`, color: form?.primaryColor || primaryColor, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}>
                 <span>✓</span> Concluído com Sucesso
               </div>
 
@@ -878,16 +882,8 @@ function DynamicFormFunnel() {
                       width: '100%',
                       padding: '16px',
                       borderRadius: '12px',
-                      background: 'linear-gradient(90deg, #00DF81 0%, #00F0FF 100%)',
-                      color: '#070B18',
-                      fontWeight: 900,
-                      fontSize: '14px',
-                      textDecoration: 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      boxShadow: '0 4px 20px rgba(0, 223, 129, 0.35)',
+                      background: `linear-gradient(90deg, ${form?.primaryColor || primaryColor} 0%, #00F0FF 100%)`,
+                      boxShadow: `0 4px 20px ${(form?.primaryColor || primaryColor)}55`,
                       boxSizing: 'border-box',
                     }}
                   >
