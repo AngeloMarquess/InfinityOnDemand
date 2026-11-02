@@ -104,7 +104,7 @@ const TMP_DATA_FILE = path.join('/tmp', 'forms-database.json');
 
 const INITIAL_CLIENTS: ClientTenant[] = [
   {
-    id: 'client-1',
+    id: '962f688c-c1b8-4136-8b5c-030e427c23c1',
     name: 'Cactus Moda',
     company: 'Cactus Calorosos',
     phone: '5581981280719',
@@ -114,7 +114,7 @@ const INITIAL_CLIENTS: ClientTenant[] = [
     created_at: '2026-03-01T10:00:00.000Z',
   },
   {
-    id: 'client-2',
+    id: 'f384667a-92c0-4287-a84b-c6536b11e944',
     name: 'Elys Joias',
     company: 'Elys Calheiros Joias',
     phone: '5581981280719',

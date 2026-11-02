@@ -177,21 +177,34 @@ export async function POST(req: Request) {
       console.error('Erro na integração do lead com Supabase/CRM:', e);
     }
 
-    // Montar link do WhatsApp se configurado para envio
-    let whatsappUrl = '';
-    if (body.whatsapp_destination) {
-      const cleanPhone = body.whatsapp_destination.replace(/\D/g, '');
-      const text = encodeURIComponent(
-        `Olá! Acabei de preencher o formulário "${finalTitle}".\nNome: ${name}\nWhatsApp: ${phone}\nScore: ${score}/100`
-      );
-      whatsappUrl = `https://wa.me/${cleanPhone}?text=${text}`;
+    // Montar link do WhatsApp com mensagem completa e humanizada
+    const destinationPhone = body.whatsapp_destination || '5581981280719';
+    const cleanPhone = destinationPhone.replace(/\D/g, '');
+    
+    let msgText = `Olá, me chamo *${name}* e acabei de preencher o formulário *${finalTitle}*.\n\n` +
+      `Seguem minhas informações:\n` +
+      `*Nome:* ${name}\n` +
+      `*Telefone:* ${phone}\n` +
+      (email ? `*E-mail:* ${email}\n` : '') +
+      (company ? `*Empresa:* ${company}\n` : '') +
+      (faturamento ? `*Faturamento:* ${faturamento}\n` : '') +
+      (nicho ? `*Segmento:* ${nicho}\n` : '');
+
+    if (body.data_agendamento || body.horario_agendamento) {
+      msgText += `\n📅 *Agendamento Confirmado:*\n` +
+        `*Data:* ${body.data_agendamento || ''}\n` +
+        `*Horário:* ${body.horario_agendamento || ''}\n` +
+        `*Diagnóstico:* Aprovado 🎉\n`;
     }
+
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(msgText)}`;
 
     return NextResponse.json({
       success: true,
       lead: savedLead,
       score,
       whatsappUrl,
+      whatsapp_url: whatsappUrl,
     }, { headers: corsHeaders });
   } catch (err: any) {
     console.error('Erro em POST /api/forms/submit:', err);

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 interface FormQuestion {
@@ -20,6 +20,7 @@ interface FormQuestion {
     | 'rating';
   options?: string[];
   required: boolean;
+  phase?: string; // ex: 'SOBRE VOCÊ', 'SUA EMPRESA', 'QUALIFICAÇÃO', 'AGENDAMENTO'
 }
 
 interface FormItem {
@@ -42,11 +43,38 @@ interface FormItem {
   backgroundColor?: string;
   backgroundImageUrl?: string;
   backgroundStyle?: string;
+  enableScheduling?: boolean;
 }
+
+// Calcular os próximos 3 dias úteis a partir de hoje
+function getNextBusinessDays(count = 3): string[] {
+  const days: string[] = [];
+  const date = new Date();
+  const dayNames = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+
+  let added = 0;
+  let safety = 0;
+  date.setDate(date.getDate() + 1);
+
+  while (added < count && safety < 14) {
+    safety++;
+    const dow = date.getDay();
+    if (dow !== 0 && dow !== 6) { // Ignorar Domingo (0) e Sábado (6)
+      const dd = String(date.getDate()).padStart(2, '0');
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      days.push(`${dayNames[dow]}, ${dd}/${mm}`);
+      added++;
+    }
+    date.setDate(date.getDate() + 1);
+  }
+
+  return days;
+}
+
+const AVAILABLE_TIMES = ['10:30', '13:00', '14:30', '16:00', '17:30', '19:00'];
 
 function DynamicFormFunnel() {
   const searchParams = useSearchParams();
-  // Obter o slug por parâmetro de busca (?slug=xxx) OU diretamente pela URL (/f/xxx ou /xxx)
   let resolvedSlug = searchParams?.get('slug') || searchParams?.get('form') || '';
   if (!resolvedSlug && typeof window !== 'undefined') {
     const parts = window.location.pathname.split('/').filter(Boolean);
@@ -61,22 +89,27 @@ function DynamicFormFunnel() {
   const utmCampaign = searchParams?.get('utm_campaign') || '';
 
   const [form, setForm] = useState<FormItem | null>(null);
-  const primaryColor: string = form?.primaryColor || '#00DF81';
+  const primaryColor: string = form?.primaryColor || '#FF5500'; // Estilo vibrante Arcus / Infinity
   const [loadingForm, setLoadingForm] = useState(true);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
-  // Armazenamento de respostas: questionId -> valor (string, number, array)
+  // Armazenamento de respostas
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [leadName, setLeadName] = useState('');
   const [leadPhone, setLeadPhone] = useState('');
   const [leadEmail, setLeadEmail] = useState('');
   const [leadCompany, setLeadCompany] = useState('');
 
+  // Agendamento Inteligente Arcus
+  const [schedulingPhase, setSchedulingPhase] = useState<'none' | 'date' | 'time'>('none');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
+
   const [validationError, setValidationError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [whatsappUrl, setWhatsappUrl] = useState('');
-  const [countdown, setCountdown] = useState(4);
+  const [countdown, setCountdown] = useState(3);
 
   // Carregar dados do formulário da API
   useEffect(() => {
@@ -100,7 +133,34 @@ function DynamicFormFunnel() {
   const questions = form?.questions || [];
   const currentQuestion = questions[currentStepIndex];
   const totalQuestions = questions.length;
-  const progressPercent = totalQuestions > 0 ? Math.round(((currentStepIndex) / totalQuestions) * 100) : 0;
+
+  // Dias úteis calculados dinamicamente
+  const businessDays = useMemo(() => getNextBusinessDays(3), []);
+
+  // Determinar a Fase Atual (exibida acima da barra de progresso)
+  const currentPhaseName = useMemo(() => {
+    if (schedulingPhase === 'date' || schedulingPhase === 'time') {
+      return 'AGENDAMENTO';
+    }
+    if (currentQuestion?.phase) {
+      return currentQuestion.phase.toUpperCase();
+    }
+    // Regra automática baseada nas perguntas:
+    // 1 a 3: SOBRE VOCÊ
+    // 4 a 6: SUA EMPRESA
+    // 7 em diante: QUALIFICAÇÃO
+    if (currentStepIndex < 3) return 'SOBRE VOCÊ';
+    if (currentStepIndex < 6) return 'SUA EMPRESA';
+    return 'QUALIFICAÇÃO';
+  }, [schedulingPhase, currentQuestion, currentStepIndex]);
+
+  // Progresso total
+  const progressPercent = useMemo(() => {
+    if (schedulingPhase === 'time') return 95;
+    if (schedulingPhase === 'date') return 85;
+    if (totalQuestions === 0) return 0;
+    return Math.round(((currentStepIndex) / totalQuestions) * 75);
+  }, [schedulingPhase, currentStepIndex, totalQuestions]);
 
   // Máscara de telefone
   const formatPhone = (val: string) => {
@@ -112,9 +172,196 @@ function DynamicFormFunnel() {
     return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
   };
 
-  // Redirecionamento automático WhatsApp na conclusão
+  // Verificar se o lead é qualificado para agendamento
+  const checkIsQualified = (currentAnswers: Record<string, any>) => {
+    // Se o form desabilitou agendamento explicitamente
+    if (form?.enableScheduling === false) return false;
+    // Agendamento habilitado por padrão para todos os leads qualificados
+    return true;
+  };
+
+  // Avançar etapa regular
+  const handleNextStep = async () => {
+    if (!currentQuestion) return;
+
+    const currentVal = answers[currentQuestion.id];
+
+    // Validação de obrigatório
+    if (currentQuestion.required) {
+      if (
+        currentVal === undefined ||
+        currentVal === null ||
+        (typeof currentVal === 'string' && !currentVal.trim()) ||
+        (Array.isArray(currentVal) && currentVal.length === 0)
+      ) {
+        setValidationError('Esta pergunta é obrigatória. Por favor, responda para continuar.');
+        return;
+      }
+    }
+
+    setValidationError('');
+
+    // Capturar dados de contato
+    if (currentQuestion.type === 'phone' && currentVal) {
+      setLeadPhone(String(currentVal));
+    }
+    if (currentQuestion.type === 'email' && currentVal) {
+      setLeadEmail(String(currentVal));
+    }
+    const lowerTitle = currentQuestion.title.toLowerCase();
+    if (currentQuestion.type === 'text' && !leadName && lowerTitle.includes('nome')) {
+      setLeadName(String(currentVal));
+    }
+    if (currentQuestion.type === 'text' && !leadCompany && (lowerTitle.includes('empresa') || lowerTitle.includes('marca'))) {
+      setLeadCompany(String(currentVal));
+    }
+
+    // Se estiver na última etapa das perguntas regulares
+    if (currentStepIndex >= totalQuestions - 1) {
+      if (checkIsQualified(answers)) {
+        setSchedulingPhase('date');
+      } else {
+        await handleFinalSubmit();
+      }
+    } else {
+      setCurrentStepIndex((prev) => prev + 1);
+    }
+  };
+
+  // Voltar etapa
+  const handlePrevStep = () => {
+    if (schedulingPhase === 'time') {
+      setSchedulingPhase('date');
+      return;
+    }
+    if (schedulingPhase === 'date') {
+      setSchedulingPhase('none');
+      return;
+    }
+    if (currentStepIndex > 0) {
+      setValidationError('');
+      setCurrentStepIndex((prev) => prev - 1);
+    }
+  };
+
+  // Manipular seleção única (Select / Radio)
+  const handleSelectOption = (opt: string) => {
+    const updatedAnswers = { ...answers, [currentQuestion.id]: opt };
+    setAnswers(updatedAnswers);
+    setValidationError('');
+
+    const lowerTitle = currentQuestion.title.toLowerCase();
+    if (!leadCompany && (lowerTitle.includes('empresa') || lowerTitle.includes('marca'))) {
+      setLeadCompany(opt);
+    }
+
+    setTimeout(() => {
+      if (currentStepIndex >= totalQuestions - 1) {
+        if (checkIsQualified(updatedAnswers)) {
+          setSchedulingPhase('date');
+        } else {
+          handleFinalSubmit(updatedAnswers);
+        }
+      } else {
+        setCurrentStepIndex((prev) => prev + 1);
+      }
+    }, 200);
+  };
+
+  // Selecionar Data de Agendamento
+  const handleSelectDate = (day: string) => {
+    setSelectedDate(day);
+    setValidationError('');
+    setSchedulingPhase('time');
+  };
+
+  // Selecionar Horário e Finalizar (Envia e já redireciona para WhatsApp)
+  const handleSelectTimeAndFinish = async (time: string) => {
+    setSelectedTime(time);
+    await handleFinalSubmit(answers, {
+      data_agendamento: selectedDate,
+      horario_agendamento: time,
+    });
+  };
+
+  // Manipular caixas de seleção múltipla (Checkboxes)
+  const handleCheckboxToggle = (opt: string) => {
+    const currentList: string[] = Array.isArray(answers[currentQuestion.id]) ? [...answers[currentQuestion.id]] : [];
+    const exists = currentList.includes(opt);
+    let updated: string[];
+    if (exists) {
+      updated = currentList.filter((item) => item !== opt);
+    } else {
+      updated = [...currentList, opt];
+    }
+    setAnswers((prev) => ({ ...prev, [currentQuestion.id]: updated }));
+    if (updated.length > 0) setValidationError('');
+  };
+
+  // Envio final para API e redirecionamento direto para o WhatsApp
+  const handleFinalSubmit = async (
+    finalAnswersOverride?: Record<string, any>,
+    extraSchedulingData?: { data_agendamento?: string; horario_agendamento?: string }
+  ) => {
+    try {
+      setSubmitting(true);
+      const payloadAnswers = finalAnswersOverride || answers;
+
+      const mappedAnswers: Record<string, any> = {};
+      questions.forEach((q) => {
+        const val = payloadAnswers[q.id];
+        if (val !== undefined) {
+          mappedAnswers[q.title] = val;
+        }
+      });
+
+      if (extraSchedulingData?.data_agendamento) {
+        mappedAnswers['Data Agendada'] = extraSchedulingData.data_agendamento;
+      }
+      if (extraSchedulingData?.horario_agendamento) {
+        mappedAnswers['Horário Agendado'] = extraSchedulingData.horario_agendamento;
+      }
+
+      const res = await fetch('/api/forms/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          form_slug: form?.slug || slug,
+          form_title: form?.title || 'Diagnóstico Infinity',
+          name: leadName || answers['qa1'] || answers['q1'] || 'Lead Interessado',
+          phone: leadPhone || answers['qa2'] || answers['q2'] || '',
+          email: leadEmail || answers['qa4'] || answers['q4'] || '',
+          company: leadCompany || answers['qa3'] || answers['q3'] || '',
+          whatsapp_destination: form?.whatsappDestination || '5581981280719',
+          answers: mappedAnswers,
+          data_agendamento: extraSchedulingData?.data_agendamento || selectedDate || '',
+          horario_agendamento: extraSchedulingData?.horario_agendamento || selectedTime || '',
+          utm_source: utmSource,
+          utm_medium: utmMedium,
+          utm_campaign: utmCampaign,
+        }),
+      });
+
+      const data = await res.json();
+      const targetWaUrl = data.whatsapp_url || data.whatsappUrl;
+
+      if (targetWaUrl) {
+        setWhatsappUrl(targetWaUrl);
+        // Redireciona imediatamente para o WhatsApp
+        window.location.href = targetWaUrl;
+      }
+      setIsCompleted(true);
+    } catch (err) {
+      console.error(err);
+      setIsCompleted(true);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Redirecionamento de segurança caso o navegador bloqueie o primeiro redirecionamento
   useEffect(() => {
-    if (isCompleted && whatsappUrl && form?.sendToWhatsapp) {
+    if (isCompleted && whatsappUrl) {
       const timer = setInterval(() => {
         setCountdown((c) => {
           if (c <= 1) {
@@ -127,7 +374,7 @@ function DynamicFormFunnel() {
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [isCompleted, whatsappUrl, form]);
+  }, [isCompleted, whatsappUrl]);
 
   if (loadingForm) {
     return (
@@ -135,7 +382,7 @@ function DynamicFormFunnel() {
         style={{
           minHeight: '100vh',
           backgroundColor: '#050814',
-          color: '#00DF81',
+          color: primaryColor,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -143,7 +390,7 @@ function DynamicFormFunnel() {
           fontWeight: 700,
         }}
       >
-        Carregando Infinity Forms...
+        Carregando formulário...
       </div>
     );
   }
@@ -178,126 +425,6 @@ function DynamicFormFunnel() {
     );
   }
 
-  // Avançar etapa com validação de campo obrigatório
-  const handleNextStep = async () => {
-    if (!currentQuestion) return;
-
-    const currentVal = answers[currentQuestion.id];
-
-    // Validação de obrigatório
-    if (currentQuestion.required) {
-      if (
-        currentVal === undefined ||
-        currentVal === null ||
-        (typeof currentVal === 'string' && !currentVal.trim()) ||
-        (Array.isArray(currentVal) && currentVal.length === 0)
-      ) {
-        setValidationError('Esta pergunta é obrigatória. Por favor, responda para continuar.');
-        return;
-      }
-    }
-
-    setValidationError('');
-
-    // Capturar dados de contato em perguntas de texto/telefone/email
-    if (currentQuestion.type === 'phone' && currentVal) {
-      setLeadPhone(String(currentVal));
-    }
-    if (currentQuestion.type === 'email' && currentVal) {
-      setLeadEmail(String(currentVal));
-    }
-    if (currentQuestion.type === 'text' && !leadName && currentQuestion.title.toLowerCase().includes('nome')) {
-      setLeadName(String(currentVal));
-    }
-
-    // Se estiver na última etapa, submeter formulário
-    if (currentStepIndex >= totalQuestions - 1) {
-      await handleFinalSubmit();
-    } else {
-      setCurrentStepIndex((prev) => prev + 1);
-    }
-  };
-
-  // Voltar etapa
-  const handlePrevStep = () => {
-    if (currentStepIndex > 0) {
-      setValidationError('');
-      setCurrentStepIndex((prev) => prev - 1);
-    }
-  };
-
-  // Manipular seleção única (Select / Radio)
-  const handleSelectOption = (opt: string) => {
-    setAnswers((prev) => ({ ...prev, [currentQuestion.id]: opt }));
-    setValidationError('');
-    setTimeout(() => {
-      if (currentStepIndex >= totalQuestions - 1) {
-        handleFinalSubmit({ ...answers, [currentQuestion.id]: opt });
-      } else {
-        setCurrentStepIndex((prev) => prev + 1);
-      }
-    }, 220);
-  };
-
-  // Manipular caixas de seleção múltipla (Checkboxes: 2, 3 ou mais opções)
-  const handleCheckboxToggle = (opt: string) => {
-    const currentList: string[] = Array.isArray(answers[currentQuestion.id]) ? [...answers[currentQuestion.id]] : [];
-    const exists = currentList.includes(opt);
-    let updated: string[];
-    if (exists) {
-      updated = currentList.filter((item) => item !== opt);
-    } else {
-      updated = [...currentList, opt];
-    }
-    setAnswers((prev) => ({ ...prev, [currentQuestion.id]: updated }));
-    if (updated.length > 0) setValidationError('');
-  };
-
-  // Envio final para API
-  const handleFinalSubmit = async (finalAnswersOverride?: Record<string, any>) => {
-    try {
-      setSubmitting(true);
-      const payloadAnswers = finalAnswersOverride || answers;
-
-      // Mapear respostas com títulos das perguntas para fácil leitura
-      const mappedAnswers: Record<string, any> = {};
-      questions.forEach((q) => {
-        const val = payloadAnswers[q.id];
-        if (val !== undefined) {
-          mappedAnswers[q.title] = val;
-        }
-      });
-
-      const res = await fetch('/api/forms/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          form_slug: form.slug,
-          form_title: form.title,
-          name: leadName || answers['q1'] || 'Lead Interessado',
-          phone: leadPhone || answers['q2'] || '',
-          email: leadEmail || '',
-          company: leadCompany || '',
-          answers: mappedAnswers,
-          utm_source: utmSource,
-          utm_medium: utmMedium,
-          utm_campaign: utmCampaign,
-        }),
-      });
-
-      const data = await res.json();
-      if (data.whatsapp_url) {
-        setWhatsappUrl(data.whatsapp_url);
-      }
-      setIsCompleted(true);
-    } catch (err) {
-      console.error(err);
-      setIsCompleted(true);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   return (
     <div
       style={{
@@ -317,7 +444,7 @@ function DynamicFormFunnel() {
         flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '24px 16px',
+        padding: '28px 16px',
         boxSizing: 'border-box',
         position: 'relative',
         overflowX: 'hidden',
@@ -328,80 +455,78 @@ function DynamicFormFunnel() {
         style={{
           position: 'fixed',
           inset: 0,
-          backgroundColor: 'rgba(5, 8, 20, 0.72)',
-          backdropFilter: 'blur(3px)',
-          WebkitBackdropFilter: 'blur(3px)',
+          backgroundColor: 'rgba(5, 8, 20, 0.78)',
+          backdropFilter: 'blur(5px)',
+          WebkitBackdropFilter: 'blur(5px)',
           pointerEvents: 'none',
           zIndex: 1,
         }}
       />
 
-      {/* ── HEADER: LOGO DISCRETO + STEPPER ── */}
+      {/* ── HEADER DISCRETO COM LOGO CENTRAL + BARRA DE FASE ESTILO ARCUS ── */}
       <header
         style={{
           width: '100%',
-          maxWidth: '540px',
+          maxWidth: '560px',
           margin: '0 auto',
           position: 'relative',
           zIndex: 10,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          paddingBottom: '16px',
+          paddingBottom: '20px',
         }}
       >
-        <a
-          href="https://infinityondemand.com.br"
-          target="_blank"
-          rel="noopener noreferrer"
-          title={form?.brandName || 'Infinity On Demand'}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            marginBottom: '16px',
-            textDecoration: 'none',
-            color: '#fff',
-            cursor: 'pointer',
-          }}
-        >
-          <img
-            src={form?.brandLogoUrl || '/logo-infinity.png'}
-            alt={form?.brandName || 'Infinity On Demand'}
-            onError={(e) => {
-              (e.target as any).src = '/logo-infinity.png';
-            }}
-            style={{
-              height: '46px',
-              width: 'auto',
-              maxHeight: '46px',
-              maxWidth: '180px',
-              objectFit: 'contain',
-              filter: `drop-shadow(0 0 12px ${(form?.primaryColor || primaryColor)}88)`,
-            }}
-          />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '15px', fontWeight: 900, letterSpacing: '0.04em' }}>
-            <span>{(form?.brandName || 'INFINITY ON DEMAND').split(' ')[0]}</span>
-            <span style={{ color: form?.primaryColor || primaryColor }}>{(form?.brandName || 'INFINITY ON DEMAND').split(' ').slice(1).join(' ')}</span>
-          </div>
-        </a>
+        {/* Logo Central da Marca */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
+          {form?.brandLogoUrl ? (
+            <img
+              src={form.brandLogoUrl}
+              alt={form?.brandName || 'Logo'}
+              style={{
+                height: '38px',
+                width: 'auto',
+                maxWidth: '180px',
+                objectFit: 'contain',
+                filter: `drop-shadow(0 0 10px ${primaryColor}66)`,
+              }}
+            />
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: 900, letterSpacing: '0.04em' }}>
+              <span style={{ color: '#fff' }}>{(form?.brandName || 'INFINITY ON DEMAND').split(' ')[0]}</span>
+              <span style={{ color: primaryColor }}>{(form?.brandName || 'INFINITY ON DEMAND').split(' ').slice(1).join(' ')}</span>
+            </div>
+          )}
+        </div>
 
-        {/* Stepper Progress Bar */}
-        {!isCompleted && totalQuestions > 0 && (
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', fontWeight: 800, letterSpacing: '0.8px', color: form?.primaryColor || primaryColor, textTransform: 'uppercase' }}>
-              <span>Etapa {currentStepIndex + 1} de {totalQuestions}</span>
-              <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 600 }}>{progressPercent}%</span>
+        {/* Barra de Progresso com Indicador de FASE (SOBRE VOCÊ / SUA EMPRESA / QUALIFICAÇÃO / AGENDAMENTO) */}
+        {!isCompleted && (
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <span style={{ 
+                fontSize: '12px', 
+                fontWeight: 900, 
+                letterSpacing: '1.2px', 
+                color: primaryColor, 
+                textTransform: 'uppercase' 
+              }}>
+                {currentPhaseName}
+              </span>
+              <span style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.45)', fontWeight: 600 }}>
+                {schedulingPhase === 'time' ? 'Horário' : schedulingPhase === 'date' ? 'Data' : `Etapa ${currentStepIndex + 1} de ${totalQuestions}`}
+              </span>
             </div>
 
-            <div style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255, 255, 255, 0.12)', borderRadius: '999px', overflow: 'hidden' }}>
+            {/* Linha da Barra de Progresso */}
+            <div style={{ width: '100%', height: '4px', backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '999px', overflow: 'hidden' }}>
               <div
                 style={{
                   height: '100%',
-                  width: `${Math.max(progressPercent, 6)}%`,
-                  background: `linear-gradient(90deg, ${form?.primaryColor || primaryColor} 0%, #00F0FF 100%)`,
+                  width: `${Math.max(progressPercent, 10)}%`,
+                  backgroundColor: primaryColor,
                   borderRadius: '999px',
-                  transition: 'width 0.4s ease-out',
+                  transition: 'width 0.35s ease-out',
+                  boxShadow: `0 0 12px ${primaryColor}`,
                 }}
               />
             </div>
@@ -409,11 +534,11 @@ function DynamicFormFunnel() {
         )}
       </header>
 
-      {/* ── CARD CENTRAL DO FORMULÁRIO ── */}
+      {/* ── CARD CENTRAL DO FORMULÁRIO ESTILO ARCUS ── */}
       <main
         style={{
           width: '100%',
-          maxWidth: '540px',
+          maxWidth: '560px',
           margin: '0 auto',
           position: 'relative',
           zIndex: 10,
@@ -426,35 +551,35 @@ function DynamicFormFunnel() {
       >
         <div
           style={{
-            backgroundColor: 'rgba(11, 15, 28, 0.88)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
+            backgroundColor: 'rgba(13, 18, 36, 0.92)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
             borderRadius: '24px',
-            padding: '32px 28px',
-            boxShadow: '0 25px 60px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            padding: '36px 30px',
+            boxShadow: '0 24px 60px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
             transition: 'all 0.3s ease',
           }}
         >
 
-          {/* ════════ TELAS DE PERGUNTAS ATIVAS ════════ */}
-          {!isCompleted && currentQuestion && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* ════════ TELAS REGULARES DE PERGUNTAS ════════ */}
+          {!isCompleted && schedulingPhase === 'none' && currentQuestion && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
               <div>
-                <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', lineHeight: '1.3', marginBottom: '6px' }}>
+                <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', lineHeight: '1.3', marginBottom: '8px' }}>
                   {currentQuestion.title}
                   {currentQuestion.required && (
-                    <span style={{ color: form?.primaryColor || primaryColor, marginLeft: '6px' }} title="Obrigatória">*</span>
+                    <span style={{ color: primaryColor, marginLeft: '6px' }} title="Obrigatória">*</span>
                   )}
                 </h1>
                 {currentQuestion.helper && (
-                  <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>
+                  <p style={{ fontSize: '14px', color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
                     {currentQuestion.helper}
                   </p>
                 )}
               </div>
 
-              {/* TIPO: MÚLTIPLA ESCOLHA (1 OPÇÃO - RADIO / 1-CLIQUE) */}
+              {/* TIPO: SELEÇÃO ÚNICA (RADIO / 1-CLIQUE) */}
               {currentQuestion.type === 'select' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {(currentQuestion.options || []).map((opt, oIdx) => {
@@ -466,10 +591,10 @@ function DynamicFormFunnel() {
                         onClick={() => handleSelectOption(opt)}
                         style={{
                           width: '100%',
-                          padding: '16px 18px',
+                          padding: '16px 20px',
                           borderRadius: '14px',
-                          border: isSelected ? '1px solid #00DF81' : '1px solid rgba(255, 255, 255, 0.12)',
-                          backgroundColor: isSelected ? 'rgba(0, 223, 129, 0.18)' : 'rgba(255, 255, 255, 0.04)',
+                          border: isSelected ? `1px solid ${primaryColor}` : '1px solid rgba(255, 255, 255, 0.12)',
+                          backgroundColor: isSelected ? `${primaryColor}22` : 'rgba(255, 255, 255, 0.03)',
                           color: '#fff',
                           textAlign: 'left',
                           cursor: 'pointer',
@@ -477,9 +602,15 @@ function DynamicFormFunnel() {
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           gap: '12px',
-                          fontSize: '14px',
+                          fontSize: '15px',
                           fontWeight: 600,
                           transition: 'all 0.18s',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.07)';
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
                         }}
                       >
                         <span>{opt}</span>
@@ -488,8 +619,9 @@ function DynamicFormFunnel() {
                             width: '18px',
                             height: '18px',
                             borderRadius: '50%',
-                            border: isSelected ? '2px solid #00DF81' : '2px solid rgba(255, 255, 255, 0.3)',
+                            border: isSelected ? `2px solid ${primaryColor}` : '2px solid rgba(255, 255, 255, 0.3)',
                             backgroundColor: isSelected ? primaryColor : 'transparent',
+                            flexShrink: 0,
                           }}
                         />
                       </button>
@@ -498,10 +630,10 @@ function DynamicFormFunnel() {
                 </div>
               )}
 
-              {/* TIPO: CAIXAS DE SELEÇÃO (MÚLTIPLAS OPÇÕES - MARCAR 2, 3 OU MAIS) */}
+              {/* TIPO: CAIXAS DE SELEÇÃO (MÚLTIPLAS OPÇÕES) */}
               {currentQuestion.type === 'checkbox' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <p style={{ fontSize: '11px', color: '#00DF81', fontWeight: 700, margin: 0, textTransform: 'uppercase' }}>
+                  <p style={{ fontSize: '11px', color: primaryColor, fontWeight: 700, margin: 0, textTransform: 'uppercase' }}>
                     ✓ Você pode selecionar múltiplas opções:
                   </p>
                   {(currentQuestion.options || []).map((opt, oIdx) => {
@@ -514,10 +646,10 @@ function DynamicFormFunnel() {
                         onClick={() => handleCheckboxToggle(opt)}
                         style={{
                           width: '100%',
-                          padding: '14px 18px',
+                          padding: '15px 18px',
                           borderRadius: '14px',
-                          border: isSelected ? '1px solid #00DF81' : '1px solid rgba(255, 255, 255, 0.12)',
-                          backgroundColor: isSelected ? 'rgba(0, 223, 129, 0.18)' : 'rgba(255, 255, 255, 0.04)',
+                          border: isSelected ? `1px solid ${primaryColor}` : '1px solid rgba(255, 255, 255, 0.12)',
+                          backgroundColor: isSelected ? `${primaryColor}22` : 'rgba(255, 255, 255, 0.03)',
                           color: '#fff',
                           textAlign: 'left',
                           cursor: 'pointer',
@@ -536,7 +668,7 @@ function DynamicFormFunnel() {
                             width: '20px',
                             height: '20px',
                             borderRadius: '6px',
-                            border: isSelected ? '2px solid #00DF81' : '2px solid rgba(255, 255, 255, 0.3)',
+                            border: isSelected ? `2px solid ${primaryColor}` : '2px solid rgba(255, 255, 255, 0.3)',
                             backgroundColor: isSelected ? primaryColor : 'transparent',
                             color: '#070B18',
                             display: 'flex',
@@ -544,6 +676,7 @@ function DynamicFormFunnel() {
                             justifyContent: 'center',
                             fontWeight: 900,
                             fontSize: '12px',
+                            flexShrink: 0,
                           }}
                         >
                           {isSelected ? '✓' : ''}
@@ -554,7 +687,7 @@ function DynamicFormFunnel() {
                 </div>
               )}
 
-              {/* TIPO: TEXTO CURTO (VARCHAR) */}
+              {/* TIPO: TEXTO CURTO */}
               {currentQuestion.type === 'text' && (
                 <div>
                   <input
@@ -584,7 +717,7 @@ function DynamicFormFunnel() {
                 </div>
               )}
 
-              {/* TIPO: TEXTO LONGO (PARÁGRAFO / TEXTAREA) */}
+              {/* TIPO: TEXTAREA */}
               {currentQuestion.type === 'textarea' && (
                 <div>
                   <textarea
@@ -612,7 +745,7 @@ function DynamicFormFunnel() {
                 </div>
               )}
 
-              {/* TIPO: NÚMERO / QUANTIDADE */}
+              {/* TIPO: NÚMERO */}
               {currentQuestion.type === 'number' && (
                 <div>
                   <input
@@ -653,14 +786,14 @@ function DynamicFormFunnel() {
                         onClick={() => handleSelectOption(opt)}
                         style={{
                           width: '100%',
-                          padding: '14px 18px',
+                          padding: '15px 18px',
                           borderRadius: '12px',
-                          border: answers[currentQuestion.id] === opt ? '1px solid #00DF81' : '1px solid rgba(255, 255, 255, 0.1)',
-                          backgroundColor: answers[currentQuestion.id] === opt ? 'rgba(0, 223, 129, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                          border: answers[currentQuestion.id] === opt ? `1px solid ${primaryColor}` : '1px solid rgba(255, 255, 255, 0.1)',
+                          backgroundColor: answers[currentQuestion.id] === opt ? `${primaryColor}22` : 'rgba(255, 255, 255, 0.03)',
                           color: '#fff',
                           textAlign: 'left',
                           cursor: 'pointer',
-                          fontSize: '14px',
+                          fontSize: '15px',
                           fontWeight: 600,
                         }}
                       >
@@ -670,7 +803,7 @@ function DynamicFormFunnel() {
                   </div>
                 ) : (
                   <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#00DF81', fontWeight: 800 }}>R$</span>
+                    <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: primaryColor, fontWeight: 800 }}>R$</span>
                     <input
                       type="text"
                       autoFocus
@@ -704,14 +837,15 @@ function DynamicFormFunnel() {
                     autoFocus
                     value={answers[currentQuestion.id] || ''}
                     onChange={(e) => {
-                      const formatted = formatPhone(e.target.value);
-                      setAnswers((prev) => ({ ...prev, [currentQuestion.id]: formatted }));
+                      const masked = formatPhone(e.target.value);
+                      setAnswers((prev) => ({ ...prev, [currentQuestion.id]: masked }));
+                      setLeadPhone(masked);
                       if (validationError) setValidationError('');
                     }}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleNextStep();
                     }}
-                    placeholder="(00) 00000-0000"
+                    placeholder="(81) 98888-8888"
                     style={{
                       width: '100%',
                       padding: '16px 18px',
@@ -719,7 +853,8 @@ function DynamicFormFunnel() {
                       backgroundColor: 'rgba(0, 0, 0, 0.45)',
                       border: '1px solid rgba(255, 255, 255, 0.15)',
                       color: '#fff',
-                      fontSize: '16px',
+                      fontSize: '17px',
+                      letterSpacing: '0.5px',
                       outline: 'none',
                       boxSizing: 'border-box',
                     }}
@@ -727,7 +862,7 @@ function DynamicFormFunnel() {
                 </div>
               )}
 
-              {/* TIPO: E-MAIL */}
+              {/* TIPO: EMAIL */}
               {currentQuestion.type === 'email' && (
                 <div>
                   <input
@@ -736,6 +871,7 @@ function DynamicFormFunnel() {
                     value={answers[currentQuestion.id] || ''}
                     onChange={(e) => {
                       setAnswers((prev) => ({ ...prev, [currentQuestion.id]: e.target.value }));
+                      setLeadEmail(e.target.value);
                       if (validationError) setValidationError('');
                     }}
                     onKeyDown={(e) => {
@@ -783,7 +919,7 @@ function DynamicFormFunnel() {
                 </div>
               )}
 
-              {/* TIPO: AVALIAÇÃO / ESTRELAS (1 A 5) */}
+              {/* TIPO: AVALIAÇÃO / ESTRELAS */}
               {currentQuestion.type === 'rating' && (
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', padding: '16px 0' }}>
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -801,7 +937,6 @@ function DynamicFormFunnel() {
                         fontWeight: 900,
                         border: 'none',
                         cursor: 'pointer',
-                        transition: 'transform 0.15s',
                       }}
                     >
                       ★ {star}
@@ -810,28 +945,31 @@ function DynamicFormFunnel() {
                 </div>
               )}
 
-              {/* Mensagem de Erro de Validação */}
+              {/* Erro de Validação */}
               {validationError && (
-                <p style={{ fontSize: '12px', color: '#FF4D4D', margin: 0, fontWeight: 600 }}>
+                <p style={{ fontSize: '13px', color: '#FF4D4D', margin: 0, fontWeight: 600 }}>
                   ⚠️ {validationError}
                 </p>
               )}
 
-              {/* BOTÕES DE NAVEGAÇÃO */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px' }}>
+              {/* BOTÕES DE NAVEGAÇÃO E RODAPÉ DO CARD ESTILO ARCUS */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px' }}>
                 {currentStepIndex > 0 ? (
                   <button
                     type="button"
                     onClick={handlePrevStep}
                     style={{
                       background: 'rgba(255, 255, 255, 0.06)',
-                      border: '1px solid rgba(255, 255, 255, 0.12)',
-                      color: 'rgba(255, 255, 255, 0.8)',
-                      padding: '10px 18px',
-                      borderRadius: '10px',
+                      border: '1px solid rgba(255, 255, 255, 0.14)',
+                      color: 'rgba(255, 255, 255, 0.85)',
+                      padding: '12px 20px',
+                      borderRadius: '12px',
                       cursor: 'pointer',
                       fontSize: '13px',
-                      fontWeight: 600,
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
                     }}
                   >
                     ← Voltar
@@ -846,75 +984,227 @@ function DynamicFormFunnel() {
                     style={{
                       padding: '14px 28px',
                       borderRadius: '12px',
-                      background: form?.primaryColor || primaryColor,
-                      boxShadow: `0 4px 16px ${(form?.primaryColor || primaryColor)}66`,
+                      background: primaryColor,
+                      color: '#070B18',
+                      fontWeight: 800,
+                      fontSize: '14px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      boxShadow: `0 4px 20px ${primaryColor}66`,
                     }}
                   >
-                    {submitting ? 'Enviando...' : (currentStepIndex >= totalQuestions - 1 ? 'Finalizar e Enviar →' : 'Continuar →')}
+                    {submitting ? 'Enviando...' : (currentStepIndex >= totalQuestions - 1 ? 'Continuar →' : 'Continuar →')}
                   </button>
                 )}
               </div>
+
+              {/* Indicador discreto Arcus de resposta salva */}
+              <div style={{ textAlign: 'right', marginTop: '6px' }}>
+                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.5px', textTransform: 'uppercase', fontWeight: 600 }}>
+                  RESPOSTA SALVA
+                </span>
+              </div>
+
             </div>
           )}
 
-          {/* ════════ TELA DE OBRIGADO (THANK YOU PAGE CONFIGURÁVEL) ════════ */}
-          {isCompleted && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '20px', padding: '10px 0' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 14px', borderRadius: '20px', backgroundColor: `${form?.primaryColor || primaryColor}25`, border: `1px solid ${form?.primaryColor || primaryColor}50`, color: form?.primaryColor || primaryColor, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}>
-                <span>✓</span> Concluído com Sucesso
-              </div>
-
+          {/* ════════ AGENDAMENTO INTELIGENTE: ETAPA DE ESCOLHA DE DATA ════════ */}
+          {!isCompleted && schedulingPhase === 'date' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
               <div>
-                <h2 style={{ fontSize: '26px', fontWeight: 900, color: '#fff', marginBottom: '8px' }}>
-                  {form.thankYouTitle || 'Obrigado por responder!'}
-                </h2>
-                <p style={{ fontSize: '14px', color: '#94A3B8', maxWidth: '400px', margin: '0 auto', lineHeight: '1.5' }}>
-                  {form.thankYouMessage || 'Suas respostas foram salvas com segurança e nossa equipe já foi notificada.'}
+                <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', lineHeight: '1.3', marginBottom: '8px' }}>
+                  Parabéns, a {leadCompany || leadName || 'sua empresa'} foi aprovada para nosso diagnóstico! 🎉 Para qual dia você gostaria de agendar?
+                </h1>
+                <p style={{ fontSize: '14px', color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
+                  Selecione um dos dias úteis para nossa sessão estratégica online de 30 minutos.
                 </p>
               </div>
 
-              {/* AÇÃO DO WHATSAPP SE ATIVADA */}
-              {form.sendToWhatsapp && (
-                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '8px' }}>
-                  <a
-                    href={whatsappUrl || (form.whatsappDestination ? `https://wa.me/${form.whatsappDestination.replace(/\D/g, '')}` : '#')}
+              {/* Cards de Dias Úteis */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
+                {businessDays.map((day, dIdx) => (
+                  <button
+                    key={dIdx}
+                    type="button"
+                    onClick={() => handleSelectDate(day)}
                     style={{
-                      width: '100%',
-                      padding: '16px',
-                      borderRadius: '12px',
-                      background: `linear-gradient(90deg, ${form?.primaryColor || primaryColor} 0%, #00F0FF 100%)`,
-                      boxShadow: `0 4px 20px ${(form?.primaryColor || primaryColor)}55`,
-                      boxSizing: 'border-box',
+                      padding: '18px 14px',
+                      borderRadius: '14px',
+                      backgroundColor: selectedDate === day ? `${primaryColor}22` : 'rgba(255, 255, 255, 0.04)',
+                      border: selectedDate === day ? `1px solid ${primaryColor}` : '1px solid rgba(255, 255, 255, 0.12)',
+                      color: '#fff',
+                      fontSize: '14px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      textAlign: 'center',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                      transition: 'all 0.18s',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (selectedDate !== day) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (selectedDate !== day) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)';
                     }}
                   >
-                    <span>Falar no WhatsApp com o especialista</span>
-                    {countdown > 0 && (
-                      <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '10px', backgroundColor: 'rgba(0, 0, 0, 0.25)', fontWeight: 800 }}>
-                        ({countdown}s)
-                      </span>
-                    )}
-                  </a>
+                    <span>{day.split(',')[0]}</span>
+                    <span style={{ color: primaryColor, fontSize: '13px', fontWeight: 800 }}>{day.split(',')[1]}</span>
+                  </button>
+                ))}
+              </div>
 
-                  <p style={{ fontSize: '11px', color: '#94A3B8' }}>
-                    Redirecionando automaticamente em {countdown}s... Se não abrir, toque no botão acima.
-                  </p>
-                </div>
-              )}
-
-              {!form.sendToWhatsapp && (
-                <a
-                  href="https://infinityondemand.com.br"
+              {/* Botão Voltar */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={handlePrevStep}
                   style={{
-                    padding: '12px 24px',
-                    borderRadius: '10px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                    color: '#fff',
-                    textDecoration: 'none',
+                    background: 'rgba(255, 255, 255, 0.06)',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
+                    color: 'rgba(255, 255, 255, 0.85)',
+                    padding: '12px 20px',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
                     fontSize: '13px',
                     fontWeight: 700,
                   }}
                 >
-                  Voltar ao site principal
+                  ← Voltar
+                </button>
+
+                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.5px', textTransform: 'uppercase', fontWeight: 600 }}>
+                  RESPOSTA SALVA
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* ════════ AGENDAMENTO INTELIGENTE: ETAPA DE ESCOLHA DE HORÁRIO ════════ */}
+          {!isCompleted && schedulingPhase === 'time' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+              <div>
+                <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', lineHeight: '1.3', marginBottom: '8px' }}>
+                  E qual o melhor horário?
+                </h1>
+                <p style={{ fontSize: '14px', color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
+                  Dia selecionado: <strong style={{ color: primaryColor }}>{selectedDate}</strong> (Horário de Brasília).
+                </p>
+              </div>
+
+              {/* Grid 6 Horários estilo Arcus */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                {AVAILABLE_TIMES.map((time, tIdx) => (
+                  <button
+                    key={tIdx}
+                    type="button"
+                    disabled={submitting}
+                    onClick={() => handleSelectTimeAndFinish(time)}
+                    style={{
+                      padding: '16px 12px',
+                      borderRadius: '14px',
+                      backgroundColor: selectedTime === time ? primaryColor : 'rgba(255, 255, 255, 0.04)',
+                      border: selectedTime === time ? `1px solid ${primaryColor}` : '1px solid rgba(255, 255, 255, 0.12)',
+                      color: selectedTime === time ? '#070B18' : '#fff',
+                      fontSize: '16px',
+                      fontWeight: 800,
+                      cursor: submitting ? 'wait' : 'pointer',
+                      textAlign: 'center',
+                      transition: 'all 0.18s',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (selectedTime !== time) {
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        e.currentTarget.style.borderColor = primaryColor;
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (selectedTime !== time) {
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                      }
+                    }}
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+
+              {/* Botão Voltar */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={handlePrevStep}
+                  disabled={submitting}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.06)',
+                    border: '1px solid rgba(255, 255, 255, 0.14)',
+                    color: 'rgba(255, 255, 255, 0.85)',
+                    padding: '12px 20px',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                  }}
+                >
+                  ← Voltar
+                </button>
+
+                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.5px', textTransform: 'uppercase', fontWeight: 600 }}>
+                  {submitting ? 'ENVIANDO AO WHATSAPP...' : 'RESPOSTA SALVA'}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* ════════ TELA DE CONCLUSÃO / REDIRECIONAMENTO WHATSAPP ════════ */}
+          {isCompleted && (
+            <div style={{ textAlign: 'center', padding: '16px 0' }}>
+              <div
+                style={{
+                  width: '68px',
+                  height: '68px',
+                  borderRadius: '50%',
+                  backgroundColor: `${primaryColor}22`,
+                  color: primaryColor,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '32px',
+                  margin: '0 auto 20px',
+                  boxShadow: `0 0 30px ${primaryColor}44`,
+                }}
+              >
+                ✓
+              </div>
+
+              <h2 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '10px', color: '#fff' }}>
+                Diagnóstico e Agendamento Confirmados!
+              </h2>
+
+              <p style={{ fontSize: '14px', color: '#94A3B8', marginBottom: '24px', lineHeight: 1.6 }}>
+                Redirecionando diretamente para o WhatsApp do nosso consultor em <strong style={{ color: primaryColor }}>{countdown}s</strong>...
+              </p>
+
+              {whatsappUrl && (
+                <a
+                  href={whatsappUrl}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '14px 28px',
+                    borderRadius: '14px',
+                    backgroundColor: '#25D366',
+                    color: '#fff',
+                    fontWeight: 800,
+                    fontSize: '15px',
+                    textDecoration: 'none',
+                    boxShadow: '0 8px 24px rgba(37, 211, 102, 0.35)',
+                  }}
+                >
+                  <span>💬 Abrir WhatsApp Agora</span>
                 </a>
               )}
             </div>
@@ -927,18 +1217,14 @@ function DynamicFormFunnel() {
       <footer
         style={{
           width: '100%',
-          maxWidth: '540px',
-          margin: '0 auto',
-          position: 'relative',
-          zIndex: 10,
           textAlign: 'center',
-          paddingTop: '16px',
-          paddingBottom: '8px',
           fontSize: '11px',
-          color: 'rgba(255, 255, 255, 0.4)',
+          color: 'rgba(255, 255, 255, 0.35)',
+          paddingTop: '20px',
+          zIndex: 10,
         }}
       >
-        <div>Infinity On Demand • Diagnóstico Empresarial Seguro © 2026</div>
+        <div>{form?.brandName || 'Infinity On Demand'} • Diagnóstico Inteligente © 2026</div>
       </footer>
     </div>
   );
@@ -952,7 +1238,7 @@ export default function FormsRuntimePage() {
           style={{
             minHeight: '100vh',
             backgroundColor: '#050814',
-            color: '#00DF81',
+            color: '#FF5500',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

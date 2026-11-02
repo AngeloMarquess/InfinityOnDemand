@@ -19,6 +19,7 @@ interface FormQuestion {
     | 'rating';
   options?: string[];
   required: boolean;
+  phase?: string;
 }
 
 interface ClientTenant {
@@ -166,13 +167,43 @@ export default function FormulariosTab() {
     loadData();
   }, []);
 
+  // Helper robusto para associar formulário ao cliente selecionado (suporta UUID e nome da empresa)
+  const isFormFromClient = (f: FormItem, clientId: string) => {
+    if (clientId === 'all') return true;
+    if (f.clientId === clientId) return true;
+    const client = clients.find((c) => c.id === clientId);
+    if (!client) return false;
+    const cName = (client.company || client.name || '').toLowerCase().trim();
+    const fName = (f.clientName || '').toLowerCase().trim();
+    if (cName && fName && (cName.includes(fName) || fName.includes(cName))) return true;
+    if (cName.includes('cactus') && (f.clientId === 'client-1' || f.clientId === '962f688c-c1b8-4136-8b5c-030e427c23c1' || fName.includes('cactus') || f.slug === 'v' || f.slug === 'cactus' || f.slug === 'angelo')) return true;
+    if (cName.includes('elys') && (f.clientId === 'client-2' || f.clientId === 'f384667a-92c0-4287-a84b-c6536b11e944' || fName.includes('elys'))) return true;
+    return false;
+  };
+
+  // Helper robusto para associar lead ao cliente selecionado
+  const isLeadFromClient = (l: FormLead, clientId: string) => {
+    if (clientId === 'all') return true;
+    if (l.client_id === clientId) return true;
+    const client = clients.find((c) => c.id === clientId);
+    if (!client) return false;
+    const cName = (client.company || client.name || '').toLowerCase().trim();
+    const lClientName = (l.client_name || '').toLowerCase().trim();
+    if (cName && lClientName && (cName.includes(lClientName) || lClientName.includes(cName))) return true;
+    // Checar pelo formulário associado
+    const matchForm = forms.find((f) => f.slug === l.form_slug);
+    if (matchForm) {
+      return isFormFromClient(matchForm, clientId);
+    }
+    return false;
+  };
   // Filtragem dos formulários por Tenant e por Busca
   const filteredForms = useMemo(() => {
     return forms.filter((f) => {
       if (activeArea === 'infinity' && f.tenantType !== 'infinity') return false;
       if (activeArea === 'client') {
         if (f.tenantType !== 'client') return false;
-        if (selectedClientId !== 'all' && f.clientId !== selectedClientId) return false;
+        if (selectedClientId !== 'all' && !isFormFromClient(f, selectedClientId)) return false;
       }
       if (formSearchQuery.trim()) {
         const q = formSearchQuery.toLowerCase();
@@ -184,7 +215,7 @@ export default function FormulariosTab() {
       }
       return true;
     });
-  }, [forms, activeArea, selectedClientId, formSearchQuery]);
+  }, [forms, activeArea, selectedClientId, formSearchQuery, clients]);
 
   // Formulário selecionado atualmente
   const activeSelectedForm = useMemo(() => {
@@ -195,18 +226,19 @@ export default function FormulariosTab() {
   // Filtragem dos leads
   const filteredLeads = useMemo(() => {
     return leads.filter((l) => {
+      const matchForm = forms.find((f) => f.slug === l.form_slug);
       if (activeArea === 'infinity') {
-        const matchForm = forms.find((f) => f.slug === l.form_slug);
         if (matchForm && matchForm.tenantType !== 'infinity') return false;
       }
       if (activeArea === 'client') {
-        if (selectedClientId !== 'all' && l.client_id !== selectedClientId) return false;
+        if (matchForm && matchForm.tenantType !== 'client') return false;
+        if (selectedClientId !== 'all' && !isLeadFromClient(l, selectedClientId)) return false;
       }
       if (selectedFormSlug !== 'all' && l.form_slug !== selectedFormSlug) return false;
       if (statusFilter !== 'all' && l.status !== statusFilter) return false;
       return true;
     });
-  }, [leads, forms, activeArea, selectedClientId, selectedFormSlug, statusFilter]);
+  }, [leads, forms, activeArea, selectedClientId, selectedFormSlug, statusFilter, clients]);
 
   const totalLeads = filteredLeads.length;
   const highQualifiedLeads = filteredLeads.filter((l) => l.lead_score >= 75).length;
@@ -554,7 +586,11 @@ export default function FormulariosTab() {
             </button>
 
             <button
-              onClick={() => { setActiveArea('client'); }}
+              onClick={() => {
+                setActiveArea('client');
+                setSelectedClientId('all');
+                setSelectedFormSlug('all');
+              }}
               style={{
                 padding: '6px 14px', borderRadius: '8px',
                 border: activeArea === 'client' ? '1px solid #FFB800' : '1px solid rgba(255,255,255,0.1)',
@@ -586,21 +622,27 @@ export default function FormulariosTab() {
               >
                 Todos os Clientes
               </button>
-              {clients.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setSelectedClientId(c.id)}
-                  style={{
-                    padding: '6px 12px', borderRadius: '8px',
-                    backgroundColor: selectedClientId === c.id ? 'rgba(255,184,0,0.2)' : 'rgba(255,255,255,0.04)',
-                    border: selectedClientId === c.id ? '1px solid #FFB800' : '1px solid rgba(255,255,255,0.1)',
-                    color: selectedClientId === c.id ? '#FFB800' : '#fff',
-                    fontSize: '11px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
-                  }}
-                >
-                  {c.company} ({forms.filter((f) => f.clientId === c.id).length} funis)
-                </button>
-              ))}
+              {clients.map((c) => {
+                const count = forms.filter((f) => f.tenantType === 'client' && isFormFromClient(f, c.id)).length;
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => {
+                      setSelectedClientId(c.id);
+                      setSelectedFormSlug('all');
+                    }}
+                    style={{
+                      padding: '6px 12px', borderRadius: '8px',
+                      backgroundColor: selectedClientId === c.id ? 'rgba(255,184,0,0.2)' : 'rgba(255,255,255,0.04)',
+                      border: selectedClientId === c.id ? '1px solid #FFB800' : '1px solid rgba(255,255,255,0.1)',
+                      color: selectedClientId === c.id ? '#FFB800' : '#fff',
+                      fontSize: '11px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {c.company} ({count} funis)
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -1508,6 +1550,20 @@ https://forms.infinityondemand.com.br/${f.slug}`);
                             </div>
                           </div>
 
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                            <span style={{ fontSize: '11px', fontWeight: 800, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase' }}>Fase da Pergunta:</span>
+                            <select
+                              value={q.phase || (idx < 3 ? 'SOBRE VOCÊ' : idx < 6 ? 'SUA EMPRESA' : 'QUALIFICAÇÃO')}
+                              onChange={(e) => updateQuestion(q.id, { phase: e.target.value })}
+                              style={{ padding: '4px 10px', borderRadius: '6px', backgroundColor: '#0f172a', border: '1px solid rgba(0,223,129,0.3)', color: '#00DF81', fontSize: '11px', fontWeight: 800, outline: 'none' }}
+                            >
+                              <option value="SOBRE VOCÊ">👤 SOBRE VOCÊ</option>
+                              <option value="SUA EMPRESA">🏢 SUA EMPRESA</option>
+                              <option value="QUALIFICAÇÃO">🎯 QUALIFICAÇÃO</option>
+                              <option value="AGENDAMENTO">📅 AGENDAMENTO</option>
+                              <option value="DIAGNÓSTICO">📊 DIAGNÓSTICO</option>
+                            </select>
+                          </div>
                           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '10px' }}>
                             <input
                               type="text"
