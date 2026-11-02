@@ -76,7 +76,7 @@ interface FormLead {
   created_at: string;
 }
 
-export function FormulariosTab() {
+export default function FormulariosTab() {
   const [forms, setForms] = useState<FormItem[]>([]);
   const [clients, setClients] = useState<ClientTenant[]>([]);
   const [leads, setLeads] = useState<FormLead[]>([]);
