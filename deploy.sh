@@ -12,10 +12,19 @@ git pull origin main
 npm install
 npm run build
 
-# Reiniciar servidor (PM2) se disponível
+# Reiniciar SOMENTE as aplicações da Infinity no PM2 (sem tocar em outros clientes/projetos)
 if command -v pm2 &> /dev/null; then
-  echo "🔄 Reiniciando aplicação no PM2..."
-  pm2 reload all || pm2 restart all
+  echo "🔄 Reiniciando apenas serviços da Infinity no PM2..."
+  
+  if pm2 describe infinityondemand &> /dev/null; then
+    echo "▶ Recarregando infinityondemand..."
+    pm2 reload infinityondemand
+  fi
+
+  if pm2 describe infinity-forms &> /dev/null; then
+    echo "▶ Recarregando infinity-forms..."
+    pm2 reload infinity-forms
+  fi
 fi
 
 echo "✅ Deploy finalizado com sucesso!"
