@@ -52,7 +52,7 @@ function DynamicFormFunnel() {
   const utmCampaign = searchParams?.get('utm_campaign') || '';
 
   const [form, setForm] = useState<FormItem | null>(null);
-  const primaryColor = form?.primaryColor || primaryColor;
+  const primaryColor: string = form?.primaryColor || '#00DF81';
   const [loadingForm, setLoadingForm] = useState(true);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
