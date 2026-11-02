@@ -146,8 +146,9 @@ export default function EcommercePage() {
             </div>
             <div className="ecom-portfolio-grid">
               {[
-                { title: 'Ecale', desc: 'E-commerce de Moda', link: 'https://ecale.com.br/', isHighlight: true, image: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=800' },
-                { title: 'Joyce Fenolio', desc: 'Joias & Semijoias', link: 'https://www.joycefenolio.com.br/', isHighlight: false, image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80' },
+                { title: 'Cactus Calorosos', desc: 'E-commerce de Moda & Vestuário', link: 'https://cactuscalorosos.com.br/', isHighlight: true, image: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=800' },
+                { title: 'Elys Calheiros Joias', desc: 'Joias & Semijoias de Luxo', link: 'https://elyscalheirosjoias.com.br/', isHighlight: true, image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80' },
+                { title: 'Ecale', desc: 'E-commerce de Moda', link: 'https://ecale.com.br/', isHighlight: false, image: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&q=80&w=800' },
                 { title: 'SportSystem', desc: 'Automotiva & Tuning', link: 'https://sportsystem.com.br/', isHighlight: false, image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=800&q=80' },
                 { title: 'Tutti Sabores', desc: 'Doceria & Confeitaria', link: 'https://tuttisabores.com.br/', isHighlight: false, image: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=800&q=80' },
               ].map((item, idx) => (

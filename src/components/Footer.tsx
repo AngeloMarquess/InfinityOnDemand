@@ -72,12 +72,14 @@ export default function Footer({ dict, locale }: { dict?: any; locale?: string }
           {/* Soluções Column */}
           <div>
             <h4 style={{ fontWeight: 700, marginBottom: "20px", fontSize: "15px", color: "var(--text-primary)" }}>{t.solucoes}</h4>
-            <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "14px", fontSize: "14px" }}>
-              <li><a href="https://ecommerce.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.ecommerceCust}</a></li>
-              <li><a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.infinityCRM}</a></li>
-              <li><Link href={`${prefix}/delivery`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.infinityDelivery}</Link></li>
-              <li><a href="#consulting" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.cloudDevops}</a></li>
-              <li><Link href={`${prefix}/trafego`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.growthMarketing}</Link></li>
+            <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "12px", fontSize: "14px" }}>
+              <li><Link href={`${prefix}/ecommerce`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>E-commerce Customizado</Link></li>
+              <li><a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Infinity CRM</a></li>
+              <li><Link href={`${prefix}/delivery`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Infinity Delivery SaaS</Link></li>
+              <li><Link href={`${prefix}/market`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Sistemas para Mercado</Link></li>
+              <li><Link href={`${prefix}/consultoria`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Site Institucional</Link></li>
+              <li><a href="https://forms.infinityondemand.com.br" target="_blank" rel="noopener noreferrer" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Formulários Interativos</a></li>
+              <li><Link href={`${prefix}/trafego`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Tráfego Pago & Performance</Link></li>
             </ul>
           </div>
 
@@ -86,8 +88,8 @@ export default function Footer({ dict, locale }: { dict?: any; locale?: string }
             <h4 style={{ fontWeight: 700, marginBottom: "20px", fontSize: "15px", color: "var(--text-primary)" }}>{t.empresa}</h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "14px", fontSize: "14px" }}>
               <li><a href={`${prefix}/sobre`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.sobreNos}</a></li>
-              <li><a href="#labs" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.pesquisaAI}</a></li>
-              <li><a href="#contact" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.carreiras}</a></li>
+              <li><Link href={`${prefix}/#labs`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.pesquisaAI}</Link></li>
+              <li><Link href={`${prefix}/carreiras`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.carreiras}</Link></li>
               <li><a href="#contact" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.contato}</a></li>
               <li><a href={`${prefix}/privacy`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.privacidade}</a></li>
             </ul>
@@ -97,12 +99,16 @@ export default function Footer({ dict, locale }: { dict?: any; locale?: string }
           <div>
             <h4 style={{ fontWeight: 700, marginBottom: "20px", fontSize: "15px", color: "var(--text-primary)" }}>{t.contatoTitle}</h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "14px", fontSize: "14px" }}>
-              <li className="text-secondary" style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+              <li className="text-secondary" style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
                 <span style={{ color: "var(--accent-primary)", flexShrink: 0 }}>📧</span>
-                <span style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>contato@infinityondemand.com.br</span>
+                <a href="mailto:contato@infinityondemand.com.br" style={{ color: "inherit", textDecoration: "none", fontSize: "13px", whiteSpace: "nowrap" }}>contato@infinityondemand.com.br</a>
               </li>
               <li className="text-secondary" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <span style={{ color: "var(--accent-primary)", flexShrink: 0 }}>📱</span> (81) 98128-0719
+              </li>
+              <li className="text-secondary" style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                <span style={{ color: "var(--accent-primary)", flexShrink: 0, marginTop: "2px" }}>📍</span>
+                <span style={{ fontSize: "13px", lineHeight: 1.5 }}>R. Cap. José da Luz, 137, Sala 0203 - Coelhos, Recife - PE</span>
               </li>
               <li className="text-secondary" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <span style={{ color: "var(--accent-primary)", flexShrink: 0 }}>🌐</span> infinityondemand.com.br
@@ -160,6 +166,25 @@ export default function Footer({ dict, locale }: { dict?: any; locale?: string }
           <div style={{ display: "flex", gap: "24px", fontSize: "13px" }}>
             <a href={`${prefix}/privacy`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.politicaPrivacidade}</a>
             <a href="#" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>{t.termosDeUso}</a>
+          </div>
+        </div>
+
+        {/* Corporate & Legal Registry (Razão Social, CNPJ e Endereço) */}
+        <div style={{
+          marginTop: "24px",
+          paddingTop: "20px",
+          borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+          textAlign: "center",
+          fontSize: "12px",
+          lineHeight: 1.8,
+          color: "var(--text-secondary)",
+          opacity: 0.8
+        }}>
+          <div>
+            <strong style={{ color: "var(--text-primary)", fontWeight: 600 }}>INFINITY ON DEMAND LTDA</strong> &bull; CNPJ: 65.929.586/0001-19
+          </div>
+          <div>
+            Rua Capitão José da Luz, 137, Sala 0203, Edifício Cervantes &bull; Bairro Coelhos &bull; Recife - PE &bull; CEP: 50070-540
           </div>
         </div>
       </div>

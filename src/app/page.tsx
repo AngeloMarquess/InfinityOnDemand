@@ -511,6 +511,44 @@ export default function Home() {
               <p style={{ fontSize: "15px", lineHeight: 1.6, color: "#6B7280" }}>Setup avançado de CRMs como HubSpot e plataformas próprias integradas, organizando o funil de vendas da sua operação comercial.</p>
             </div>
 
+            {/* Card 4: Formulários Interativos */}
+            <div style={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "24px", transition: "box-shadow 0.3s ease, transform 0.3s ease" }} onMouseOver={(e) => { e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.08)"; e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseOut={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}>
+              <div style={{ width: "56px", height: "56px", borderRadius: "16px", background: "linear-gradient(135deg, #10B981 0%, #06B6D4 100%)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px", boxShadow: "0 4px 15px rgba(16,185,129,0.25)" }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 11L12 14L22 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M21 12V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3H16" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <h3 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "12px", color: "#0B0F19" }}>Formulários & Qualificação de Leads</h3>
+              <p style={{ fontSize: "15px", lineHeight: 1.6, color: "#6B7280" }}>Funis inteligentes estilo Typeform para qualificar leads de tráfego pago, com cálculo de Lead Score e integração direta ao WhatsApp comercial.</p>
+            </div>
+
+            {/* Card 5: Sistemas para Mercados */}
+            <div style={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "24px", transition: "box-shadow 0.3s ease, transform 0.3s ease" }} onMouseOver={(e) => { e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.08)"; e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseOut={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}>
+              <div style={{ width: "56px", height: "56px", borderRadius: "16px", background: "linear-gradient(135deg, #059669 0%, #0284C7 100%)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px", boxShadow: "0 4px 15px rgba(5,150,105,0.25)" }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 3H5L6.68 14.39C6.77144 15.0004 7.07853 15.5562 7.54589 15.9575C8.01324 16.3588 8.61114 16.5799 9.23 16.58H18.4C19.0189 16.5799 19.6168 16.3588 20.0841 15.9575C20.5515 15.5562 20.8586 15.0004 20.95 14.39L22 7H6" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="9" cy="20" r="1.5" fill="#fff"/>
+                  <circle cx="18" cy="20" r="1.5" fill="#fff"/>
+                </svg>
+              </div>
+              <h3 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "12px", color: "#0B0F19" }}>Sistemas para Mercados & Supermercados</h3>
+              <p style={{ fontSize: "15px", lineHeight: 1.6, color: "#6B7280" }}>Plataforma Infinity Market completa: catálogo digital, rotas de entrega por CEP, separação inteligente de pedidos e app direto para hortifrutis e atacarejos.</p>
+            </div>
+
+            {/* Card 6: E-commerces */}
+            <div style={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "24px", transition: "box-shadow 0.3s ease, transform 0.3s ease" }} onMouseOver={(e) => { e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.08)"; e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseOut={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}>
+              <div style={{ width: "56px", height: "56px", borderRadius: "16px", background: "linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px", boxShadow: "0 4px 15px rgba(139,92,246,0.25)" }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16 11V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V11" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+                  <rect x="3" y="7" width="18" height="14" rx="3" stroke="#fff" strokeWidth="2"/>
+                  <path d="M12 14V17" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <h3 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "12px", color: "#0B0F19" }}>E-commerces de Alta Conversão</h3>
+              <p style={{ fontSize: "15px", lineHeight: 1.6, color: "#6B7280" }}>Lojas virtuais personalizadas entregues em até 7 dias, arquitetadas para mobile, checkout em 1 clique e preparadas para faturar alto.</p>
+            </div>
+
           </div>
         </div>
       </section>

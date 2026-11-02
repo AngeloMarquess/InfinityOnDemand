@@ -31,6 +31,19 @@ export function FormulariosTab() {
   const [nichoFilter, setNichoFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createdForms, setCreatedForms] = useState([
+    { id: '1', title: 'Qualificação E-commerce & Varejo', slug: 'moda', status: 'Ativo', responses: 0, niche: 'Moda & Acessórios' },
+    { id: '2', title: 'Captação de Supermercados & Atacarejo', slug: 'mercado', status: 'Ativo', responses: 0, niche: 'Alimentação & Mercados' },
+  ]);
+  const [newForm, setNewForm] = useState({
+    title: '',
+    slug: '',
+    niche: 'Moda Feminina',
+    whatsappDestination: '5581981280719',
+    autoRedirectSeconds: 4,
+  });
+  const [createSuccess, setCreateSuccess] = useState('');
 
   const fetchLeads = async () => {
     try {
@@ -106,6 +119,21 @@ export function FormulariosTab() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '8px',
+              padding: '10px 18px', borderRadius: '12px',
+              backgroundColor: '#00DB79', border: 'none',
+              color: '#070B18', fontSize: '12px', fontWeight: 800, cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(0,219,121,0.25)',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#00F58D'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#00DF81'}
+          >
+            ✨ + Criar Novo Formulário
+          </button>
           <a
             href="/forms"
             target="_blank"
@@ -117,7 +145,7 @@ export function FormulariosTab() {
               color: '#fff', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.2s',
             }}
           >
-            🔗 Abrir Formulário Público
+            🔗 Abrir Formulário Ativo
           </a>
           <button
             onClick={fetchLeads}
@@ -454,6 +482,164 @@ export function FormulariosTab() {
           </div>
         )}
       </div>
+      {/* ── MODAL: CRIADOR DE FORMULÁRIO ESTILO TYPEFORM ── */}
+      {showCreateModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)',
+          zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '20px',
+        }}>
+          <div style={{
+            backgroundColor: '#0c101c', border: '1px solid rgba(0,219,121,0.3)',
+            borderRadius: '24px', width: '100%', maxWidth: '640px',
+            padding: '36px', position: 'relative', boxShadow: '0 24px 60px rgba(0,0,0,0.5)',
+          }}>
+            <button
+              onClick={() => { setShowCreateModal(false); setCreateSuccess(''); }}
+              style={{
+                position: 'absolute', top: '20px', right: '20px',
+                background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff',
+                width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px',
+              }}
+            >
+              ✕
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <span style={{ fontSize: '24px' }}>✨</span>
+              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff' }}>Criador de Formulários Inteligentes</h3>
+            </div>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '24px' }}>
+              Crie uma nova experiência interativa multi-etapas estilo Typeform para rodar em tráfego pago.
+            </p>
+
+            {createSuccess ? (
+              <div style={{ textAlign: 'center', padding: '30px 0' }}>
+                <div style={{ fontSize: '48px', marginBottom: '12px' }}>🎉</div>
+                <h4 style={{ fontSize: '18px', fontWeight: 700, color: '#00DB79', marginBottom: '6px' }}>{createSuccess}</h4>
+                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginBottom: '20px' }}>
+                  O formulário já está configurado e pronto para receber tráfego!
+                </p>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                  <button
+                    onClick={() => { setShowCreateModal(false); setCreateSuccess(''); }}
+                    style={{ padding: '10px 20px', borderRadius: '10px', backgroundColor: '#00DB79', color: '#070B18', fontWeight: 800, border: 'none', cursor: 'pointer' }}
+                  >
+                    Concluir
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const slugClean = (newForm.slug || newForm.title.toLowerCase().replace(/[^a-z0-9]/g, '-')).replace(/^-+|-+$/g, '');
+                setCreatedForms(prev => [
+                  ...prev,
+                  {
+                    id: String(Date.now()),
+                    title: newForm.title,
+                    slug: slugClean,
+                    status: 'Ativo',
+                    responses: 0,
+                    niche: newForm.niche,
+                  }
+                ]);
+                setCreateSuccess(`Formulário "${newForm.title}" criado com sucesso!`);
+              }}>
+                <div style={{ marginBottom: '18px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', marginBottom: '6px', textTransform: 'uppercase' }}>
+                    Nome / Título do Funil
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: Qualificação Imóveis de Luxo"
+                    value={newForm.title}
+                    onChange={e => {
+                      const title = e.target.value;
+                      const autoSlug = title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+                      setNewForm(prev => ({ ...prev, title, slug: autoSlug }));
+                    }}
+                    style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '14px', outline: 'none' }}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '18px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', marginBottom: '6px', textTransform: 'uppercase' }}>
+                      Slug da URL
+                    </label>
+                    <div style={{ display: 'flex', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '0 12px' }}>
+                      <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>forms.../</span>
+                      <input
+                        type="text"
+                        required
+                        value={newForm.slug}
+                        onChange={e => setNewForm(prev => ({ ...prev, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') }))}
+                        placeholder="moda-7dias"
+                        style={{ width: '100%', padding: '12px 6px', backgroundColor: 'transparent', border: 'none', color: '#00DB79', fontSize: '13px', fontWeight: 700, outline: 'none' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', marginBottom: '6px', textTransform: 'uppercase' }}>
+                      Nicho Principal
+                    </label>
+                    <select
+                      value={newForm.niche}
+                      onChange={e => setNewForm(prev => ({ ...prev, niche: e.target.value }))}
+                      style={{ width: '100%', padding: '12px 14px', borderRadius: '10px', backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '13px', outline: 'none' }}
+                    >
+                      <option value="Moda Feminina">Moda Feminina</option>
+                      <option value="Joias & Semijoias">Joias & Semijoias</option>
+                      <option value="Alimentação & Delivery">Alimentação & Delivery</option>
+                      <option value="Mercados & Varejo">Mercados & Varejo</option>
+                      <option value="Serviços & B2B">Serviços & B2B</option>
+                      <option value="Imobiliário">Imobiliário</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', marginBottom: '6px', textTransform: 'uppercase' }}>
+                    WhatsApp de Recebimento do Lead
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={newForm.whatsappDestination}
+                    onChange={e => setNewForm(prev => ({ ...prev, whatsappDestination: e.target.value }))}
+                    placeholder="5581981280719"
+                    style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '14px', outline: 'none' }}
+                  />
+                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '4px', display: 'block' }}>
+                    O lead qualificado será direcionado para este número com o diagnóstico preenchido.
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateModal(false)}
+                    style={{ padding: '12px 20px', borderRadius: '10px', backgroundColor: 'rgba(255,255,255,0.06)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '13px' }}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    style={{ padding: '12px 24px', borderRadius: '10px', backgroundColor: '#00DF81', color: '#070B18', border: 'none', cursor: 'pointer', fontWeight: 800, fontSize: '13px', boxShadow: '0 4px 16px rgba(0,219,121,0.3)' }}
+                  >
+                    Criar e Publicar Formulário
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

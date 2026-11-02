@@ -11,6 +11,8 @@ const nonLocalizedRoutes = [
   '/teste-whatsapp',
   '/Briefing',
   '/aluno',
+  '/forms',
+  '/f',
 ];
 
 function getLocaleFromPath(pathname: string): string | null {
@@ -24,6 +26,17 @@ function getLocaleFromPath(pathname: string): string | null {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const host = request.headers.get('host') || '';
+
+  // Interceptar subdominio forms.infinityondemand.com.br
+  if (host.includes('forms.infinityondemand.com.br')) {
+    if (pathname === '/') {
+      return NextResponse.rewrite(new URL('/forms', request.url));
+    }
+    if (pathname.startsWith('/forms') || pathname.startsWith('/f/') || pathname.startsWith('/api/')) {
+      return NextResponse.next();
+    }
+  }
 
   // Skip API routes, static files, Next.js internals, and public assets
   if (

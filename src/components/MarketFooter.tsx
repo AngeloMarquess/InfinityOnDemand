@@ -231,7 +231,7 @@ export default function MarketFooter({ locale = 'pt' }: { locale?: string }) {
           color: '#64748B'
         }}>
           <div>
-            © {new Date().getFullYear()} Infinity On Demand Tecnologia Ltda. Todos os direitos reservados.
+            © {new Date().getFullYear()} INFINITY ON DEMAND LTDA. Todos os direitos reservados.
           </div>
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
             <Link href={`${prefix}/`} style={{ color: '#64748B', textDecoration: 'none' }}>
@@ -246,6 +246,24 @@ export default function MarketFooter({ locale = 'pt' }: { locale?: string }) {
             <a href="https://wa.me/5581981280719" target="_blank" rel="noopener noreferrer" style={{ color: '#00DF81', textDecoration: 'none', fontWeight: 600 }}>
               Suporte & Comercial
             </a>
+          </div>
+        </div>
+
+        {/* Corporate & Legal Registry (Razão Social, CNPJ e Endereço) */}
+        <div style={{
+          marginTop: '20px',
+          paddingTop: '16px',
+          borderTop: '1px solid rgba(255, 255, 255, 0.04)',
+          textAlign: 'center',
+          fontSize: '11px',
+          lineHeight: 1.7,
+          color: '#64748B'
+        }}>
+          <div>
+            <strong style={{ color: '#94A3B8' }}>INFINITY ON DEMAND LTDA</strong> &bull; CNPJ: 65.929.586/0001-19
+          </div>
+          <div>
+            Rua Capitão José da Luz, 137, Sala 0203, Edifício Cervantes &bull; Bairro Coelhos, Recife - PE &bull; CEP: 50070-540
           </div>
         </div>
 
