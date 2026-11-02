@@ -28,14 +28,41 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const host = request.headers.get('host') || '';
 
-  // Interceptar subdominio forms.infinityondemand.com.br
+  // Interceptar subdomínio forms.infinityondemand.com.br
   if (host.includes('forms.infinityondemand.com.br')) {
-    if (pathname === '/') {
-      return NextResponse.rewrite(new URL('/forms', request.url));
-    }
-    if (pathname.startsWith('/forms') || pathname.startsWith('/f/') || pathname.startsWith('/api/')) {
+    // Arquivos estáticos e Next.js internals
+    if (
+      pathname.startsWith('/_next/') ||
+      pathname.startsWith('/favicon') ||
+      pathname.includes('.')
+    ) {
       return NextResponse.next();
     }
+
+    // APIs
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.next();
+    }
+
+    // Página de Preços / Landing do Forms
+    if (pathname === '/precos' || pathname.startsWith('/forms/precos')) {
+      return NextResponse.rewrite(new URL('/forms', request.url));
+    }
+
+    // Rota direta de forms
+    if (pathname === '/forms' || pathname.startsWith('/forms/')) {
+      return NextResponse.next();
+    }
+
+    // Se o usuário acessar /f/slug ou qualquer slug no subdomínio de forms (ex: /sobre, /ecommerce, /testes, etc.)
+    // NUNCA deve cair no site principal da Infinity (home/sobre).
+    // O subdomínio forms é 100% isolado e serve o funil de formulário correspondente:
+    const slug = pathname.replace(/^\//, '').replace(/^f\//, '');
+    const formUrl = new URL('/forms', request.url);
+    if (slug) {
+      formUrl.searchParams.set('form', slug);
+    }
+    return NextResponse.rewrite(formUrl);
   }
 
   // Skip API routes, static files, Next.js internals, and public assets

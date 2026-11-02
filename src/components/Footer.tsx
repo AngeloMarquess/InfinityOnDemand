@@ -78,7 +78,7 @@ export default function Footer({ dict, locale }: { dict?: any; locale?: string }
               <li><Link href={`${prefix}/delivery`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Infinity Delivery SaaS</Link></li>
               <li><Link href={`${prefix}/market`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Sistemas para Mercado</Link></li>
               <li><Link href={`${prefix}/consultoria`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Site Institucional</Link></li>
-              <li><a href="https://forms.infinityondemand.com.br" target="_blank" rel="noopener noreferrer" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Formulários Interativos</a></li>
+              <li><Link href={`${prefix}/forms`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Formulários Interativos</Link></li>
               <li><Link href={`${prefix}/trafego`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Tráfego Pago & Performance</Link></li>
             </ul>
           </div>

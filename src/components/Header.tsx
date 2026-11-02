@@ -64,7 +64,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
         {/* Desktop nav */}
         <nav className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <Link href={`${prefix}/trafego`} style={{ padding: "8px 12px", borderRadius: "4px", color: "#00DF81", fontWeight: 700 }}>{t.trafego || 'Tráfego Pago'}</Link>
-          <a href="https://forms.infinityondemand.com.br" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "#00DF81", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "6px" }}><span>Forms</span><span style={{ fontSize: "10px", padding: "1px 6px", borderRadius: "999px", background: "rgba(0,223,129,0.2)", border: "1px solid rgba(0,223,129,0.5)", color: "#00DF81", fontWeight: 800, textTransform: "uppercase" }}>Novo</span></a>
+          <Link href={`${prefix}/forms`} style={{ padding: "8px 12px", borderRadius: "4px", color: "#00DF81", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "6px" }}><span>Forms</span><span style={{ fontSize: "10px", padding: "1px 6px", borderRadius: "999px", background: "rgba(0,223,129,0.2)", border: "1px solid rgba(0,223,129,0.5)", color: "#00DF81", fontWeight: 800, textTransform: "uppercase" }}>Novo</span></Link>
           <Link href={`${prefix}/consultoria`} style={{ padding: "8px 12px", borderRadius: "4px" }}>{t.consultoria}</Link>
           <Link href={`${prefix}/ecommerce`} style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.ecommerce}</Link>
           <a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" style={{ padding: "8px 12px", borderRadius: "4px", color: "var(--text-primary)", fontWeight: 600 }}>{t.crm}</a>
@@ -355,7 +355,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
         <nav className="mobile-menu-links">
           <Link href={prefix || '/'} onClick={closeMenu}>{t.inicio}</Link>
           <Link href={`${prefix}/trafego`} onClick={closeMenu} style={{ color: "#00DF81", fontWeight: 700 }}>{t.trafego || 'Tráfego Pago'}</Link>
-          <a href="https://forms.infinityondemand.com.br" target="_blank" rel="noopener noreferrer" onClick={closeMenu} style={{ color: "#00DF81", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "8px" }}><span>Forms</span><span style={{ fontSize: "10px", padding: "1px 6px", borderRadius: "999px", background: "rgba(0,223,129,0.2)", border: "1px solid rgba(0,223,129,0.5)", color: "#00DF81", fontWeight: 800, textTransform: "uppercase" }}>Novo</span></a>
+          <Link href={`${prefix}/forms`} onClick={closeMenu} style={{ color: "#00DF81", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "8px" }}><span>Forms</span><span style={{ fontSize: "10px", padding: "1px 6px", borderRadius: "999px", background: "rgba(0,223,129,0.2)", border: "1px solid rgba(0,223,129,0.5)", color: "#00DF81", fontWeight: 800, textTransform: "uppercase" }}>Novo</span></Link>
           <Link href={`${prefix}/consultoria`} onClick={closeMenu}>{t.consultoria}</Link>
           <Link href={`${prefix}/ecommerce`} onClick={closeMenu}>{t.ecommerce}</Link>
           <a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" onClick={closeMenu}>
