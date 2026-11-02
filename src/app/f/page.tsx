@@ -865,7 +865,7 @@ function DynamicFormFunnel() {
               {form.sendToWhatsapp && (
                 <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '8px' }}>
                   <a
-                    href={whatsappUrl || `https://wa.me/${form.whatsappDestination.replace(/\D/g, '')}`}
+                    href={whatsappUrl || (form.whatsappDestination ? `https://wa.me/${form.whatsappDestination.replace(/\D/g, '')}` : '#')}
                     style={{
                       width: '100%',
                       padding: '16px',
