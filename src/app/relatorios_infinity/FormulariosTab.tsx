@@ -1356,12 +1356,24 @@ https://forms.infinityondemand.com.br/${f.slug}`);
                           </label>
                           <select
                             value={formDraft.clientId || ''}
-                            onChange={(e) => setFormDraft((prev) => ({ ...prev, clientId: e.target.value }))}
+                            onChange={(e) => {
+                              const chosenId = e.target.value;
+                              const chosen = clients.find((c) => c.id === chosenId);
+                              const clientTitle = chosen?.company || chosen?.name || '';
+                              setFormDraft((prev) => ({
+                                ...prev,
+                                clientId: chosenId,
+                                clientName: clientTitle,
+                                brandName: prev.brandName ? prev.brandName : clientTitle,
+                              }));
+                            }}
                             style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', backgroundColor: '#0f172a', border: '1px solid rgba(255,184,0,0.4)', color: '#fff', fontSize: '13px', outline: 'none' }}
                           >
                             <option value="">Selecione um cliente...</option>
                             {clients.map((c) => (
-                              <option key={c.id} value={c.id}>{c.company} ({c.name})</option>
+                              <option key={c.id} value={c.id}>
+                                {c.company && c.name && c.company !== c.name ? `${c.company} (${c.name})` : (c.company || c.name)}
+                              </option>
                             ))}
                           </select>
                         </div>

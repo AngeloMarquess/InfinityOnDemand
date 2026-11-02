@@ -50,6 +50,15 @@ export async function GET(request: Request) {
           if (!post.published_at || new Date(post.published_at).getFullYear() <= 1970) {
             post.published_at = post.created_at || '2026-03-20T12:00:00Z';
           }
+          // Se o post no banco tiver conteúdo curto/stub e existir versão completa no seed, priorizar o conteúdo rico do seed
+          if (seedMatch && (!post.content || post.content.length < 800 || (seedMatch.content && seedMatch.content.length > post.content.length))) {
+            post.content = seedMatch.content;
+            if (seedMatch.title) post.title = seedMatch.title;
+            if (seedMatch.excerpt) post.excerpt = seedMatch.excerpt;
+            if (seedMatch.meta_title) post.meta_title = seedMatch.meta_title;
+            if (seedMatch.meta_description) post.meta_description = seedMatch.meta_description;
+            if (seedMatch.reading_time) post.reading_time = seedMatch.reading_time;
+          }
           // Increment views
           await supabase.from('blog_posts').update({ views: (post.views || 0) + 1 }).eq('id', post.id);
           return NextResponse.json(post, { headers: cors() });
@@ -88,8 +97,7 @@ export async function GET(request: Request) {
         query = query.or(`title.ilike.%${search}%,excerpt.ilike.%${search}%`);
       }
 
-      query = query.order('published_at', { ascending: false, nullsFirst: false })
-        .range((page - 1) * limit, page * limit - 1);
+      query = query.order('published_at', { ascending: false, nullsFirst: false });
 
       const res = await query;
       if (res.data && res.data.length > 0) {
@@ -104,10 +112,13 @@ export async function GET(request: Request) {
       }
     }
 
-    // Mesclar posts do banco com os 10 posts estratégicos de SEO (sem duplicar por slug)
+    // Mesclar posts do banco com os posts estratégicos de SEO (sem duplicar por slug)
     const existingSlugs = new Set(dbPosts.map((p) => p.slug));
     const seedToAdd = SEED_POSTS.filter((sp) => !existingSlugs.has(sp.slug));
     let allPosts = [...dbPosts, ...seedToAdd];
+
+    // Ordenar todos os artigos combinados por published_at decrescente
+    allPosts.sort((a, b) => new Date(b.published_at || b.created_at || 0).getTime() - new Date(a.published_at || a.created_at || 0).getTime());
 
     // Filtros de categoria e busca sobre a lista completa
     if (category) {

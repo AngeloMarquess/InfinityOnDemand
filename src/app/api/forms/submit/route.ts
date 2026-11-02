@@ -70,9 +70,11 @@ export async function POST(req: Request) {
       created_at: new Date().toISOString(),
     });
 
-    // Salvar no Supabase se disponível
+    // Salvar no Supabase (tanto histórico de formulários quanto CRM crm_contacts na coluna "Novo Lead")
     try {
       const supabase = getServerSupabase();
+      
+      // 1. Tabela histórica de submissões
       await supabase.from('crm_form_submissions').insert([{
         id: savedLead.id,
         form_slug,
@@ -90,8 +92,60 @@ export async function POST(req: Request) {
         utm_medium: utm_medium || null,
         utm_campaign: utm_campaign || null,
       }]);
+
+      // 2. Buscar estágio "Novo Lead" no Pipeline de Vendas do CRM
+      let targetStageId: string | null = null;
+      try {
+        const { data: stages } = await supabase
+          .from('crm_stages')
+          .select('id, name')
+          .order('order_index', { ascending: true });
+        
+        if (stages && stages.length > 0) {
+          const novoStage = stages.find((s: any) => s.name?.toLowerCase().includes('novo'));
+          targetStageId = novoStage ? novoStage.id : stages[0].id;
+        }
+      } catch (errStage) {
+        console.error('Aviso ao buscar stages do CRM:', errStage);
+      }
+
+      // Montar resumo das respostas para anotações do lead
+      let answersNote = '';
+      Object.entries(answers).forEach(([k, v]: [string, any]) => {
+        answersNote += `• ${k}: ${Array.isArray(v) ? v.join(', ') : String(v)}\n`;
+      });
+
+      const crmNotes = `Lead capturado via formulário "${finalTitle}" em ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')} (Score: ${score}/100)\nFunil: ${form_slug}\nOrigem UTM: ${utm_source || 'Meta Ads'}${utm_medium ? ` / ${utm_medium}` : ''}${utm_campaign ? ` / ${utm_campaign}` : ''}\n\nRespostas do Formulário:\n${answersNote}`;
+
+      // Tags solicitadas pelo usuário para identificar a origem e o form
+      const tags = [
+        finalTitle,
+        'Formulário',
+        utm_source || 'Meta Ads',
+        'Tráfego Pago',
+      ].filter(Boolean);
+
+      const crmOwnerId = process.env.CRM_OWNER_USER_ID || 'c7d7e35b-d352-475d-88b1-5fe1ba3cfb97';
+
+      // Inserir diretamente no CRM (tabela crm_contacts com origin: 'site' para cair na aba "Leads do Site")
+      await supabase.from('crm_contacts').insert([{
+        user_id: crmOwnerId,
+        name,
+        email: email || null,
+        phone: phone || null,
+        company: company || name,
+        notes: crmNotes,
+        estimated_value: 0,
+        origin: 'site',
+        contact_type: 'lead',
+        stage_id: targetStageId,
+        project_interest: finalTitle,
+        tags,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }]);
     } catch (e) {
-      // Ignora erro do Supabase
+      console.error('Erro na integração do lead com Supabase/CRM:', e);
     }
 
     // Montar link do WhatsApp se configurado para envio
