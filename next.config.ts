@@ -45,6 +45,20 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/contato',
+        destination: '/#contact',
+        permanent: true,
+      },
+      {
+        source: '/contact',
+        destination: '/#contact',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
