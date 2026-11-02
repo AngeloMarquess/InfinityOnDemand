@@ -44,9 +44,9 @@ export function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // Página de Preços / Landing do Forms
+    // Página de Preços do Forms
     if (pathname === '/precos' || pathname.startsWith('/forms/precos')) {
-      return NextResponse.rewrite(new URL('/forms', request.url));
+      return NextResponse.rewrite(new URL('/forms/precos', request.url));
     }
 
     // Rota direta de forms
