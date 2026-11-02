@@ -124,7 +124,13 @@
     "blogPost3Date": "10 Mar, 2026 • 5 min de leitura",
     "blogPost3Title": "O Futuro do Delivery: Como a Tecnologia Está Transformando Restaurantes",
     "blogPost3Desc": "De cardápios digitais a gestão Kanban de pedidos — como plataformas SaaS estão dominando o food service.",
-    "blogLerArtigo": "Ler artigo"
+    "blogLerArtigo": "Ler artigo",
+    "consultCard4Title": "Formulários & Funis Interativos",
+    "consultCard4Desc": "Funis de captura estilo Typeform com qualificação inteligente, lead scoring preditivo e redirecionamento automático direto para o WhatsApp.",
+    "consultCard5Title": "Sistemas para Mercados & Varejo",
+    "consultCard5Desc": "Engenharia para varejo e hortifrútis: PDV ágil, balanças, controle de estoque e plataforma própria de delivery sem taxas de intermediários.",
+    "consultCard6Title": "Fábrica de E-commerces",
+    "consultCard6Desc": "Desenvolvimento de lojas virtuais de alta conversão com checkout fluido, integrações com ERP e arquitetura pronta para escalar faturamento."
   },
   "blogPage": {
     "searchPlaceholder": "🔍 Buscar artigos...",

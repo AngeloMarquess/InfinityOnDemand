@@ -124,7 +124,13 @@
     "blogPost3Date": "10 Mar, 2026 • 5 min de lectura",
     "blogPost3Title": "El Futuro del Delivery: Cómo la Tecnología Está Transformando Restaurantes",
     "blogPost3Desc": "De menús digitales a gestión Kanban de pedidos — cómo plataformas SaaS están dominando el food service.",
-    "blogLerArtigo": "Leer artículo"
+    "blogLerArtigo": "Leer artículo",
+    "consultCard4Title": "Formularios y Embudos Interactivos",
+    "consultCard4Desc": "Embudos estilo Typeform con calificación inteligente, lead scoring predictivo y redirección automática por WhatsApp.",
+    "consultCard5Title": "Sistemas para Supermercados",
+    "consultCard5Desc": "Ingeniería para retail y mercados: POS ágil, balanzas, control de inventario y delivery propio sin comisiones.",
+    "consultCard6Title": "Fábrica de E-commerce",
+    "consultCard6Desc": "Desarrollo de tiendas online de alto rendimiento con checkout rápido, integraciones ERP y arquitectura escalable."
   },
   "blogPage": {
     "searchPlaceholder": "🔍 Buscar artículos...",

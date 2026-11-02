@@ -104,26 +104,30 @@ export async function GET(request: Request) {
       }
     }
 
-    // Se o banco tiver posts, usamos o banco; caso contrário, usamos os 10 posts estratégicos de SEO
-    let allPosts = dbPosts.length > 0 ? dbPosts : SEED_POSTS;
+    // Mesclar posts do banco com os 10 posts estratégicos de SEO (sem duplicar por slug)
+    const existingSlugs = new Set(dbPosts.map((p) => p.slug));
+    const seedToAdd = SEED_POSTS.filter((sp) => !existingSlugs.has(sp.slug));
+    let allPosts = [...dbPosts, ...seedToAdd];
 
-    // Filtros em memória para seed posts
-    if (dbPosts.length === 0) {
-      if (category) {
-        allPosts = allPosts.filter(
-          (p) => p.blog_categories?.slug === category || p.tags?.some((t: string) => t.toLowerCase().includes(category.toLowerCase()))
-        );
-      }
-      if (search) {
-        const q = search.toLowerCase();
-        allPosts = allPosts.filter(
-          (p) => p.title.toLowerCase().includes(q) || p.excerpt.toLowerCase().includes(q)
-        );
-      }
+    // Filtros de categoria e busca sobre a lista completa
+    if (category) {
+      allPosts = allPosts.filter(
+        (p) =>
+          p.blog_categories?.slug === category ||
+          p.tags?.some((t: string) => t.toLowerCase().includes(category.toLowerCase()))
+      );
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      allPosts = allPosts.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.excerpt.toLowerCase().includes(q)
+      );
     }
 
-    const total = dbPosts.length > 0 ? dbCount : allPosts.length;
-    const paginated = dbPosts.length > 0 ? allPosts : allPosts.slice((page - 1) * limit, page * limit);
+    const total = allPosts.length;
+    const paginated = allPosts.slice((page - 1) * limit, page * limit);
 
     return NextResponse.json({
       posts: paginated,

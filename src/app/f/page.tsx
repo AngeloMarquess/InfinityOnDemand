@@ -52,6 +52,7 @@ function DynamicFormFunnel() {
   const utmCampaign = searchParams?.get('utm_campaign') || '';
 
   const [form, setForm] = useState<FormItem | null>(null);
+  const primaryColor = form?.primaryColor || primaryColor;
   const [loadingForm, setLoadingForm] = useState(true);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
@@ -125,7 +126,7 @@ function DynamicFormFunnel() {
         style={{
           minHeight: '100vh',
           backgroundColor: '#050814',
-          color: '#00DF81',
+          color: primaryColor,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -160,7 +161,7 @@ function DynamicFormFunnel() {
         </p>
         <a
           href="https://infinityondemand.com.br"
-          style={{ padding: '10px 20px', borderRadius: '10px', backgroundColor: '#00DF81', color: '#070B18', fontWeight: 800, textDecoration: 'none' }}
+          style={{ padding: '10px 20px', borderRadius: '10px', backgroundColor: primaryColor, color: '#070B18', fontWeight: 800, textDecoration: 'none' }}
         >
           Voltar ao site
         </a>
@@ -293,7 +294,7 @@ function DynamicFormFunnel() {
       style={{
         minHeight: '100vh',
         width: '100vw',
-        backgroundImage: "url('/forms-bg.jpg')",
+        backgroundImage: form?.backgroundImageUrl ? `url('${form.backgroundImageUrl}')` : "url('/forms-bg.jpg')",
         backgroundPosition: 'center center',
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
@@ -342,37 +343,39 @@ function DynamicFormFunnel() {
           href="https://infinityondemand.com.br"
           target="_blank"
           rel="noopener noreferrer"
-          title="Infinity On Demand"
+          title={form?.brandName || 'Infinity On Demand'}
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            marginBottom: '14px',
+            gap: '12px',
+            marginBottom: '16px',
             textDecoration: 'none',
             color: '#fff',
             cursor: 'pointer',
           }}
         >
           <img
-            src="/logo-infinity.png"
-            alt="Infinity On Demand"
+            src={form?.brandLogoUrl || '/logo-infinity.png'}
+            alt={form?.brandName || 'Infinity On Demand'}
             style={{
-              height: '28px',
+              height: '46px',
               width: 'auto',
+              maxHeight: '46px',
+              maxWidth: '180px',
               objectFit: 'contain',
-              filter: 'drop-shadow(0 0 10px rgba(0, 223, 129, 0.45))',
+              filter: `drop-shadow(0 0 12px ${(form?.primaryColor || primaryColor)}88)`,
             }}
           />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', fontWeight: 900, letterSpacing: '-0.3px' }}>
-            <span>INFINITY</span>
-            <span style={{ color: '#00DF81' }}>ON DEMAND</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '15px', fontWeight: 900, letterSpacing: '0.04em' }}>
+            <span>{(form?.brandName || 'INFINITY ON DEMAND').split(' ')[0]}</span>
+            <span style={{ color: form?.primaryColor || primaryColor }}>{(form?.brandName || 'INFINITY ON DEMAND').split(' ').slice(1).join(' ')}</span>
           </div>
         </a>
 
         {/* Stepper Progress Bar */}
         {!isCompleted && totalQuestions > 0 && (
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', fontWeight: 800, letterSpacing: '0.8px', color: '#00DF81', textTransform: 'uppercase' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', fontWeight: 800, letterSpacing: '0.8px', color: form?.primaryColor || primaryColor, textTransform: 'uppercase' }}>
               <span>Etapa {currentStepIndex + 1} de {totalQuestions}</span>
               <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 600 }}>{progressPercent}%</span>
             </div>
@@ -382,7 +385,7 @@ function DynamicFormFunnel() {
                 style={{
                   height: '100%',
                   width: `${Math.max(progressPercent, 6)}%`,
-                  background: 'linear-gradient(90deg, #00DF81 0%, #00F0FF 100%)',
+                  background: `linear-gradient(90deg, ${form?.primaryColor || primaryColor} 0%, #00F0FF 100%)`,
                   borderRadius: '999px',
                   transition: 'width 0.4s ease-out',
                 }}
@@ -427,7 +430,7 @@ function DynamicFormFunnel() {
                 <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', lineHeight: '1.3', marginBottom: '6px' }}>
                   {currentQuestion.title}
                   {currentQuestion.required && (
-                    <span style={{ color: '#00DF81', marginLeft: '6px' }} title="Obrigatória">*</span>
+                    <span style={{ color: primaryColor, marginLeft: '6px' }} title="Obrigatória">*</span>
                   )}
                 </h1>
                 {currentQuestion.helper && (
@@ -472,7 +475,7 @@ function DynamicFormFunnel() {
                             height: '18px',
                             borderRadius: '50%',
                             border: isSelected ? '2px solid #00DF81' : '2px solid rgba(255, 255, 255, 0.3)',
-                            backgroundColor: isSelected ? '#00DF81' : 'transparent',
+                            backgroundColor: isSelected ? primaryColor : 'transparent',
                           }}
                         />
                       </button>
@@ -484,7 +487,7 @@ function DynamicFormFunnel() {
               {/* TIPO: CAIXAS DE SELEÇÃO (MÚLTIPLAS OPÇÕES - MARCAR 2, 3 OU MAIS) */}
               {currentQuestion.type === 'checkbox' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <p style={{ fontSize: '11px', color: '#00DF81', fontWeight: 700, margin: 0, textTransform: 'uppercase' }}>
+                  <p style={{ fontSize: '11px', color: primaryColor, fontWeight: 700, margin: 0, textTransform: 'uppercase' }}>
                     ✓ Você pode selecionar múltiplas opções:
                   </p>
                   {(currentQuestion.options || []).map((opt, oIdx) => {
@@ -520,7 +523,7 @@ function DynamicFormFunnel() {
                             height: '20px',
                             borderRadius: '6px',
                             border: isSelected ? '2px solid #00DF81' : '2px solid rgba(255, 255, 255, 0.3)',
-                            backgroundColor: isSelected ? '#00DF81' : 'transparent',
+                            backgroundColor: isSelected ? primaryColor : 'transparent',
                             color: '#070B18',
                             display: 'flex',
                             alignItems: 'center',
@@ -653,7 +656,7 @@ function DynamicFormFunnel() {
                   </div>
                 ) : (
                   <div style={{ position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#00DF81', fontWeight: 800 }}>R$</span>
+                    <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: primaryColor, fontWeight: 800 }}>R$</span>
                     <input
                       type="text"
                       autoFocus
@@ -778,7 +781,7 @@ function DynamicFormFunnel() {
                         width: '54px',
                         height: '54px',
                         borderRadius: '14px',
-                        backgroundColor: answers[currentQuestion.id] === String(star) ? '#00DF81' : 'rgba(255, 255, 255, 0.08)',
+                        backgroundColor: answers[currentQuestion.id] === String(star) ? primaryColor : 'rgba(255, 255, 255, 0.08)',
                         color: answers[currentQuestion.id] === String(star) ? '#070B18' : '#fff',
                         fontSize: '20px',
                         fontWeight: 900,
@@ -848,7 +851,7 @@ function DynamicFormFunnel() {
           {/* ════════ TELA DE OBRIGADO (THANK YOU PAGE CONFIGURÁVEL) ════════ */}
           {isCompleted && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '20px', padding: '10px 0' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 14px', borderRadius: '20px', backgroundColor: 'rgba(0, 223, 129, 0.15)', border: '1px solid rgba(0, 223, 129, 0.3)', color: '#00DF81', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 14px', borderRadius: '20px', backgroundColor: 'rgba(0, 223, 129, 0.15)', border: '1px solid rgba(0, 223, 129, 0.3)', color: primaryColor, fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}>
                 <span>✓</span> Concluído com Sucesso
               </div>
 
@@ -948,7 +951,7 @@ export default function FormsRuntimePage() {
           style={{
             minHeight: '100vh',
             backgroundColor: '#050814',
-            color: '#00DF81',
+            color: primaryColor,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
