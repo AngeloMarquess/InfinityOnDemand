@@ -369,6 +369,106 @@ export default function RelatoriosInfinity() {
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
+  // ─── Central Social Media Configurations ───
+  const socialNetworkConfigs = {
+    instagram: {
+      name: liveProfile?.name || profileData.name,
+      username: `@${liveProfile?.username || profileData.username.replace('@', '')}`,
+      avatar: liveProfile?.profile_picture_url || profileData.profilePicture,
+      badge: 'Instagram Oficial',
+      badgeColor: '#E1306C',
+      badgeBg: 'rgba(225, 48, 108, 0.15)',
+      bio: profileData.bio,
+      followers: liveProfile?.followers_count ?? profileData.followers,
+      following: liveProfile?.follows_count ?? profileData.following,
+      posts: liveProfile?.media_count ?? profileData.posts,
+      engagement: `${liveProfile?.engagementRate ?? profileData.engagementRate}%`,
+      likesAvg: liveProfile?.totalPosts ? (liveProfile.totalLikes / liveProfile.totalPosts).toFixed(1) : profileData.avgLikes,
+      commentsAvg: liveProfile?.totalPosts ? (liveProfile.totalComments / liveProfile.totalPosts).toFixed(2) : profileData.avgComments,
+      ratio: liveProfile ? (liveProfile.followers_count / (liveProfile.follows_count || 1)).toFixed(2) : '0.99',
+      kpis: [
+        { icon: '❤️', title: 'Taxa de Engajamento', value: `${liveProfile?.engagementRate ?? profileData.engagementRate}%`, subtitle: 'Benchmark: 2-6%', color: '#EF4444' },
+        { icon: '👍', title: 'Likes Médios/Post', value: String(liveProfile?.totalPosts ? (liveProfile.totalLikes / liveProfile.totalPosts).toFixed(1) : profileData.avgLikes), subtitle: `Total: ${liveProfile?.totalLikes ?? profileData.totalLikes} likes`, color: '#8B5CF6' },
+        { icon: '💬', title: 'Comentários Médios', value: String(liveProfile?.totalPosts ? (liveProfile.totalComments / liveProfile.totalPosts).toFixed(2) : profileData.avgComments), subtitle: `Total: ${liveProfile?.totalComments ?? profileData.totalComments} comentários`, color: '#F59E0B' },
+        { icon: '📐', title: 'Ratio Seguidor/Seguindo', value: String(liveProfile ? (liveProfile.followers_count / (liveProfile.follows_count || 1)).toFixed(2) : '0.99'), subtitle: 'Ideal: > 2.0', color: '#06B6D4' },
+      ],
+      healthScore: { total: 25, engagement: 15, consistency: 5, growth: 3, variety: 2 }
+    },
+    facebook: {
+      name: 'Infinity On Demand',
+      username: 'facebook.com/infinityondemand',
+      avatar: '/logo-infinity.png',
+      badge: 'Página Facebook',
+      badgeColor: '#1877F2',
+      badgeBg: 'rgba(24, 119, 242, 0.15)',
+      bio: 'Inovação, tecnologia e performance real. Ajudamos empresas e marcas a escalarem com tráfego e IA.',
+      followers: 1240,
+      following: 86,
+      posts: 94,
+      engagement: '2.14%',
+      likesAvg: '18.4',
+      commentsAvg: '3.2',
+      ratio: '14.4',
+      kpis: [
+        { icon: '👍', title: 'Alcance Mensal', value: '18.4k', subtitle: '+14% vs mês anterior', color: '#1877F2' },
+        { icon: '👥', title: 'Seguidores da Página', value: '1.240', subtitle: '+48 novos este mês', color: '#00DF81' },
+        { icon: '💬', title: 'Conversas no Messenger', value: '84', subtitle: 'Atendimento e vendas', color: '#00AAFF' },
+        { icon: '🎯', title: 'Cliques no Link', value: '312', subtitle: 'Tráfego para landing pages', color: '#F59E0B' },
+      ],
+      healthScore: { total: 68, engagement: 22, consistency: 20, growth: 14, variety: 12 }
+    },
+    tiktok: {
+      name: 'Infinity On Demand',
+      username: '@infinityondemand',
+      avatar: '/logo-infinity.png',
+      badge: 'TikTok Business',
+      badgeColor: '#00F2FE',
+      badgeBg: 'rgba(0, 242, 254, 0.15)',
+      bio: 'Bastidores de software, IA na prática e growth marketing para acelerar o seu negócio. 🔥',
+      followers: 3420,
+      following: 112,
+      posts: 42,
+      engagement: '5.80%',
+      likesAvg: '240.5',
+      commentsAvg: '18.4',
+      ratio: '30.5',
+      kpis: [
+        { icon: '👁️', title: 'Visualizações de Vídeo', value: '84.2k', subtitle: 'Últimos 30 dias', color: '#00F2FE' },
+        { icon: '❤️', title: 'Curtidas Totais', value: '12.8k', subtitle: 'Em 42 vídeos', color: '#FE2C55' },
+        { icon: '🔁', title: 'Compartilhamentos', value: '620', subtitle: 'Vídeos virais', color: '#8B5CF6' },
+        { icon: '📈', title: 'Taxa de Retenção', value: '41.2%', subtitle: 'Média de conclusão', color: '#00DF81' },
+      ],
+      healthScore: { total: 74, engagement: 25, consistency: 22, growth: 15, variety: 12 }
+    },
+    pinterest: {
+      name: 'Infinity On Demand',
+      username: 'pinterest.com/infinityondemand',
+      avatar: '/logo-infinity.png',
+      badge: 'Pinterest Business',
+      badgeColor: '#E60023',
+      badgeBg: 'rgba(230, 0, 35, 0.15)',
+      bio: 'Inspirações de interfaces UI/UX, layouts modernos de e-commerce, identidade visual e criativos.',
+      followers: 580,
+      following: 42,
+      posts: 168,
+      engagement: '3.40%',
+      likesAvg: '34.0',
+      commentsAvg: '1.2',
+      ratio: '13.8',
+      kpis: [
+        { icon: '📌', title: 'Impressões Mensais', value: '42.5k', subtitle: 'Pesquisas orgânicas', color: '#E60023' },
+        { icon: '💾', title: 'Saves / Repins', value: '840', subtitle: 'Pins salvos em pastas', color: '#F59E0B' },
+        { icon: '🔗', title: 'Cliques de Saída', value: '490', subtitle: 'Tráfego para o site', color: '#00DF81' },
+        { icon: '📂', title: 'Pastas Criadas', value: '12', subtitle: 'UI, Criativos, E-com', color: '#00AAFF' },
+      ],
+      healthScore: { total: 62, engagement: 18, consistency: 18, growth: 14, variety: 12 }
+    },
+  };
+
+  const isSocialTab = activeTab === 'overview' || ['content', 'timing', 'actions', 'campaign', 'creatives', 'agenda'].includes(activeTab);
+  const currentSocialSubTab = activeTab === 'overview' ? socialSubTab : (activeTab as any);
+  const activeSocialNetwork = socialNetworkConfigs[selectedSocialNetwork] || socialNetworkConfigs.instagram;
+
   // Scroll tab nav to the very beginning on mount
   useEffect(() => {
     if (tabNavRef.current) {
@@ -1018,52 +1118,229 @@ export default function RelatoriosInfinity() {
       {/* ── Content ── */}
       <main style={{ padding: '20px 16px', maxWidth: '1400px', margin: '0 auto' }}>
 
-        {/* ═══════════ TAB: OVERVIEW ═══════════ */}
-        {activeTab === 'overview' && (
-          <>
-            {/* Profile Banner */}
+        {/* ═══════════ CENTRAL SOCIAL MEDIA (CARD + MULTIREDES + SUB-MENUS) ═══════════ */}
+        {isSocialTab && (
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(0,219,121,0.06) 0%, rgba(74,144,226,0.05) 50%, rgba(139,92,246,0.04) 100%)',
+            border: '1px solid rgba(0,219,121,0.2)',
+            borderRadius: '24px',
+            padding: '24px',
+            marginBottom: '32px',
+            position: 'relative',
+            overflow: 'hidden',
+            boxShadow: '0 12px 40px rgba(0,0,0,0.3)'
+          }}>
+            {/* Topo do Card: Seletor de Redes Sociais */}
             <div style={{
-              background: 'linear-gradient(135deg, rgba(0,219,121,0.08) 0%, rgba(74,144,226,0.08) 100%)',
-              border: '1px solid rgba(0,219,121,0.15)',
-              borderRadius: '24px',
-              padding: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '12px',
+              paddingBottom: '20px',
+              marginBottom: '22px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#00DF81', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>🌐</span> Central Social Media
+                </span>
+                <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '999px', backgroundColor: 'rgba(0, 223, 129, 0.15)', color: '#00DF81', fontWeight: 700 }}>
+                  Multiredes Ativa
+                </span>
+              </div>
+
+              {/* Botões de Redes Sociais */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                {[
+                  { id: 'instagram', label: 'Instagram', icon: '📸', color: '#E1306C' },
+                  { id: 'facebook', label: 'Facebook', icon: '📘', color: '#1877F2' },
+                  { id: 'tiktok', label: 'TikTok', icon: '🎵', color: '#00F2FE' },
+                  { id: 'pinterest', label: 'Pinterest', icon: '📌', color: '#E60023' },
+                ].map(net => {
+                  const isSelected = selectedSocialNetwork === net.id;
+                  return (
+                    <button
+                      key={net.id}
+                      onClick={() => setSelectedSocialNetwork(net.id as any)}
+                      style={{
+                        padding: '7px 14px',
+                        borderRadius: '10px',
+                        border: isSelected ? `1px solid ${net.color}` : '1px solid rgba(255, 255, 255, 0.08)',
+                        backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.09)' : 'rgba(255, 255, 255, 0.02)',
+                        color: isSelected ? '#fff' : 'rgba(255, 255, 255, 0.65)',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.2s ease',
+                        boxShadow: isSelected ? `0 0 14px ${net.color}33` : 'none'
+                      }}
+                    >
+                      <span>{net.icon}</span>
+                      <span>{net.label}</span>
+                      {isSelected && (
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: net.color }} />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Informações do Perfil Selecionado */}
+            <div style={{
               display: 'flex',
               flexWrap: 'wrap',
               gap: '24px',
               alignItems: 'center',
-              marginBottom: '32px',
+              marginBottom: '24px'
             }}>
-              <img
-                src={liveProfile?.profile_picture_url || profileData.profilePicture}
-                alt="Profile"
-                style={{ width: '90px', height: '90px', borderRadius: '50%', border: '3px solid rgba(0,219,121,0.4)', objectFit: 'cover' }}
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-              />
-              <div style={{ flex: '1 1 300px' }}>
-                <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '4px' }}>@{liveProfile?.username || profileData.username.replace('@', '')}</h2>
-                <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', marginBottom: '12px' }}>{liveProfile?.name || profileData.name}</p>
-                <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.35)', whiteSpace: 'pre-line', lineHeight: 1.5 }}>{profileData.bio}</p>
+              <div style={{ position: 'relative' }}>
+                <img
+                  src={activeSocialNetwork.avatar}
+                  alt={activeSocialNetwork.name}
+                  style={{
+                    width: '90px',
+                    height: '90px',
+                    borderRadius: '50%',
+                    border: `3px solid ${activeSocialNetwork.badgeColor}`,
+                    objectFit: 'cover'
+                  }}
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+                <div style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  right: 0,
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  backgroundColor: activeSocialNetwork.badgeColor,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '11px',
+                  color: '#fff',
+                  fontWeight: 800
+                }}>
+                  ✓
+                </div>
               </div>
+
+              <div style={{ flex: '1 1 300px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                  <h2 style={{ fontSize: '24px', fontWeight: 700, margin: 0, color: '#fff' }}>
+                    {activeSocialNetwork.username}
+                  </h2>
+                  <span style={{
+                    fontSize: '11px',
+                    padding: '2px 8px',
+                    borderRadius: '6px',
+                    backgroundColor: activeSocialNetwork.badgeBg,
+                    color: activeSocialNetwork.badgeColor,
+                    fontWeight: 700
+                  }}>
+                    {activeSocialNetwork.badge}
+                  </span>
+                </div>
+                <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>
+                  {activeSocialNetwork.name}
+                </p>
+                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', whiteSpace: 'pre-line', lineHeight: 1.5, margin: 0 }}>
+                  {activeSocialNetwork.bio}
+                </p>
+              </div>
+
               <div style={{ display: 'flex', gap: '32px' }}>
                 {[
-                  { label: 'Seguidores', value: liveProfile?.followers_count ?? profileData.followers },
-                  { label: 'Seguindo', value: liveProfile?.follows_count ?? profileData.following },
-                  { label: 'Posts', value: liveProfile?.media_count ?? profileData.posts },
+                  { label: 'Seguidores', value: activeSocialNetwork.followers },
+                  { label: 'Seguindo', value: activeSocialNetwork.following },
+                  { label: selectedSocialNetwork === 'pinterest' ? 'Pins' : 'Posts', value: activeSocialNetwork.posts },
                 ].map(s => (
                   <div key={s.label} style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '28px', fontWeight: 700, color: '#fff' }}>{typeof s.value === 'number' ? s.value.toLocaleString('pt-BR') : s.value}</div>
-                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
+                    <div style={{ fontSize: '28px', fontWeight: 700, color: '#fff' }}>
+                      {typeof s.value === 'number' ? s.value.toLocaleString('pt-BR') : s.value}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      {s.label}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* KPI Cards */}
+            {/* Barra de Módulos / Sub-Menus Internos de Social Media */}
+            <div style={{
+              paddingTop: '18px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              flexWrap: 'wrap'
+            }}>
+              <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px', color: 'rgba(255, 255, 255, 0.45)', marginRight: '6px' }}>
+                Módulos:
+              </span>
+              {[
+                { id: 'overview', label: 'Visão Geral & KPIs', icon: '📊' },
+                { id: 'content', label: 'Análise de Conteúdo', icon: '📝' },
+                { id: 'timing', label: 'Horários & Tendências', icon: '⏱️' },
+                { id: 'actions', label: 'Plano de Ação', icon: '🎯' },
+                { id: 'campaign', label: 'Campanha Social', icon: '🚀' },
+                { id: 'creatives', label: 'Criativos', icon: '🎨' },
+                { id: 'agenda', label: 'Agenda & Posts', icon: '📅' },
+              ].map(sub => {
+                const isCurrent = currentSocialSubTab === sub.id;
+                return (
+                  <button
+                    key={sub.id}
+                    onClick={() => {
+                      setSocialSubTab(sub.id as any);
+                      setActiveTab('overview');
+                    }}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: '10px',
+                      border: isCurrent ? '1px solid #00DF81' : '1px solid rgba(255, 255, 255, 0.08)',
+                      backgroundColor: isCurrent ? 'rgba(0, 223, 129, 0.16)' : 'rgba(255, 255, 255, 0.03)',
+                      color: isCurrent ? '#00DF81' : 'rgba(255, 255, 255, 0.75)',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      transition: 'all 0.18s ease',
+                      boxShadow: isCurrent ? '0 0 14px rgba(0, 223, 129, 0.2)' : 'none'
+                    }}
+                  >
+                    <span>{sub.icon}</span>
+                    <span>{sub.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════ SUB-ABA: VISÃO GERAL & KPIS ═══════════ */}
+        {isSocialTab && currentSocialSubTab === 'overview' && (
+          <>
+            {/* KPI Cards Dinâmicos */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
-              <MetricCard icon="❤️" title="Taxa de Engajamento" value={`${liveProfile?.engagementRate ?? profileData.engagementRate}%`} subtitle="Benchmark: 2-6%" color="#EF4444" />
-              <MetricCard icon="👍" title="Likes Médios/Post" value={liveProfile?.totalPosts ? (liveProfile.totalLikes / liveProfile.totalPosts).toFixed(1) : profileData.avgLikes} subtitle={`Total: ${liveProfile?.totalLikes ?? profileData.totalLikes} likes`} color="#8B5CF6" />
-              <MetricCard icon="💬" title="Comentários Médios" value={liveProfile?.totalPosts ? (liveProfile.totalComments / liveProfile.totalPosts).toFixed(2) : profileData.avgComments} subtitle={`Total: ${liveProfile?.totalComments ?? profileData.totalComments} comentários`} color="#F59E0B" />
-              <MetricCard icon="📐" title="Ratio Seguidor/Seguindo" value={liveProfile ? (liveProfile.followers_count / (liveProfile.follows_count || 1)).toFixed(2) : '1.05'} subtitle="Ideal: > 2.0" color="#06B6D4" />
+              {activeSocialNetwork.kpis.map((kpi, kIdx) => (
+                <MetricCard
+                  key={kIdx}
+                  icon={kpi.icon}
+                  title={kpi.title}
+                  value={kpi.value}
+                  subtitle={kpi.subtitle}
+                  color={kpi.color}
+                />
+              ))}
             </div>
 
             {/* Engagement Gauge */}
@@ -1075,13 +1352,13 @@ export default function RelatoriosInfinity() {
               marginBottom: '32px',
               textAlign: 'center',
             }}>
-              <SectionTitle icon="🎯" title="Health Score da Conta" subtitle="Baseado em engajamento, consistência e crescimento" />
+              <SectionTitle icon="🎯" title={`Health Score da Conta (${activeSocialNetwork.name})`} subtitle="Baseado em engajamento, consistência e crescimento" />
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
                 {/* Gauge visual */}
                 <div style={{ position: 'relative', width: '200px', height: '200px' }}>
                   <svg viewBox="0 0 200 200" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
                     <circle cx="100" cy="100" r="85" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="18" />
-                    <circle cx="100" cy="100" r="85" fill="none" stroke="url(#gauge-gradient)" strokeWidth="18" strokeDasharray={`${0.25 * 534} ${534}`} strokeLinecap="round" />
+                    <circle cx="100" cy="100" r="85" fill="none" stroke="url(#gauge-gradient)" strokeWidth="18" strokeDasharray={`${(activeSocialNetwork.healthScore.total / 100) * 534} ${534}`} strokeLinecap="round" />
                     <defs>
                       <linearGradient id="gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                         <stop offset="0%" stopColor="#EF4444" />
@@ -1090,16 +1367,16 @@ export default function RelatoriosInfinity() {
                     </defs>
                   </svg>
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: '48px', fontWeight: 800, color: '#F59E0B' }}>25</span>
+                    <span style={{ fontSize: '48px', fontWeight: 800, color: '#F59E0B' }}>{activeSocialNetwork.healthScore.total}</span>
                     <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>/100</span>
                   </div>
                 </div>
                 <div style={{ textAlign: 'left' }}>
                   {[
-                    { label: 'Engajamento', score: 15, max: 30, color: '#EF4444' },
-                    { label: 'Consistência', score: 5, max: 30, color: '#EF4444' },
-                    { label: 'Crescimento', score: 3, max: 20, color: '#EF4444' },
-                    { label: 'Variedade de conteúdo', score: 2, max: 20, color: '#F59E0B' },
+                    { label: 'Engajamento', score: activeSocialNetwork.healthScore.engagement, max: 30, color: '#EF4444' },
+                    { label: 'Consistência', score: activeSocialNetwork.healthScore.consistency, max: 30, color: '#EF4444' },
+                    { label: 'Crescimento', score: activeSocialNetwork.healthScore.growth, max: 20, color: '#EF4444' },
+                    { label: 'Variedade de conteúdo', score: activeSocialNetwork.healthScore.variety, max: 20, color: '#F59E0B' },
                   ].map(item => (
                     <div key={item.label} style={{ marginBottom: '12px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
@@ -1118,12 +1395,12 @@ export default function RelatoriosInfinity() {
         )}
 
         {/* ═══════════ TAB: CONTENT (LIVE) ═══════════ */}
-        {activeTab === 'content' && (
+        {isSocialTab && currentSocialSubTab === 'content' && (
           <AnalyticsLiveTab />
         )}
 
         {/* ═══════════ TAB: TIMING ═══════════ */}
-        {activeTab === 'timing' && (
+        {isSocialTab && currentSocialSubTab === 'timing' && (
           <>
             {/* Day Analysis */}
             <SectionTitle icon="📅" title="Melhor Dia da Semana" subtitle="Média de likes por dia da semana" />
@@ -1244,7 +1521,7 @@ export default function RelatoriosInfinity() {
         )}
 
         {/* ═══════════ TAB: ACTIONS ═══════════ */}
-        {activeTab === 'actions' && (
+        {isSocialTab && currentSocialSubTab === 'actions' && (
           <>
             <SectionTitle icon="🎯" title="Plano de Ação Estratégico" subtitle="Recomendações priorizadas para os próximos 30 dias" />
             <div style={{ display: 'grid', gap: '12px', marginBottom: '48px' }}>
@@ -1343,7 +1620,7 @@ export default function RelatoriosInfinity() {
         )}
 
         {/* ═══════════ TAB: CAMPAIGN ═══════════ */}
-        {activeTab === 'campaign' && (
+        {isSocialTab && currentSocialSubTab === 'campaign' && (
           <>
             <SectionTitle icon="🚀" title="Campanha: Operação Reativação" subtitle="Calendário editorial Semanas 1 e 2 — De 0.66% para 3%+ em 30 dias" />
 
@@ -1468,7 +1745,7 @@ export default function RelatoriosInfinity() {
         )}
 
         {/* ═══════════ TAB: CREATIVES ═══════════ */}
-        {activeTab === 'creatives' && (
+        {isSocialTab && currentSocialSubTab === 'creatives' && (
           <>
             {/* Progress Counter */}
             {(() => {
@@ -1613,7 +1890,7 @@ export default function RelatoriosInfinity() {
         )}
 
         {/* ═══════════ TAB: AGENDA ═══════════ */}
-        {activeTab === 'agenda' && (() => {
+        {isSocialTab && currentSocialSubTab === 'agenda' && (() => {
           const days = ['Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo', 'Segunda'];
           const dayThemes = ['Provocação', 'Educação', 'Autoridade', 'Oferta', 'Educação', 'Provocação', 'Autoridade'];
           const dayColors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#00DB79', '#4ECDC4', '#FF6B6B', '#FFD93D'];
