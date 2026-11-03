@@ -20,18 +20,107 @@ import {
   MousePointerClick, 
   FileCheck, 
   Rocket, 
-  MessageSquare,
-  HelpCircle,
-  Code2,
-  Check,
-  Lock
+  MessageSquare, 
+  HelpCircle, 
+  Code2, 
+  Check, 
+  Lock,
+  ExternalLink
 } from 'lucide-react';
+
+interface ProjectCase {
+  id: string;
+  name: string;
+  niche: string;
+  category: string;
+  tag: string;
+  tagColor: string;
+  tagBg: string;
+  tagBorder: string;
+  url: string;
+  image: string;
+  objetivo: string;
+  description: string;
+  metrics: string;
+  speed: string;
+}
+
+const PROJECTS_SHOWCASE: ProjectCase[] = [
+  {
+    id: 'larissa-paz',
+    name: 'Dra. Larissa Paz Mendes',
+    niche: 'Oftalmologia & Saúde de Alto Padrão',
+    category: 'SAÚDE & CLÍNICA MÉDICA',
+    tag: 'Site Institucional',
+    tagColor: '#00DF81',
+    tagBg: 'rgba(0, 223, 129, 0.12)',
+    tagBorder: 'rgba(0, 223, 129, 0.35)',
+    url: 'https://larissapaz.com.br/',
+    image: '/projetos/larissapaz.png',
+    objetivo: 'Posicionamento de autoridade médica e agendamento de consultas pelo WhatsApp',
+    description: 'Site institucional de alta conversão para clínica médica e oftalmologia, com arquitetura visual refinada, apresentação de tratamentos e botão direto de WhatsApp.',
+    metrics: '+140% Agendamentos',
+    speed: '99/100'
+  },
+  {
+    id: 'sportsystem',
+    name: 'SportSystem Drag Racing',
+    niche: 'Automotivo & Peças de Arrancada',
+    category: 'AUTOMOTIVO & ALTA PERFORMANCE',
+    tag: 'E-commerce & Catálogo Técnico',
+    tagColor: '#F59E0B',
+    tagBg: 'rgba(245, 158, 11, 0.12)',
+    tagBorder: 'rgba(245, 158, 11, 0.35)',
+    url: 'https://sportsystem.com.br/',
+    image: '/projetos/sportsystem.png',
+    objetivo: 'Vender autopeças de competição para todo o Brasil com catálogo de alta velocidade',
+    description: 'Referência nacional em arrancada e motores VW a ar. Plataforma veloz com milhares de produtos cadastrados, filtros técnicos avançados e checkout ágil.',
+    metrics: 'Milhares de Vendas',
+    speed: '98/100'
+  },
+  {
+    id: 'joyce-fenolio',
+    name: 'Joyce Fenolio Joias',
+    niche: 'Joias & Semijoias de Luxo',
+    category: 'E-COMMERCE • JOALHERIA',
+    tag: 'Loja Virtual & Brand Experience',
+    tagColor: '#EC4899',
+    tagBg: 'rgba(236, 72, 153, 0.12)',
+    tagBorder: 'rgba(236, 72, 153, 0.35)',
+    url: 'https://www.joycefenolio.com.br/',
+    image: '/projetos/joycefenolio.png',
+    objetivo: 'Vender online para todo o Brasil com visual de joalheria de luxo e alta recompra',
+    description: 'Loja virtual sofisticada com experiência mobile impecável, fotos em alta definição, cálculo dinâmico de frete e integração direta para vendas pelo WhatsApp.',
+    metrics: 'Checkout Fluido',
+    speed: '99/100'
+  },
+  {
+    id: 'oxeego',
+    name: 'OxeeGo Supermercados',
+    niche: 'Supermercado & Retail Tech',
+    category: 'VAREJO TECH & DELIVERY OS',
+    tag: 'Supermercado & Delivery SaaS',
+    tagColor: '#00AAFF',
+    tagBg: 'rgba(0, 170, 255, 0.12)',
+    tagBorder: 'rgba(0, 170, 255, 0.35)',
+    url: 'https://infinityondemand.com.br/market#case-oxeego',
+    image: '/projetos/oxeego.png',
+    objetivo: 'Roteirização de entregas, app de separação com balança e compras no WhatsApp',
+    description: 'Ecossistema completo com mais de 4.800 entregas na Região Metropolitana do Recife, catálogo online inteligente, app de entregadores e integração fiscal.',
+    metrics: '+4.800 Entregas',
+    speed: '99/100'
+  }
+];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function SiteInstitucionalContent({ dict, locale }: { dict?: any; locale?: string }) {
   const currentLocale = locale || 'pt';
   const es = currentLocale === 'es';
   const prefix = currentLocale === 'pt' ? '' : `/${currentLocale}`;
+
+  // State para o Banner do Hero
+  const [heroActiveIndex, setHeroActiveIndex] = useState(0);
+  const activeHeroProject = PROJECTS_SHOWCASE[heroActiveIndex];
 
   // State para o Formulário Rápido de Orçamento
   const [nome, setNome] = useState('');
@@ -106,13 +195,13 @@ export default function SiteInstitucionalContent({ dict, locale }: { dict?: any;
       <Header dict={dict} locale={locale} />
 
       {/* ========================================================
-          HERO SECTION — HIGH PERFORMANCE & EXCLUSIVE DESIGN
+          HERO SECTION — COM BANNER CHAMATIVO INTERATIVO
           ======================================================== */}
       <section style={{
         position: 'relative',
         padding: '120px 24px 90px',
         overflow: 'hidden',
-        background: 'radial-gradient(circle at 15% 20%, rgba(0, 223, 129, 0.14) 0%, transparent 60%), radial-gradient(circle at 85% 50%, rgba(0, 170, 255, 0.14) 0%, transparent 60%)',
+        background: 'radial-gradient(circle at 15% 20%, rgba(0, 223, 129, 0.15) 0%, transparent 60%), radial-gradient(circle at 85% 50%, rgba(0, 170, 255, 0.15) 0%, transparent 60%)',
         borderBottom: '1px solid rgba(255, 255, 255, 0.06)'
       }}>
         {/* Subtle grid background */}
@@ -125,8 +214,8 @@ export default function SiteInstitucionalContent({ dict, locale }: { dict?: any;
           pointerEvents: 'none'
         }} />
 
-        <div style={{ maxWidth: '1240px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '56px', alignItems: 'center' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '48px', alignItems: 'center' }}>
             
             {/* Left Content */}
             <div>
@@ -155,14 +244,14 @@ export default function SiteInstitucionalContent({ dict, locale }: { dict?: any;
                 marginBottom: '24px',
                 color: '#ffffff'
               }}>
-                {es ? 'Sitios web que' : 'Sites que posicionam sua'}{' '}
+                {es ? 'Sitios web que' : 'Sites que posicionam sua'}{' ' }
                 <span style={{
                   background: 'linear-gradient(135deg, #00DF81 0%, #00AAFF 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent'
                 }}>
                   {es ? 'posicionan tu marca' : 'marca no topo'}
-                </span>{' '}
+                </span>{' ' }
                 {es ? 'y convierten visitantes en clientes.' : 'e convertem visitantes em clientes.'}
               </h1>
 
@@ -209,7 +298,7 @@ export default function SiteInstitucionalContent({ dict, locale }: { dict?: any;
                 </a>
 
                 <a
-                  href="#diferenciais"
+                  href="#projetos-no-ar"
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.05)',
                     color: '#ffffff',
@@ -231,7 +320,7 @@ export default function SiteInstitucionalContent({ dict, locale }: { dict?: any;
                     e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
                   }}
                 >
-                  {es ? 'Ver Diferenciales' : 'Conhecer Diferenciais'}
+                  {es ? 'Ver Proyectos en Vivo' : 'Ver Projetos no Ar ↓'}
                 </a>
               </div>
 
@@ -252,98 +341,522 @@ export default function SiteInstitucionalContent({ dict, locale }: { dict?: any;
 
             </div>
 
-            {/* Right Preview Card */}
+            {/* Right: BANNER CHAMATIVO COM SHOWCASE INTERATIVO */}
             <div style={{ position: 'relative' }}>
+              
+              {/* Glowing Aura Behind Card */}
               <div style={{
-                backgroundColor: '#0F172A',
-                borderRadius: '24px',
-                border: '1px solid rgba(0, 223, 129, 0.3)',
-                padding: '16px',
-                boxShadow: '0 24px 60px rgba(0, 0, 0, 0.7), 0 0 50px rgba(0, 223, 129, 0.15)'
+                position: 'absolute',
+                inset: '-10px',
+                background: 'linear-gradient(135deg, rgba(0, 223, 129, 0.3) 0%, rgba(0, 170, 255, 0.25) 50%, rgba(236, 72, 153, 0.2) 100%)',
+                borderRadius: '32px',
+                filter: 'blur(25px)',
+                opacity: 0.8,
+                zIndex: 0
+              }} />
+
+              <div style={{
+                position: 'relative',
+                zIndex: 1,
+                backgroundColor: '#0A1022',
+                borderRadius: '28px',
+                border: '1px solid rgba(0, 223, 129, 0.4)',
+                padding: '18px',
+                boxShadow: '0 28px 70px rgba(0, 0, 0, 0.8)'
               }}>
-                {/* Browser Mockup Top Bar */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px 14px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '#ff5f56' }} />
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '#ffbd2e' }} />
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: '#27c93f' }} />
-                  <div style={{
-                    flex: 1,
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    borderRadius: '8px',
-                    padding: '4px 12px',
-                    fontSize: '11px',
-                    color: 'rgba(255, 255, 255, 0.6)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    marginLeft: '12px'
-                  }}>
-                    <Lock size={10} color="#00DF81" />
-                    https://suaempresa.com.br
-                  </div>
+                
+                {/* Showcase Selector Tabs */}
+                <div style={{
+                  display: 'flex',
+                  gap: '8px',
+                  overflowX: 'auto',
+                  paddingBottom: '12px',
+                  marginBottom: '12px',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+                }}>
+                  {PROJECTS_SHOWCASE.map((proj, idx) => (
+                    <button
+                      key={proj.id}
+                      onClick={() => setHeroActiveIndex(idx)}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '999px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        whiteSpace: 'nowrap',
+                        border: heroActiveIndex === idx ? `1px solid ${proj.tagColor}` : '1px solid rgba(255, 255, 255, 0.1)',
+                        backgroundColor: heroActiveIndex === idx ? proj.tagBg : 'rgba(255, 255, 255, 0.03)',
+                        color: heroActiveIndex === idx ? proj.tagColor : 'rgba(255, 255, 255, 0.65)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {proj.name}
+                    </button>
+                  ))}
                 </div>
 
-                {/* Visual Mockup inside Window */}
+                {/* Browser Mockup Top Bar */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 12px 14px',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: 11, height: 11, borderRadius: '50%', backgroundColor: '#ff5f56' }} />
+                    <div style={{ width: 11, height: 11, borderRadius: '50%', backgroundColor: '#ffbd2e' }} />
+                    <div style={{ width: 11, height: 11, borderRadius: '50%', backgroundColor: '#27c93f' }} />
+                  </div>
+
+                  {/* Browser URL Input */}
+                  <div style={{
+                    flex: 1,
+                    maxWidth: '380px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '10px',
+                    padding: '6px 14px',
+                    fontSize: '11px',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    margin: '0 12px'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <Lock size={12} color="#00DF81" />
+                      <span style={{ color: 'rgba(255, 255, 255, 0.85)', fontWeight: 600 }}>{activeHeroProject.url}</span>
+                    </div>
+                    <span style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '4px', backgroundColor: 'rgba(0, 223, 129, 0.2)', color: '#00DF81', fontWeight: 800 }}>SSL ATIVO</span>
+                  </div>
+
+                  <a
+                    href={activeHeroProject.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      fontSize: '11px',
+                      color: activeHeroProject.tagColor,
+                      fontWeight: 700,
+                      textDecoration: 'none'
+                    }}
+                  >
+                    Abrir <ExternalLink size={12} />
+                  </a>
+                </div>
+
+                {/* Visual Viewport with Live Screenshot */}
                 <div style={{
                   marginTop: '14px',
-                  borderRadius: '16px',
+                  borderRadius: '18px',
                   overflow: 'hidden',
                   position: 'relative',
                   height: '360px',
-                  background: 'linear-gradient(180deg, #131E35 0%, #0B1120 100%)',
-                  padding: '24px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between'
+                  backgroundColor: '#000',
+                  border: '1px solid rgba(255, 255, 255, 0.08)'
                 }}>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'linear-gradient(135deg, #00DF81, #00AAFF)' }} />
-                        <span style={{ fontWeight: 800, fontSize: '14px', color: '#fff' }}>Sua Marca Premium</span>
-                      </div>
-                      <div style={{ display: 'flex', gap: '10px' }}>
-                        <div style={{ width: '40px', height: '6px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.2)' }} />
-                        <div style={{ width: '40px', height: '6px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.2)' }} />
-                        <div style={{ width: '40px', height: '6px', borderRadius: '4px', backgroundColor: 'rgba(255,255,255,0.2)' }} />
-                      </div>
-                    </div>
+                  <img
+                    src={activeHeroProject.image}
+                    alt={activeHeroProject.name}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      objectPosition: 'top center',
+                      transition: 'transform 0.5s ease'
+                    }}
+                  />
+                  
+                  {/* Subtle Gradient Shade on Bottom */}
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(to top, rgba(7, 11, 24, 0.9) 0%, rgba(7, 11, 24, 0.2) 40%, transparent 100%)'
+                  }} />
 
-                    <div style={{ width: '140px', height: '14px', borderRadius: '4px', background: 'rgba(0, 223, 129, 0.25)', marginBottom: '14px' }} />
-                    <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#fff', lineHeight: 1.25, marginBottom: '12px' }}>
-                      Autoridade Visual que Transforma seu Posicionamento
-                    </h3>
-                    <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.5, maxWidth: '380px' }}>
-                      Design de ponta, animações fluidas a 60 FPS e formulários integrados que direcionam o visitante direto para o WhatsApp da sua equipe.
-                    </p>
+                  {/* Top-Right Badge: 🟢 PROJETO NO AR */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '16px',
+                    right: '16px',
+                    backgroundColor: 'rgba(7, 11, 24, 0.9)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(0, 223, 129, 0.4)',
+                    borderRadius: '999px',
+                    padding: '6px 14px',
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    color: '#00DF81',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.6)'
+                  }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#00DF81', display: 'inline-block' }} />
+                    PROJETO NO AR
                   </div>
 
-                  {/* Mockup Floating Metrics */}
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '12px',
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                    padding: '14px',
-                    borderRadius: '12px',
-                    border: '1px solid rgba(255, 255, 255, 0.08)'
-                  }}>
+                  {/* Bottom Info inside Mockup */}
+                  <div style={{ position: 'absolute', bottom: '16px', left: '16px', right: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px' }}>
                     <div>
-                      <div style={{ fontSize: '11px', color: '#00DF81', fontWeight: 700 }}>TAXA DE CONVERSÃO</div>
-                      <div style={{ fontSize: '18px', fontWeight: 900, color: '#fff' }}>+180% Méd.</div>
+                      <div style={{ fontSize: '11px', fontWeight: 800, color: activeHeroProject.tagColor, letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+                        {activeHeroProject.category}
+                      </div>
+                      <div style={{ fontSize: '18px', fontWeight: 900, color: '#fff', marginTop: '2px' }}>
+                        {activeHeroProject.name}
+                      </div>
                     </div>
-                    <div>
-                      <div style={{ fontSize: '11px', color: '#00AAFF', fontWeight: 700 }}>GOOGLE PAGE SPEED</div>
-                      <div style={{ fontSize: '18px', fontWeight: 900, color: '#fff' }}>99 / 100 🟢</div>
+
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <div style={{
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        backgroundColor: 'rgba(7, 11, 24, 0.85)',
+                        backdropFilter: 'blur(8px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        color: '#00DF81'
+                      }}>
+                        ⚡ {activeHeroProject.speed} PageSpeed
+                      </div>
+                      <div style={{
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        backgroundColor: 'rgba(7, 11, 24, 0.85)',
+                        backdropFilter: 'blur(8px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        color: '#00AAFF'
+                      }}>
+                        📈 {activeHeroProject.metrics}
+                      </div>
                     </div>
                   </div>
 
                 </div>
 
+                {/* Banner Bottom Action Strip */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginTop: '14px',
+                  padding: '6px 8px 0'
+                }}>
+                  <div style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.65)' }}>
+                    <strong style={{ color: '#fff' }}>Arquitetura:</strong> Next.js 15 • TypeScript • Vercel Edge CDN
+                  </div>
+                  <a
+                    href="#projetos-no-ar"
+                    style={{
+                      fontSize: '12px',
+                      fontWeight: 800,
+                      color: '#00DF81',
+                      textDecoration: 'none'
+                    }}
+                  >
+                    Ver todos os projetos →
+                  </a>
+                </div>
+
               </div>
+
             </div>
 
           </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          SESSÃO "PROJETOS NO AR" — SITES QUE CONSTRUÍMOS E ESTÃO FUNCIONANDO AGORA
+          ======================================================== */}
+      <section id="projetos-no-ar" style={{
+        padding: '100px 24px',
+        backgroundColor: '#060A16',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Glow ambient background */}
+        <div style={{
+          position: 'absolute',
+          top: '0',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '800px',
+          height: '400px',
+          background: 'radial-gradient(circle, rgba(236, 72, 153, 0.08) 0%, rgba(0, 170, 255, 0.05) 50%, transparent 70%)',
+          pointerEvents: 'none'
+        }} />
+
+        <div style={{ maxWidth: '1280px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          
+          {/* Header da Sessão exatamente como solicitado na Imagem 3 */}
+          <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+            
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 18px',
+              borderRadius: '999px',
+              backgroundColor: 'rgba(236, 72, 153, 0.15)',
+              border: '1px solid rgba(236, 72, 153, 0.4)',
+              color: '#F472B6',
+              fontSize: '13px',
+              fontWeight: 800,
+              letterSpacing: '0.5px',
+              marginBottom: '16px'
+            }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#F472B6' }} />
+              Projetos no ar
+            </div>
+
+            <h2 style={{
+              fontSize: 'clamp(28px, 4.5vw, 46px)',
+              fontWeight: 900,
+              letterSpacing: '-1px',
+              marginBottom: '16px',
+              color: '#ffffff'
+            }}>
+              Sites que construímos —{' '}
+              <span style={{ color: '#00AAFF' }}>
+                e que estão funcionando agora
+              </span>
+            </h2>
+
+            <p style={{
+              fontSize: '16px',
+              color: 'rgba(255, 255, 255, 0.65)',
+              maxWidth: '780px',
+              margin: '0 auto',
+              lineHeight: 1.6
+            }}>
+              Entidade definida, schema interligado, indexação no Google e no Bing e medição configurada na entrega. Clique e abra no ar — não é imagem de proposta nem protótipo.
+            </p>
+
+          </div>
+
+          {/* Cards Grid dos 4 Projetos */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(290px, 100%), 1fr))',
+            gap: '24px'
+          }}>
+            {PROJECTS_SHOWCASE.map((project) => (
+              <div
+                key={project.id}
+                style={{
+                  backgroundColor: '#0D1527',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '22px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 12px 30px rgba(0, 0, 0, 0.4)'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = 'translateY(-6px)';
+                  e.currentTarget.style.borderColor = project.tagBorder;
+                  e.currentTarget.style.boxShadow = `0 18px 40px rgba(0, 0, 0, 0.6), 0 0 25px ${project.tagBg}`;
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.4)';
+                }}
+              >
+                <div>
+                  
+                  {/* Browser Window Chrome */}
+                  <div style={{
+                    padding: '10px 14px',
+                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <div style={{ width: 9, height: 9, borderRadius: '50%', backgroundColor: '#ff5f56' }} />
+                      <div style={{ width: 9, height: 9, borderRadius: '50%', backgroundColor: '#ffbd2e' }} />
+                      <div style={{ width: 9, height: 9, borderRadius: '50%', backgroundColor: '#27c93f' }} />
+                    </div>
+                    <span style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.4)', fontFamily: 'monospace' }}>
+                      {project.url.replace('https://', '').replace('/', '').split('#')[0]}
+                    </span>
+                  </div>
+
+                  {/* Screenshot Thumbnail with link */}
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'block',
+                      position: 'relative',
+                      height: '210px',
+                      overflow: 'hidden',
+                      backgroundColor: '#050811'
+                    }}
+                  >
+                    <img
+                      src={project.image}
+                      alt={project.name}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        objectPosition: 'top center',
+                        transition: 'transform 0.4s ease'
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.transform = 'scale(1.05)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }}
+                    />
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'linear-gradient(to top, rgba(13, 21, 39, 0.95) 0%, transparent 60%)',
+                      pointerEvents: 'none'
+                    }} />
+                  </a>
+
+                  {/* Card Body */}
+                  <div style={{ padding: '20px 22px 16px' }}>
+                    
+                    {/* Tag Pill Style Image 3 */}
+                    <div style={{
+                      display: 'inline-block',
+                      padding: '4px 12px',
+                      borderRadius: '6px',
+                      backgroundColor: project.tagBg,
+                      border: `1px solid ${project.tagBorder}`,
+                      color: project.tagColor,
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      marginBottom: '12px'
+                    }}>
+                      {project.tag}
+                    </div>
+
+                    {/* Category Label */}
+                    <div style={{
+                      fontSize: '11px',
+                      fontWeight: 800,
+                      letterSpacing: '0.8px',
+                      color: 'rgba(255, 255, 255, 0.45)',
+                      textTransform: 'uppercase',
+                      marginBottom: '4px'
+                    }}>
+                      {project.category}
+                    </div>
+
+                    {/* Title */}
+                    <h3 style={{
+                      fontSize: '19px',
+                      fontWeight: 800,
+                      color: '#ffffff',
+                      marginBottom: '12px',
+                      lineHeight: 1.3
+                    }}>
+                      {project.name}
+                    </h3>
+
+                    {/* Objetivo Label + Value */}
+                    <div style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      borderRadius: '10px',
+                      padding: '10px 12px',
+                      marginBottom: '12px'
+                    }}>
+                      <span style={{ fontSize: '11px', fontWeight: 800, color: '#00AAFF', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+                        OBJETIVO
+                      </span>
+                      <span style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.4, display: 'block' }}>
+                        {project.objetivo}
+                      </span>
+                    </div>
+
+                    {/* Description */}
+                    <p style={{
+                      fontSize: '13px',
+                      color: 'rgba(255, 255, 255, 0.6)',
+                      lineHeight: 1.6,
+                      marginBottom: '16px'
+                    }}>
+                      {project.description}
+                    </p>
+
+                  </div>
+                </div>
+
+                {/* Bottom Card Action Link */}
+                <div style={{
+                  padding: '0 22px 22px',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                  paddingTop: '14px'
+                }}>
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontSize: '14px',
+                      fontWeight: 700,
+                      color: project.tagColor,
+                      textDecoration: 'none',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.opacity = '0.8';
+                      e.currentTarget.style.transform = 'translateX(3px)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.opacity = '1';
+                      e.currentTarget.style.transform = 'translateX(0)';
+                    }}
+                  >
+                    Abrir {project.name} <ArrowRight size={14} />
+                  </a>
+                </div>
+
+              </div>
+            ))}
+          </div>
+
+          {/* Footer Notice exatamente como solicitado na Imagem 3 */}
+          <div style={{
+            textAlign: 'center',
+            marginTop: '48px',
+            paddingTop: '20px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.06)'
+          }}>
+            <p style={{
+              fontSize: '13px',
+              color: 'rgba(255, 255, 255, 0.55)',
+              fontWeight: 500
+            }}>
+              <strong style={{ color: '#fff' }}>Todos estão no ar e podem ser abertos agora.</strong> Nenhum é mockup, protótipo ou imagem de portfólio de terceiro.
+            </p>
+          </div>
+
         </div>
       </section>
 
