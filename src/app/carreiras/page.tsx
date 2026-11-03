@@ -23,7 +23,9 @@ import {
   X,
   ArrowRight,
   Clock,
-  Laptop
+  Laptop,
+  Check,
+  ChevronRight
 } from 'lucide-react';
 
 interface JobPosition {
@@ -136,7 +138,7 @@ const JOB_POSITIONS: JobPosition[] = [
     ],
     responsibilities: [
       'Prototipar fluxos e telas de alta fidelidade para os desenvolvedores',
-      'Evoluir o Design System oficial da Infinity On Demand',
+      'Evoluir o Design System oficial da Infinity OnDemand',
       'Criar peças visuais e criativos conceituais para lançamentos'
     ]
   },
@@ -146,7 +148,7 @@ const JOB_POSITIONS: JobPosition[] = [
     type: 'Remoto ou Recife',
     area: 'Atendimento',
     level: 'Júnior / Pleno',
-    remuneration: 'CLT + Benefícios',
+    remuneration: 'CLT / PJ + Benefícios',
     description: 'Apoio direto aos clientes e usuários das plataformas Infinity (Help Desk, treinamento de uso, acompanhamento de métricas de saúde do cliente e resolução ágil).',
     requirements: [
       'Comunicação empática, paciente e altamente resolutiva',
@@ -219,12 +221,12 @@ export default function CarreirasPage() {
     setLoadingSubmit(true);
 
     const textMsg = `👋 *Nova Candidatura - Infinity Carreiras*\n\n` +
-      `💼 *Vaga:* ${selectedJob.title}\n` +
+      `📌 *Vaga:* ${selectedJob.title}\n` +
       `👤 *Candidato(a):* ${candidateForm.nome}\n` +
       `📱 *WhatsApp:* ${candidateForm.telefone}\n` +
       `✉️ *E-mail:* ${candidateForm.email}\n` +
       (candidateForm.portfolio ? `🔗 *LinkedIn / Portfólio:* ${candidateForm.portfolio}\n` : '') +
-      (candidateForm.motivo ? `💬 *Sobre o candidato:* ${candidateForm.motivo}\n` : '');
+      (candidateForm.motivo ? `💡 *Sobre o candidato:* ${candidateForm.motivo}\n` : '');
 
     const waUrl = `https://wa.me/5581981280719?text=${encodeURIComponent(textMsg)}`;
 
@@ -244,7 +246,7 @@ export default function CarreirasPage() {
       <Header />
 
       {/* ========================================================
-          HERO BANNER - DESCONTRAÍDO ESTILO OXE AÇAÍ COM CORES INFINITY
+          HERO BANNER - ENERGIA, TALENTO & TECNOLOGIA
           ======================================================== */}
       <section style={{ 
         position: 'relative', 
@@ -309,10 +311,10 @@ export default function CarreirasPage() {
                 maxWidth: '560px', 
                 marginBottom: '36px' 
               }}>
-                Vem fazer parte do time que tá revolucionando ecossistemas de tecnologia, inteligência artificial e marketing de performance no Brasil. Aqui tem espaço pra quem tem energia, autonomia e paixão por construir!
+                Vem fazer parte do time que está revolucionando ecossistemas de tecnologia, inteligência artificial e marketing de performance no Brasil. Aqui tem espaço pra quem tem energia, autonomia e paixão por construir!
               </p>
 
-              {/* Search Bar Descontraída */}
+              {/* Search Bar */}
               <div style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -353,7 +355,9 @@ export default function CarreirasPage() {
                     alignItems: 'center',
                     gap: '6px',
                     transition: 'all 0.2s',
-                    boxShadow: '0 4px 16px rgba(0, 223, 129, 0.35)'
+                    boxShadow: '0 4px 16px rgba(0, 223, 129, 0.35)',
+                    cursor: 'pointer',
+                    border: 'none'
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.backgroundColor = '#00F58D';
@@ -369,7 +373,7 @@ export default function CarreirasPage() {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '13px', color: 'rgba(255, 255, 255, 0.55)' }}>
-                <span>🔥 {JOB_POSITIONS.length} vagas abertas</span>
+                <span>💼 {JOB_POSITIONS.length} vagas abertas</span>
                 <span>•</span>
                 <span>📍 Recife (PE) e 100% Remoto</span>
               </div>
@@ -389,7 +393,7 @@ export default function CarreirasPage() {
               }}>
                 <img 
                   src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=80" 
-                  alt="Profissional Infinity On Demand" 
+                  alt="Profissional Infinity OnDemand" 
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
                 <div style={{
@@ -398,7 +402,7 @@ export default function CarreirasPage() {
                   background: 'linear-gradient(to top, rgba(7, 11, 24, 0.85) 0%, transparent 55%)'
                 }} />
 
-                {/* Floating Badge (Estilo Oxe Açaí "+50 contratados") */}
+                {/* Floating Badge */}
                 <div style={{
                   position: 'absolute',
                   bottom: '24px',
@@ -505,7 +509,7 @@ export default function CarreirasPage() {
             }}
             >
               <div style={{ fontSize: '32px', marginBottom: '16px' }}>🤝</div>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '10px' }}>Acolhimento</h3>
+              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '10px' }}>Acolhimento Real</h3>
               <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.65)', lineHeight: 1.6 }}>
                 Aqui ninguém é só um número. Cada pessoa importa, cresce junto e tem voz ativa no time, visse?
               </p>
@@ -530,8 +534,8 @@ export default function CarreirasPage() {
               e.currentTarget.style.boxShadow = 'none';
             }}
             >
-              <div style={{ fontSize: '32px', marginBottom: '16px' }}>🔥</div>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '10px' }}>Energia</h3>
+              <div style={{ fontSize: '32px', marginBottom: '16px' }}>⚡</div>
+              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '10px' }}>Energia & Urgência</h3>
               <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.65)', lineHeight: 1.6 }}>
                 Trabalho duro com alegria. A gente não aceita o morno: faz acontecer com paixão, leveza e velocidade.
               </p>
@@ -556,10 +560,10 @@ export default function CarreirasPage() {
               e.currentTarget.style.boxShadow = 'none';
             }}
             >
-              <div style={{ fontSize: '32px', marginBottom: '16px' }}>💎</div>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '10px' }}>Qualidade</h3>
+              <div style={{ fontSize: '32px', marginBottom: '16px' }}>🎯</div>
+              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '10px' }}>Foco em Resultados</h3>
               <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.65)', lineHeight: 1.6 }}>
-                Do código limpo ao tráfego de milhões, excelência técnica e impacto no cliente é o nosso padrão.
+                Menos reunião inútil, mais entrega palpável. Gostamos de métricas claras e impacto comprovado no cliente.
               </p>
             </div>
 
@@ -583,9 +587,9 @@ export default function CarreirasPage() {
             }}
             >
               <div style={{ fontSize: '32px', marginBottom: '16px' }}>💡</div>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '10px' }}>Inovação</h3>
+              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '10px' }}>Inovação Contínua</h3>
               <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.65)', lineHeight: 1.6 }}>
-                Ideias novas são bem-vindas sempre. Aqui todo mundo tem voz para criar, testar e inovar.
+                Ideias novas são bem-vindas sempre. Aqui todo mundo tem espaço e autonomia para criar, testar e inovar.
               </p>
             </div>
 
@@ -595,62 +599,42 @@ export default function CarreirasPage() {
       </section>
 
       {/* ========================================================
-          BANNER FOTO EQUIPE - GENTE QUE FAZ ACONTECER, VISSE!
+          BENEFÍCIOS DE TRABALHAR NA INFINITY
           ======================================================== */}
       <section style={{ padding: '80px 20px', maxWidth: '1240px', margin: '0 auto' }}>
-        <div style={{ 
-          position: 'relative', 
-          width: '100%', 
-          height: '420px', 
-          borderRadius: '32px', 
-          overflow: 'hidden',
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.5)',
-          border: '1px solid rgba(255, 255, 255, 0.1)'
-        }}>
-          <img 
-            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80" 
-            alt="Time Infinity On Demand" 
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-          {/* Overlay */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(to top, rgba(7, 11, 24, 0.95) 0%, rgba(7, 11, 24, 0.3) 60%, transparent 100%)'
-          }} />
+        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <div style={{ fontSize: '12px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#00DF81', marginBottom: '10px' }}>VANTAGENS & BENEFÍCIOS</div>
+          <h2 style={{ fontSize: '34px', fontWeight: 900 }}>Por que fazer carreira com a gente?</h2>
+        </div>
 
-          {/* Text in bottom-left */}
-          <div style={{ position: 'absolute', bottom: '40px', left: '40px', right: '40px' }}>
-            <div style={{ 
-              fontSize: '13px', 
-              fontWeight: 800, 
-              letterSpacing: '1px', 
-              textTransform: 'uppercase', 
-              color: '#F59E0B', 
-              marginBottom: '8px' 
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
+          {[
+            { icon: '🏠', title: '100% Remoto ou Híbrido', desc: 'Trabalhe de onde rende melhor. Sem trânsito diário ou perda de tempo.' },
+            { icon: '⏰', title: 'Horários Flexíveis', desc: 'Foco em entregas e metas atingidas, não em horas sentado na cadeira.' },
+            { icon: '💰', title: 'Bonificação Agressiva', desc: 'Participação em resultados, comissões em vendas e bônus por entregas de impacto.' },
+            { icon: '🎓', title: 'Acesso Livre à Infinity Academy', desc: 'Cursos, mentorias e workshops práticos de IA, engenharia e negócios digitais.' },
+            { icon: '🚀', title: 'Tecnologia de Vanguarda', desc: 'Trabalhe com o que há de mais moderno: Next.js 15, Agentes de IA, Supabase e automações.' },
+            { icon: '📈', title: 'Plano de Crescimento Rápido', desc: 'Empresa em crescimento acelerado. Quem entrega resultados é promovido com rapidez.' }
+          ].map((b, i) => (
+            <div key={i} style={{
+              backgroundColor: '#0F172A',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '16px',
+              padding: '24px',
+              transition: 'all 0.2s',
             }}>
-              NOSSO TIME
+              <div style={{ fontSize: '28px', marginBottom: '12px' }}>{b.icon}</div>
+              <h4 style={{ fontSize: '17px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>{b.title}</h4>
+              <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', lineHeight: 1.5 }}>{b.desc}</p>
             </div>
-            <h3 style={{ 
-              fontSize: 'clamp(28px, 4vw, 44px)', 
-              fontWeight: 900, 
-              color: '#ffffff',
-              letterSpacing: '-1px',
-              lineHeight: 1.2
-            }}>
-              Gente que faz acontecer, <span style={{ color: '#00DF81' }}>visse!</span>
-            </h3>
-            <p style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.75)', marginTop: '8px', maxWidth: '600px' }}>
-              Uma equipe multidisciplinar de engenheiros, copywriters, gestores e estrategistas construindo as soluções digitais mais velozes do mercado.
-            </p>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* ========================================================
-          LISTA DE VAGAS ABERTAS COM FILTROS (ESTILO INNOVEDA)
+          LISTA DE VAGAS ABERTAS COM FILTROS
           ======================================================== */}
-      <section ref={vagasSectionRef} style={{ padding: '40px 20px 100px', maxWidth: '1200px', margin: '0 auto' }}>
+      <section ref={vagasSectionRef} style={{ padding: '60px 20px 100px', maxWidth: '1200px', margin: '0 auto' }}>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '36px', flexWrap: 'wrap', gap: '20px' }}>
           <div>
@@ -676,6 +660,7 @@ export default function CarreirasPage() {
                   backgroundColor: selectedArea === area ? '#00DF81' : 'rgba(255, 255, 255, 0.05)',
                   color: selectedArea === area ? '#070B18' : 'rgba(255, 255, 255, 0.7)',
                   border: selectedArea === area ? '1px solid #00DF81' : '1px solid rgba(255, 255, 255, 0.1)',
+                  cursor: 'pointer'
                 }}
               >
                 {area}
@@ -688,160 +673,175 @@ export default function CarreirasPage() {
         {filteredJobs.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: '#0F172A', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.08)' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
-            <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>Nenhuma vaga encontrada para sua busca</h3>
-            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', marginBottom: '20px' }}>Tente buscar com outros termos ou selecione outra categoria.</p>
+            <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>Nenhuma vaga encontrada para essa busca</h3>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', marginBottom: '20px' }}>Tente buscar por outro termo ou selecione &apos;Todas&apos; nas áreas.</p>
             <button 
-              onClick={() => { setSearchTerm(''); setSelectedArea('Todas'); }}
-              style={{ padding: '10px 20px', backgroundColor: '#00DF81', color: '#070B18', borderRadius: '10px', fontWeight: 700, fontSize: '13px' }}
+              onClick={() => { setSelectedArea('Todas'); setSearchTerm(''); }}
+              style={{ backgroundColor: '#00DF81', color: '#070B18', padding: '10px 20px', borderRadius: '10px', fontWeight: 700, border: 'none', cursor: 'pointer' }}
             >
-              Limpar Filtros
+              Limpar filtros
             </button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gap: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {filteredJobs.map((job) => (
-              <div
+              <div 
                 key={job.id}
                 style={{
                   backgroundColor: '#0F172A',
                   border: '1px solid rgba(255, 255, 255, 0.08)',
                   borderRadius: '20px',
-                  padding: '32px',
+                  padding: '28px 32px',
                   display: 'flex',
-                  flexDirection: 'column',
-                  gap: '20px',
-                  transition: 'all 0.25s ease',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '24px',
+                  transition: 'all 0.25s ease'
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = 'rgba(0, 223, 129, 0.4)';
-                  e.currentTarget.style.transform = 'translateY(-3px)';
-                  e.currentTarget.style.boxShadow = '0 16px 40px rgba(0, 0, 0, 0.35)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.3)';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.2)';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                      <span style={{ 
-                        fontSize: '11px', 
-                        fontWeight: 800, 
-                        padding: '4px 10px', 
-                        borderRadius: '6px', 
-                        backgroundColor: 'rgba(0, 223, 129, 0.15)', 
-                        color: '#00DF81',
-                        letterSpacing: '0.5px',
-                        textTransform: 'uppercase'
-                      }}>
-                        {job.area}
-                      </span>
-                      <span style={{ 
-                        fontSize: '11px', 
-                        fontWeight: 700, 
-                        padding: '4px 10px', 
-                        borderRadius: '6px', 
-                        backgroundColor: 'rgba(0, 170, 255, 0.15)', 
-                        color: '#00AAFF',
-                        letterSpacing: '0.5px'
-                      }}>
-                        {job.level}
-                      </span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: 'rgba(255, 255, 255, 0.6)' }}>
-                        <MapPin size={13} color="#00DF81" /> {job.type}
-                      </span>
-                    </div>
-
-                    <h3 style={{ fontSize: '22px', fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>
-                      {job.title}
-                    </h3>
+                <div style={{ flex: '1 1 500px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                    <span style={{ 
+                      fontSize: '11px', 
+                      fontWeight: 800, 
+                      textTransform: 'uppercase', 
+                      letterSpacing: '0.5px',
+                      padding: '4px 10px', 
+                      borderRadius: '6px', 
+                      backgroundColor: job.area === 'Tecnologia' ? 'rgba(0, 223, 129, 0.15)' : job.area === 'Marketing' ? 'rgba(0, 170, 255, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                      color: job.area === 'Tecnologia' ? '#00DF81' : job.area === 'Marketing' ? '#00AAFF' : '#F59E0B'
+                    }}>
+                      {job.area}
+                    </span>
+                    <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)' }}>•</span>
+                    <span style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.7)' }}>{job.type}</span>
+                    <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)' }}>•</span>
+                    <span style={{ fontSize: '13px', color: '#00DF81', fontWeight: 600 }}>{job.remuneration}</span>
                   </div>
 
+                  <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '10px' }}>{job.title}</h3>
+                  <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.65)', lineHeight: 1.6, maxWidth: '750px', marginBottom: '16px' }}>
+                    {job.description}
+                  </p>
+
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {job.requirements.slice(0, 3).map((req, rIdx) => (
+                      <span key={rIdx} style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '6px', backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)' }}>
+                        ✓ {req}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <button
                     onClick={() => handleOpenApplyModal(job)}
                     style={{
-                      padding: '12px 28px',
-                      borderRadius: '12px',
                       backgroundColor: '#00DF81',
                       color: '#070B18',
                       fontWeight: 800,
                       fontSize: '14px',
+                      padding: '14px 28px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
-                      cursor: 'pointer',
                       transition: 'all 0.2s',
                       boxShadow: '0 4px 16px rgba(0, 223, 129, 0.25)'
                     }}
                     onMouseEnter={e => {
                       e.currentTarget.style.backgroundColor = '#00F58D';
-                      e.currentTarget.style.transform = 'scale(1.03)';
+                      e.currentTarget.style.transform = 'scale(1.02)';
                     }}
                     onMouseLeave={e => {
                       e.currentTarget.style.backgroundColor = '#00DF81';
                       e.currentTarget.style.transform = 'scale(1)';
                     }}
                   >
-                    Candidatar-se <ArrowRight size={16} />
+                    Quero me candidatar <ArrowRight size={16} />
                   </button>
                 </div>
-
-                <p style={{ fontSize: '15px', color: 'rgba(255, 255, 255, 0.75)', lineHeight: 1.65 }}>
-                  {job.description}
-                </p>
-
-                {/* Requirements Badges */}
-                <div>
-                  <div style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', marginBottom: '8px' }}>
-                    Requisitos & Habilidades:
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    {job.requirements.map((req, i) => (
-                      <span
-                        key={i}
-                        style={{
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          padding: '6px 12px',
-                          borderRadius: '8px',
-                          backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
-                          color: '#E2E8F0',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px'
-                        }}
-                      >
-                        <CheckCircle2 size={12} color="#00DF81" /> {req}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
               </div>
             ))}
           </div>
         )}
 
+        {/* Banco de Talentos / Espontâneo */}
+        <div style={{ 
+          marginTop: '60px', 
+          backgroundColor: 'linear-gradient(135deg, rgba(0, 223, 129, 0.08) 0%, rgba(0, 170, 255, 0.08) 100%)', 
+          border: '1px dashed rgba(0, 223, 129, 0.4)', 
+          borderRadius: '24px', 
+          padding: '40px 32px',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '32px', marginBottom: '12px' }}>✨</div>
+          <h3 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Não achou a sua vaga ideal?</h3>
+          <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '15px', maxWidth: '600px', margin: '0 auto 24px', lineHeight: 1.6 }}>
+            Cadastre seu perfil no nosso Banco de Talentos. Quando abrir uma vaga com a sua cara, entraremos em contato primeiro com você!
+          </p>
+          <a
+            href="https://wa.me/5581981280719?text=Ol%C3%A1!%20Gostaria%20de%20deixar%20meu%20perfil%20no%20Banco%20de%20Talentos%20da%20Infinity%20OnDemand."
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              color: '#fff',
+              fontWeight: 700,
+              fontSize: '15px',
+              padding: '14px 28px',
+              borderRadius: '12px',
+              textDecoration: 'none',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.backgroundColor = '#00DF81';
+              e.currentTarget.style.color = '#070B18';
+              e.currentTarget.style.borderColor = '#00DF81';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+              e.currentTarget.style.color = '#fff';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+            }}
+          >
+            Enviar Perfil para Banco de Talentos 🚀
+          </a>
+        </div>
+
       </section>
 
       {/* ========================================================
-          MODAL DE CANDIDATURA DIRETA
+          MODAL DE CANDIDATURA
           ======================================================== */}
       {isModalOpen && selectedJob && (
         <div style={{
           position: 'fixed',
           inset: 0,
-          backgroundColor: 'rgba(7, 11, 24, 0.85)',
-          backdropFilter: 'blur(10px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          backdropFilter: 'blur(8px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           padding: '20px',
-          zIndex: 1000
+          zIndex: 9999
         }}>
           <div style={{
             backgroundColor: '#0F172A',
@@ -852,22 +852,21 @@ export default function CarreirasPage() {
             maxHeight: '90vh',
             overflowY: 'auto',
             padding: '36px',
-            position: 'relative',
-            boxShadow: '0 24px 60px rgba(0, 0, 0, 0.6)'
+            boxShadow: '0 24px 60px rgba(0, 0, 0, 0.8)',
+            position: 'relative'
           }}>
-            
-            {/* Close Button */}
-            <button 
+            <button
               onClick={handleCloseModal}
               style={{
                 position: 'absolute',
                 top: '20px',
                 right: '20px',
+                background: 'rgba(255,255,255,0.08)',
+                border: 'none',
+                color: '#fff',
                 width: '36px',
                 height: '36px',
                 borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -879,12 +878,10 @@ export default function CarreirasPage() {
 
             {submittedSuccess ? (
               <div style={{ textAlign: 'center', padding: '30px 10px' }}>
-                <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(0, 223, 129, 0.15)', color: '#00DF81', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-                  <CheckCircle2 size={36} />
-                </div>
-                <h3 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '12px' }}>Candidatura Enviada!</h3>
-                <p style={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '15px', lineHeight: 1.6, marginBottom: '24px' }}>
-                  Recebemos seus dados e abrimos o canal de contato no WhatsApp com nosso RH. Nosso time analisará seu perfil com carinho, visse!
+                <div style={{ fontSize: '56px', marginBottom: '16px' }}>🎉</div>
+                <h3 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Candidatura Enviada!</h3>
+                <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '15px', lineHeight: 1.6, marginBottom: '24px' }}>
+                  Recebemos seus dados e abrimos a conversa no WhatsApp para agilizar o contato com o time de contratação.
                 </p>
                 <button
                   onClick={handleCloseModal}
@@ -893,8 +890,9 @@ export default function CarreirasPage() {
                     color: '#070B18',
                     padding: '12px 28px',
                     borderRadius: '12px',
-                    fontWeight: 700,
-                    fontSize: '14px'
+                    fontWeight: 800,
+                    border: 'none',
+                    cursor: 'pointer'
                   }}
                 >
                   Concluir
@@ -902,141 +900,127 @@ export default function CarreirasPage() {
               </div>
             ) : (
               <div>
-                <div style={{ 
-                  fontSize: '11px', 
-                  fontWeight: 800, 
-                  color: '#00DF81', 
-                  textTransform: 'uppercase', 
-                  letterSpacing: '1px', 
-                  marginBottom: '6px' 
-                }}>
-                  CANDIDATURA DIRETA
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#00DF81', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>
+                  CANDIDATURA PARA VAGA
                 </div>
-
-                <h3 style={{ fontSize: '22px', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>
+                <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '6px', color: '#fff' }}>
                   {selectedJob.title}
-                </h3>
+                </h2>
                 <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.55)', marginBottom: '24px' }}>
-                  {selectedJob.type} • {selectedJob.area}
+                  {selectedJob.type} • {selectedJob.area} • {selectedJob.remuneration}
                 </p>
 
-                <form onSubmit={handleSubmitCandidate} style={{ display: 'grid', gap: '16px' }}>
+                <form onSubmit={handleSubmitCandidate} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'rgba(255,255,255,0.85)' }}>
-                      Nome Completo *
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: '6px' }}>
+                      Seu Nome Completo *
                     </label>
-                    <input 
-                      type="text" 
-                      required 
-                      placeholder="Ex: João da Silva"
+                    <input
+                      type="text"
+                      required
+                      placeholder="Ex: Maria Silva"
                       value={candidateForm.nome}
-                      onChange={e => setCandidateForm(prev => ({ ...prev, nome: e.target.value }))}
+                      onChange={e => setCandidateForm({ ...candidateForm, nome: e.target.value })}
                       style={{
                         width: '100%',
-                        padding: '12px 16px',
+                        backgroundColor: '#1E293B',
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '12px',
-                        backgroundColor: '#070B18',
-                        border: '1px solid rgba(255, 255, 255, 0.12)',
+                        padding: '12px 16px',
                         color: '#fff',
                         fontSize: '14px',
-                        outline: 'none',
-                        fontFamily: 'inherit'
+                        outline: 'none'
                       }}
                     />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'rgba(255,255,255,0.85)' }}>
-                        E-mail *
-                      </label>
-                      <input 
-                        type="email" 
-                        required 
-                        placeholder="seu@email.com"
-                        value={candidateForm.email}
-                        onChange={e => setCandidateForm(prev => ({ ...prev, email: e.target.value }))}
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          borderRadius: '12px',
-                          backgroundColor: '#070B18',
-                          border: '1px solid rgba(255, 255, 255, 0.12)',
-                          color: '#fff',
-                          fontSize: '14px',
-                          outline: 'none',
-                          fontFamily: 'inherit'
-                        }}
-                      />
-                    </div>
-
-                    <div>
-                      <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'rgba(255,255,255,0.85)' }}>
+                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: '6px' }}>
                         WhatsApp *
                       </label>
-                      <input 
-                        type="tel" 
-                        required 
-                        placeholder="(81) 98888-8888"
+                      <input
+                        type="text"
+                        required
+                        placeholder="(81) 99999-9999"
                         value={candidateForm.telefone}
-                        onChange={e => setCandidateForm(prev => ({ ...prev, telefone: formatPhone(e.target.value) }))}
+                        onChange={e => setCandidateForm({ ...candidateForm, telefone: formatPhone(e.target.value) })}
                         style={{
                           width: '100%',
-                          padding: '12px 16px',
+                          backgroundColor: '#1E293B',
+                          border: '1px solid rgba(255,255,255,0.1)',
                           borderRadius: '12px',
-                          backgroundColor: '#070B18',
-                          border: '1px solid rgba(255, 255, 255, 0.12)',
+                          padding: '12px 16px',
                           color: '#fff',
                           fontSize: '14px',
-                          outline: 'none',
-                          fontFamily: 'inherit'
+                          outline: 'none'
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: '6px' }}>
+                        E-mail *
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="seu@email.com"
+                        value={candidateForm.email}
+                        onChange={e => setCandidateForm({ ...candidateForm, email: e.target.value })}
+                        style={{
+                          width: '100%',
+                          backgroundColor: '#1E293B',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          borderRadius: '12px',
+                          padding: '12px 16px',
+                          color: '#fff',
+                          fontSize: '14px',
+                          outline: 'none'
                         }}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'rgba(255,255,255,0.85)' }}>
-                      Link do LinkedIn, Portfólio ou GitHub
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: '6px' }}>
+                      Link do LinkedIn, GitHub ou Portfólio
                     </label>
-                    <input 
-                      type="url" 
-                      placeholder="https://linkedin.com/in/seuperfil ou seu site"
+                    <input
+                      type="url"
+                      placeholder="https://linkedin.com/in/seu-perfil"
                       value={candidateForm.portfolio}
-                      onChange={e => setCandidateForm(prev => ({ ...prev, portfolio: e.target.value }))}
+                      onChange={e => setCandidateForm({ ...candidateForm, portfolio: e.target.value })}
                       style={{
                         width: '100%',
-                        padding: '12px 16px',
+                        backgroundColor: '#1E293B',
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '12px',
-                        backgroundColor: '#070B18',
-                        border: '1px solid rgba(255, 255, 255, 0.12)',
+                        padding: '12px 16px',
                         color: '#fff',
                         fontSize: '14px',
-                        outline: 'none',
-                        fontFamily: 'inherit'
+                        outline: 'none'
                       }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px', color: 'rgba(255,255,255,0.85)' }}>
-                      Por que você quer construir o futuro na Infinity? (Opcional)
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', marginBottom: '6px' }}>
+                      Por que você quer trabalhar na Infinity?
                     </label>
-                    <textarea 
+                    <textarea
                       rows={3}
-                      placeholder="Conte um pouco da sua trajetória e o que te motiva..."
+                      placeholder="Conte um pouco sobre você, seus projetos e expectativas..."
                       value={candidateForm.motivo}
-                      onChange={e => setCandidateForm(prev => ({ ...prev, motivo: e.target.value }))}
+                      onChange={e => setCandidateForm({ ...candidateForm, motivo: e.target.value })}
                       style={{
                         width: '100%',
-                        padding: '12px 16px',
+                        backgroundColor: '#1E293B',
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '12px',
-                        backgroundColor: '#070B18',
-                        border: '1px solid rgba(255, 255, 255, 0.12)',
+                        padding: '12px 16px',
                         color: '#fff',
                         fontSize: '14px',
                         outline: 'none',
-                        fontFamily: 'inherit',
                         resize: 'vertical'
                       }}
                     />
@@ -1046,28 +1030,31 @@ export default function CarreirasPage() {
                     type="submit"
                     disabled={loadingSubmit}
                     style={{
-                      marginTop: '10px',
-                      padding: '14px',
-                      borderRadius: '12px',
                       backgroundColor: '#00DF81',
                       color: '#070B18',
                       fontWeight: 800,
                       fontSize: '15px',
+                      padding: '16px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      marginTop: '8px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '8px',
-                      cursor: loadingSubmit ? 'not-allowed' : 'pointer',
-                      opacity: loadingSubmit ? 0.7 : 1,
-                      boxShadow: '0 4px 20px rgba(0, 223, 129, 0.35)'
+                      boxShadow: '0 4px 20px rgba(0, 223, 129, 0.35)',
+                      opacity: loadingSubmit ? 0.7 : 1
                     }}
                   >
-                    {loadingSubmit ? 'Enviando Candidatura...' : 'Enviar Candidatura Agora →'}
+                    {loadingSubmit ? 'Enviando...' : 'Enviar Minha Candidatura 🚀'}
                   </button>
+                  <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', textAlign: 'center' }}>
+                    🔒 Seus dados são confidenciais e utilizados exclusivamente para este processo seletivo.
+                  </p>
                 </form>
               </div>
             )}
-
           </div>
         </div>
       )}

@@ -13,6 +13,11 @@ const nonLocalizedRoutes = [
   '/aluno',
   '/forms',
   '/f',
+  '/carreiras',
+  '/vagas',
+  '/privacy',
+  '/site-institucional',
+  '/sites',
 ];
 
 function getLocaleFromPath(pathname: string): string | null {
@@ -68,7 +73,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Skip non-localized routes (landing de forms na home, admin panels, dashboards, /f)
+  // Skip non-localized routes (landing de forms na home, admin panels, dashboards, /f, carreiras, vagas, privacy, site-institucional)
   if (nonLocalizedRoutes.some(route => pathname.startsWith(route))) {
     return NextResponse.next();
   }
