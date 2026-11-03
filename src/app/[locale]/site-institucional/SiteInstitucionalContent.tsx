@@ -23,7 +23,8 @@ import {
   MessageSquare,
   HelpCircle,
   Code2,
-  Check
+  Check,
+  Lock
 } from 'lucide-react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
