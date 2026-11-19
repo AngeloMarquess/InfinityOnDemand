@@ -326,7 +326,7 @@ export default function SocialAutomationsTab() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
               <span style={{ fontSize: '24px' }}>🤖</span>
               <h2 style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '-0.5px' }}>
-                Social Automations & ManyChat Engine
+                Infinity Social Flow & Direct Bot
               </h2>
               <span
                 style={{
@@ -344,7 +344,7 @@ export default function SocialAutomationsTab() {
               </span>
             </div>
             <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', maxWidth: '780px', lineHeight: 1.5 }}>
-              Central de automação estilo ManyChat para <strong>Instagram, Facebook, TikTok e YouTube</strong>. Resposta automática a comentários com envio instantâneo de DM personalizada, boas-vindas automáticas para novos seguidores e conformidade estrita da janela de 24h.
+              Central de automação proprietária da Infinity para <strong>Instagram, Facebook, TikTok e YouTube</strong>. Resposta automática a comentários com envio instantâneo de DM personalizada, boas-vindas automáticas para novos seguidores e conformidade estrita da janela de 24h.
             </p>
           </div>
 
@@ -443,7 +443,7 @@ export default function SocialAutomationsTab() {
           { id: 'simulator', label: '📱 Simulador ao Vivo' },
           { id: 'compliance', label: '🛡️ Monitor de Conformidade 24h' },
           { id: 'contacts', label: '👥 Contatos & Leads', count: contacts.length },
-          { id: 'settings', label: '⚙️ Conexões & API ManyChat' },
+          { id: 'settings', label: '⚙️ Conexões & Integrações' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -1315,11 +1315,11 @@ export default function SocialAutomationsTab() {
       )}
 
       {/* ══════════════════════════════════════════════════════════
-          SUBTAB 5: CONEXÕES & API MANYCHAT
+          SUBTAB 5: CONEXÕES & INTEGRAÇÕES INFINITY
       ══════════════════════════════════════════════════════════ */}
       {subTab === 'settings' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Card ManyChat - Conforme Print do Usuário */}
+          {/* Card de Integração de Mensageria */}
           <div
             style={{
               background: 'rgba(20,24,32,0.7)',
@@ -1330,13 +1330,13 @@ export default function SocialAutomationsTab() {
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ background: '#0070F3', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
-                  M
+                <div style={{ background: 'linear-gradient(135deg, #00DB79, #00AAFF)', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#000' }}>
+                  ∞
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 700 }}>Conexão com API Pública ManyChat</h3>
+                  <h3 style={{ fontSize: '16px', fontWeight: 700 }}>Integração de Mensageria & Token de API</h3>
                   <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>
-                    Permite sincronizar os contatos e disparos diretamente com a sua conta ManyChat (Angelo Brito).
+                    Permite sincronizar os contatos e disparos diretamente com a sua conta oficial (Angelo Brito).
                   </p>
                 </div>
               </div>
@@ -1357,12 +1357,12 @@ export default function SocialAutomationsTab() {
 
             <div style={{ marginBottom: '14px' }}>
               <label style={{ display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.6)', marginBottom: '6px', fontWeight: 600 }}>
-                Sua Chave API do ManyChat (Bearer Token)
+                Token de API de Mensageria (Bearer Token)
               </label>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <input
                   type="password"
-                  placeholder="Cole aqui a chave gerada no ManyChat..."
+                  placeholder="Cole aqui o token de API..."
                   value={manychatKeyInput}
                   onChange={(e) => setManychatKeyInput(e.target.value)}
                   style={{
@@ -1380,8 +1380,8 @@ export default function SocialAutomationsTab() {
                   onClick={handleSaveManychat}
                   disabled={testingManychat}
                   style={{
-                    background: 'linear-gradient(135deg, #0070F3, #00DB79)',
-                    color: '#fff',
+                    background: 'linear-gradient(135deg, #00DB79, #00AAFF)',
+                    color: '#08090b',
                     border: 'none',
                     borderRadius: '10px',
                     padding: '0 20px',
@@ -1412,7 +1412,7 @@ export default function SocialAutomationsTab() {
             )}
 
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
-              💡 Como obter: No ManyChat, vá em <strong>Configurações → Configurações da API → Gerar A Sua Chave API</strong> e cole acima.
+              💡 Como obter: No painel de mensageria, gere o seu Token de API com escopo de perfil e cole acima.
             </div>
           </div>
 
@@ -1426,10 +1426,10 @@ export default function SocialAutomationsTab() {
             }}
           >
             <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '6px' }}>
-              🔗 Webhook Universal da Infinity (Meta & ManyChat)
+              🔗 Webhook Universal da Infinity (Meta & Redes Sociais)
             </h3>
             <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginBottom: '14px' }}>
-              Cole esta URL no painel do <strong>ManyChat Webhook</strong> ou <strong>Meta for Developers</strong> para receber os comentários e mensagens automaticamente.
+              Cole esta URL no painel do <strong>Meta for Developers</strong> ou gerenciador de Webhook para receber os comentários e mensagens automaticamente.
             </p>
 
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>

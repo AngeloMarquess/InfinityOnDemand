@@ -789,7 +789,7 @@ export default function RelatoriosInfinity() {
 
   const tabs = [
     { id: 'overview' as const, label: 'Visão Social Media', icon: '📱' },
-    { id: 'automations' as const, label: 'Automações & ManyChat', icon: '🤖' },
+    { id: 'automations' as const, label: 'Automações Infinity', icon: '🤖' },
     { id: 'analytics' as const, label: 'Analytics', icon: '☁️' },
     { id: 'formularios' as const, label: 'Formulários & Leads', icon: '📋' },
     { id: 'campanhas_ads' as const, label: 'Campanhas', icon: '💰' },
@@ -1296,7 +1296,7 @@ export default function RelatoriosInfinity() {
                 { id: 'campaign', label: 'Campanha Social', icon: '🚀' },
                 { id: 'creatives', label: 'Criativos', icon: '🎨' },
                 { id: 'agenda', label: 'Agenda & Posts', icon: '📅' },
-                { id: 'automations_shortcut', label: 'Automações (ManyChat)', icon: '🤖' },
+                { id: 'automations_shortcut', label: 'Automações Infinity', icon: '🤖' },
               ].map(sub => {
                 const isCurrent = sub.id === 'automations_shortcut' ? activeTab === 'automations' : currentSocialSubTab === sub.id;
                 return (
@@ -2304,7 +2304,7 @@ export default function RelatoriosInfinity() {
           );
         })()}
 
-        {/* ═══════════ TAB: AUTOMAÇÕES SOCIAL & MANYCHAT ═══════════ */}
+        {/* ═══════════ TAB: AUTOMAÇÕES SOCIAL INFINITY ═══════════ */}
         {activeTab === 'automations' && <SocialAutomationsTab />}
 
         {activeTab === 'analytics' && <CloudflareAnalyticsTab />}
