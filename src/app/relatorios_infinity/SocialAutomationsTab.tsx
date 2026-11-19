@@ -25,6 +25,8 @@ export default function SocialAutomationsTab() {
   // Modal de edição / criação
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editingRule, setEditingRule] = useState<Partial<SocialAutomationRule> | null>(null);
+  const [keywordsInput, setKeywordsInput] = useState<string>('');
+  const [publicRepliesInput, setPublicRepliesInput] = useState<string>('');
   const [savingRule, setSavingRule] = useState<boolean>(false);
 
   // Estado do Simulador
@@ -141,29 +143,33 @@ export default function SocialAutomationsTab() {
 
   // Abrir modal de criação
   const handleOpenCreateModal = (template?: Partial<SocialAutomationRule>) => {
-    setEditingRule(
-      template || {
-        name: 'Nova Automação de Comentário',
-        platform: 'instagram',
-        triggerType: 'post_comment',
-        postTarget: 'all_posts',
-        keywordMatching: 'contains',
-        keywords: ['QUERO', 'INFO'],
-        publicReplyEnabled: true,
-        publicReplies: [
-          'Acabei de te enviar no direct! Dá uma olhada lá 🚀',
-          'Te mandei todos os detalhes no privado 😉',
-          'Enviado com sucesso na sua DM! 📩',
-        ],
-        privateDmMessage:
-          'Olá {{name}}! 🚀 Vi seu comentário e preparei o material exclusivo para você.\n\nClique no botão abaixo para acessar:',
-        buttonText: '👉 Acessar Agora',
-        buttonUrl: 'https://infinityondemand.com.br',
-        status: 'active',
-        delaySeconds: 3,
-        tags: ['Lead-Social'],
-      }
-    );
+    const target = template || {
+      name: 'Nova Automação de Comentário',
+      platform: 'instagram',
+      triggerType: 'post_comment',
+      postTarget: 'all_posts',
+      keywordMatching: 'contains',
+      keywords: ['IA', 'QUERO'],
+      publicReplyEnabled: true,
+      publicReplies: [
+        'Acabei de te enviar no direct! Dá uma olhada lá 🚀',
+        'Te mandei todos os detalhes no privado 😉',
+        'Enviado com sucesso na sua DM! 📩',
+      ],
+      privateDmMessage:
+        'Olá {{name}}! 🚀 Vi seu comentário e preparei o material exclusivo para você.\n\nClique no botão abaixo para acessar:',
+      attachmentType: 'none',
+      attachmentUrl: '',
+      attachmentName: '',
+      buttonText: '👉 Acessar Agora',
+      buttonUrl: 'https://infinityondemand.com.br',
+      status: 'active',
+      delaySeconds: 3,
+      tags: ['Lead-Social'],
+    };
+    setEditingRule(target);
+    setKeywordsInput(target.keywords ? target.keywords.join(', ') : '');
+    setPublicRepliesInput(target.publicReplies ? target.publicReplies.join('\n') : '');
     setIsModalOpen(true);
   };
 
@@ -174,10 +180,19 @@ export default function SocialAutomationsTab() {
 
     try {
       setSavingRule(true);
+      const parsedKeywords = keywordsInput.split(',').map((k) => k.trim()).filter(Boolean);
+      const parsedReplies = publicRepliesInput.split('\n').map((r) => r.trim()).filter(Boolean);
+
+      const ruleToSave: Partial<SocialAutomationRule> = {
+        ...editingRule,
+        keywords: parsedKeywords,
+        publicReplies: parsedReplies,
+      };
+
       const res = await fetch('/api/social-automations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'save_rule', rule: editingRule }),
+        body: JSON.stringify({ action: 'save_rule', rule: ruleToSave }),
       });
       const json = await res.json();
       if (json.success) {
@@ -827,6 +842,8 @@ export default function SocialAutomationsTab() {
                       <button
                         onClick={() => {
                           setEditingRule(rule);
+                          setKeywordsInput(rule.keywords ? rule.keywords.join(', ') : '');
+                          setPublicRepliesInput(rule.publicReplies ? rule.publicReplies.join('\n') : '');
                           setIsModalOpen(true);
                         }}
                         style={{
@@ -1163,6 +1180,25 @@ export default function SocialAutomationsTab() {
                       <p style={{ fontSize: '12px', color: '#fff', whiteSpace: 'pre-wrap', lineHeight: 1.4, margin: 0 }}>
                         {simResult.execution.privateDmMessage}
                       </p>
+
+                      {/* Preview de Anexo no Smartphone */}
+                      {simResult.execution.attachmentType === 'file' && simResult.execution.attachmentUrl && (
+                        <div style={{ marginTop: '8px', padding: '8px 10px', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '18px' }}>📄</span>
+                          <div style={{ overflow: 'hidden' }}>
+                            <div style={{ fontSize: '11px', fontWeight: 700, color: '#fff', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                              {simResult.execution.attachmentName || 'Documento_Anexo.pdf'}
+                            </div>
+                            <div style={{ fontSize: '9px', color: '#00DB79' }}>PDF • Pronto para download</div>
+                          </div>
+                        </div>
+                      )}
+
+                      {simResult.execution.attachmentType === 'image' && simResult.execution.attachmentUrl && (
+                        <div style={{ marginTop: '8px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <img src={simResult.execution.attachmentUrl} alt="Anexo" style={{ width: '100%', height: '110px', objectFit: 'cover' }} />
+                        </div>
+                      )}
 
                       {simResult.execution.buttonText && (
                         <a
@@ -2235,17 +2271,12 @@ export default function SocialAutomationsTab() {
                   </label>
                   <input
                     type="text"
-                    value={editingRule.keywords?.join(', ') || ''}
-                    onChange={(e) =>
-                      setEditingRule({
-                        ...editingRule,
-                        keywords: e.target.value.split(',').map((k) => k.trim()).filter(Boolean),
-                      })
-                    }
-                    placeholder="Ex: QUERO, INFO, DEMO, METRICAS, VALOR"
+                    value={keywordsInput}
+                    onChange={(e) => setKeywordsInput(e.target.value)}
+                    placeholder="Ex: IA, DEMO, METRICAS, QUERO, VALOR"
                     style={{
                       width: '100%',
-                      padding: '10px',
+                      padding: '10px 12px',
                       borderRadius: '10px',
                       border: '1px solid rgba(255,255,255,0.1)',
                       backgroundColor: 'rgba(255,255,255,0.04)',
@@ -2254,7 +2285,7 @@ export default function SocialAutomationsTab() {
                       boxSizing: 'border-box',
                     }}
                   />
-                  <small style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>
+                  <small style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', marginTop: '4px', display: 'block' }}>
                     Deixe vazio para responder a QUALQUER comentário feito no post.
                   </small>
                 </div>
@@ -2277,13 +2308,8 @@ export default function SocialAutomationsTab() {
                 </div>
                 <textarea
                   rows={3}
-                  value={editingRule.publicReplies?.join('\n') || ''}
-                  onChange={(e) =>
-                    setEditingRule({
-                      ...editingRule,
-                      publicReplies: e.target.value.split('\n').filter(Boolean),
-                    })
-                  }
+                  value={publicRepliesInput}
+                  onChange={(e) => setPublicRepliesInput(e.target.value)}
                   placeholder="Digite uma variação por linha para rotação anti-spam..."
                   style={{
                     width: '100%',
@@ -2320,6 +2346,92 @@ export default function SocialAutomationsTab() {
                     boxSizing: 'border-box',
                   }}
                 />
+              </div>
+
+              {/* ANEXO: DOCUMENTO PDF OU IMAGEM */}
+              <div style={{ marginBottom: '14px', background: 'rgba(0,0,0,0.3)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <label style={{ fontSize: '12px', color: '#00DB79', fontWeight: 700 }}>
+                    📎 Anexo na Mensagem (Documento PDF ou Imagem)
+                  </label>
+                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>Opcional</span>
+                </div>
+
+                {/* Seletor de Tipo de Anexo */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                  {[
+                    { id: 'none', label: '🚫 Sem Anexo' },
+                    { id: 'file', label: '📄 Documento PDF (E-book / Checklist)' },
+                    { id: 'image', label: '🖼️ Imagem (PNG / JPG / Banner)' },
+                  ].map((att) => (
+                    <button
+                      key={att.id}
+                      type="button"
+                      onClick={() => setEditingRule({ ...editingRule, attachmentType: att.id as any })}
+                      style={{
+                        flex: 1,
+                        padding: '8px 10px',
+                        borderRadius: '8px',
+                        border: (editingRule.attachmentType || 'none') === att.id ? '1px solid #00DB79' : '1px solid rgba(255,255,255,0.08)',
+                        background: (editingRule.attachmentType || 'none') === att.id ? 'rgba(0,219,121,0.15)' : 'rgba(255,255,255,0.02)',
+                        color: (editingRule.attachmentType || 'none') === att.id ? '#00DB79' : 'rgba(255,255,255,0.6)',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {att.label}
+                    </button>
+                  ))}
+                </div>
+
+                {(editingRule.attachmentType === 'file' || editingRule.attachmentType === 'image') && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                        URL Direta do Arquivo ({editingRule.attachmentType === 'file' ? 'Link do PDF' : 'Link da Imagem'})
+                      </label>
+                      <input
+                        type="url"
+                        placeholder={editingRule.attachmentType === 'file' ? 'https://infinityondemand.com.br/materiais/checklist.pdf' : 'https://infinityondemand.com.br/campaign/post.png'}
+                        value={editingRule.attachmentUrl || ''}
+                        onChange={(e) => setEditingRule({ ...editingRule, attachmentUrl: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(0,219,121,0.3)',
+                          backgroundColor: 'rgba(0,219,121,0.05)',
+                          color: '#fff',
+                          fontSize: '12px',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                        Nome do Arquivo (como aparecerá para o seguidor)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder={editingRule.attachmentType === 'file' ? 'Checklist_Velocidade_IA_WhatsApp.pdf' : 'Banner_Oferta.png'}
+                        value={editingRule.attachmentName || ''}
+                        onChange={(e) => setEditingRule({ ...editingRule, attachmentName: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          backgroundColor: 'rgba(255,255,255,0.04)',
+                          color: '#fff',
+                          fontSize: '12px',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Botões de Ação na DM */}

@@ -17,6 +17,9 @@ export interface SocialAutomationRule {
   publicReplyEnabled: boolean;
   publicReplies: string[]; // Variações de resposta pública no comentário (rotação anti-spam)
   privateDmMessage: string; // Mensagem privada com variáveis {{name}} e {{username}}
+  attachmentType?: 'none' | 'image' | 'file';
+  attachmentUrl?: string;
+  attachmentName?: string;
   buttonText?: string;
   buttonUrl?: string;
   secondaryButtonText?: string;
@@ -118,7 +121,10 @@ const INITIAL_RULES: SocialAutomationRule[] = [
       'Prontinho! Quem responde primeiro leva o cliente. Mandei na sua DM 📩',
       'Enviado no seu direct! Confere o material da IA para WhatsApp 🔥'
     ],
-    privateDmMessage: 'Fala {{name}}! 🚀 Vi que você comentou no nosso post sobre Velocidade de Resposta no WhatsApp.\n\nA verdade é dura: se sua empresa demora 15 minutos para responder um lead, 70% das chances de venda vão para o concorrente.\n\nCom o Flash SDR da Infinity, seu WhatsApp responde em menos de 10 segundos com Inteligência Artificial, qualifica o cliente e agenda o atendimento ou fecha a venda 24 horas por dia.\n\nClique abaixo para ver uma demonstração gratuita ao vivo:',
+    privateDmMessage: 'Fala {{name}}! 🚀 Vi que você comentou no nosso post sobre Velocidade de Resposta no WhatsApp.\n\nA verdade é dura: se sua empresa demora 15 minutos para responder um lead, 70% das chances de venda vão para o concorrente.\n\nCom o Flash SDR da Infinity, seu WhatsApp responde em menos de 10 segundos com Inteligência Artificial, qualifica o cliente e agenda o atendimento ou fecha a venda 24 horas por dia.\n\nBaixe o PDF em anexo e clique abaixo para ver uma demonstração gratuita ao vivo:',
+    attachmentType: 'file',
+    attachmentUrl: 'https://infinityondemand.com.br/materiais/Checklist-Velocidade-IA-WhatsApp.pdf',
+    attachmentName: 'Checklist_Velocidade_IA_WhatsApp.pdf',
     buttonText: '⚡ Ver Demonstração da IA no WhatsApp',
     buttonUrl: 'https://infinityondemand.com.br/#demo',
     secondaryButtonText: '📲 Testar Robô no WhatsApp Agora',
