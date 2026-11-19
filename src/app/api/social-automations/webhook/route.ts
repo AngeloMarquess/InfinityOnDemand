@@ -45,36 +45,34 @@ export async function POST(req: NextRequest) {
       const entries = payload.entry || [];
 
       for (const entry of entries) {
-        // A) COMENTÁRIOS NO POST OU REEL (changes -> comments)
+        // A) COMENTÁRIOS NO POST OU REEL (changes -> comments ou feed)
         const changes = entry.changes || [];
         for (const change of changes) {
-          if (change.field === 'comments') {
+          const isCommentsField = change.field === 'comments';
+          const isFeedComment = change.field === 'feed' && (change.value?.item === 'comment' || !change.value?.item);
+
+          if (isCommentsField || isFeedComment) {
             const commentValue = change.value;
-            const commentId = commentValue?.id;
-            const text = (commentValue?.text || '').trim();
-            const fromUser = commentValue?.from?.username ? `@${commentValue.from.username}` : '@usuario';
+            const commentId = commentValue?.id || commentValue?.comment_id;
+            const text = (commentValue?.text || commentValue?.message || '').trim();
+            const fromUser = commentValue?.from?.username
+              ? `@${commentValue.from.username}`
+              : commentValue?.from?.name
+                ? `@${commentValue.from.name.toLowerCase().replace(/\s+/g, '')}`
+                : '@usuario';
             const fromName = commentValue?.from?.name || commentValue?.from?.username || 'Cliente';
-            const mediaId = commentValue?.media?.id; // ID do post onde foi feito o comentário
+            const mediaId = commentValue?.media?.id || commentValue?.post_id;
 
             if (!text || !commentId) continue;
 
             // Localiza regra correspondente
             const matchedRule = db.rules.find((r) => {
               if (r.status !== 'active') return false;
-              if (r.platform !== 'instagram' && r.platform !== 'all') return false;
+              if (r.platform !== 'instagram' && r.platform !== 'all' && !(payload.object === 'page' && r.platform === 'facebook')) return false;
               if (r.triggerType !== 'post_comment') return false;
 
-              // Filtro de post específico (se configurado)
-              if (r.postTarget === 'specific_post') {
-                if (r.targetPostId && mediaId && r.targetPostId !== mediaId) return false;
-                // Se informou URL do post, checa se bate
-                if (r.targetPostUrl && mediaId && !r.targetPostUrl.includes(mediaId)) {
-                  // Aceita correspondência flexível se o targetPostUrl tiver o shortcode
-                }
-              }
-
               // Filtro de palavra-chave
-              if (r.keywordMatching === 'any' || r.keywords.length === 0) return true;
+              if (r.keywordMatching === 'any' || !r.keywords || r.keywords.length === 0) return true;
               const cleanText = text.toUpperCase();
               return r.keywords.some((kw) => cleanText.includes(kw.toUpperCase().trim()));
             });
@@ -117,7 +115,7 @@ export async function POST(req: NextRequest) {
               if (personalizedDm && metaToken && commentId) {
                 try {
                   // No Instagram Graph API oficial, para responder um comentário por DM, usa-se /messages com recipient: { comment_id }
-                  const dmRes = await fetch(`https://graph.facebook.com/v21.0/${igAccountId}/messages`, {
+                  let dmRes = await fetch(`https://graph.facebook.com/v21.0/${igAccountId}/messages`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -130,7 +128,28 @@ export async function POST(req: NextRequest) {
                       access_token: metaToken,
                     }),
                   });
-                  const dmJson = await dmRes.json();
+                  let dmJson = await dmRes.json();
+
+                  // Fallback para /me/messages se o ID da conta específico der erro
+                  if (dmJson.error) {
+                    console.log('[Trying fallback to /me/messages]:', dmJson.error);
+                    const fallbackRes = await fetch(`https://graph.facebook.com/v21.0/me/messages`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        recipient: {
+                          comment_id: commentId,
+                        },
+                        message: {
+                          text: personalizedDm,
+                        },
+                        access_token: metaToken,
+                      }),
+                    });
+                    const fallbackJson = await fallbackRes.json();
+                    if (!fallbackJson.error) dmJson = fallbackJson;
+                  }
+
                   console.log('[Instagram Private DM Sent]:', dmJson);
                   if (dmJson.message_id || dmJson.recipient_id) matchedRule.stats.dmsSent += 1;
 

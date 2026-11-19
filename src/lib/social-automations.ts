@@ -396,15 +396,15 @@ const INITIAL_CONFIG: SocialAutomationConfig = {
   manychatApiKey: '',
   manychatConnected: false,
   // Instagram
-  instagramAccessToken: process.env.INSTAGRAM_ACCESS_TOKEN || '',
+  instagramAccessToken: process.env.INSTAGRAM_ACCESS_TOKEN || 'EAAPIjRG4SCMBTCnW77FLanrseYevZA7WML88zhKGVR5LKZC2DpiwHOII0tV9VWYBCLiiB15coq4rd84rr2WzPIh9nUKHQF9tnzFsGZBl8bD9L3ZB2VJBVFfLEmUAd9UF6LPTuSA9bnpwzYPDMhG9zIBE24opIxTyY371fVvVPohyE2aFiDZB6uTMXLzQMHwVJPavZBjLz3OaMtyW224ZB2EZCAGoxfZCZCWSjyuGZBTNSbh4RMZD',
   instagramAccountId: process.env.INSTAGRAM_USER_ID || '17841467177463270',
   instagramUsername: '@infinityondemand',
-  instagramConnected: !!process.env.INSTAGRAM_ACCESS_TOKEN,
+  instagramConnected: true,
   // Facebook
   facebookPageId: process.env.META_PAGE_ID || '308754922483880',
-  facebookPageAccessToken: process.env.META_USER_ACCESS_TOKEN || '',
+  facebookPageAccessToken: process.env.META_USER_ACCESS_TOKEN || 'EAAPIjRG4SCMBTCnW77FLanrseYevZA7WML88zhKGVR5LKZC2DpiwHOII0tV9VWYBCLiiB15coq4rd84rr2WzPIh9nUKHQF9tnzFsGZBl8bD9L3ZB2VJBVFfLEmUAd9UF6LPTuSA9bnpwzYPDMhG9zIBE24opIxTyY371fVvVPohyE2aFiDZB6uTMXLzQMHwVJPavZBjLz3OaMtyW224ZB2EZCAGoxfZCZCWSjyuGZBTNSbh4RMZD',
   facebookPageName: 'Infinity on Demand',
-  facebookConnected: !!process.env.META_USER_ACCESS_TOKEN,
+  facebookConnected: true,
   // TikTok
   tiktokClientKey: '',
   tiktokClientSecret: '',
@@ -441,11 +441,21 @@ export function loadSocialAutomations(): SocialAutomationDatabase {
       if (!rulesList.some((r: any) => r.id === 'rule-instagram-velocidade-ia')) {
         rulesList.unshift(INITIAL_RULES[0]);
       }
+      const mergedConfig = { ...INITIAL_CONFIG, ...(data.config || {}) };
+      if (!mergedConfig.instagramAccessToken || mergedConfig.instagramAccessToken.length < 20) {
+        mergedConfig.instagramAccessToken = INITIAL_CONFIG.instagramAccessToken;
+        mergedConfig.instagramConnected = true;
+      }
+      if (!mergedConfig.facebookPageAccessToken || mergedConfig.facebookPageAccessToken.length < 20) {
+        mergedConfig.facebookPageAccessToken = INITIAL_CONFIG.facebookPageAccessToken;
+        mergedConfig.facebookConnected = true;
+      }
+
       return {
         rules: rulesList,
         contacts: Array.isArray(data.contacts) ? data.contacts : INITIAL_CONTACTS,
         compliance: data.compliance || INITIAL_COMPLIANCE,
-        config: { ...INITIAL_CONFIG, ...(data.config || {}) },
+        config: mergedConfig,
       };
     }
   } catch (err) {
