@@ -785,6 +785,11 @@ export default function SocialAutomationsTab() {
                           <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>
                             {getTriggerLabel(rule.triggerType)}
                           </span>
+                          {rule.triggerType === 'post_comment' && (
+                            <span style={{ fontSize: '11px', color: rule.postTarget === 'specific_post' ? '#00AAFF' : '#10B981', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '6px' }}>
+                              {rule.postTarget === 'specific_post' ? '🎯 Post Específico' : '🌐 Todos os Posts'}
+                            </span>
+                          )}
                           {rule.keywords.length > 0 && (
                             <span style={{ fontSize: '11px', color: '#00AAFF', background: 'rgba(0,170,255,0.1)', padding: '2px 8px', borderRadius: '6px' }}>
                               Palavras-chave: {rule.keywords.join(', ')}
@@ -2145,6 +2150,77 @@ export default function SocialAutomationsTab() {
                   </select>
                 </div>
               </div>
+
+              {editingRule.triggerType === 'post_comment' && (
+                <div style={{ marginBottom: '14px', background: 'rgba(0,0,0,0.25)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <label style={{ display: 'block', fontSize: '12px', color: '#00AAFF', marginBottom: '8px', fontWeight: 700 }}>
+                    🎯 Alvo da Publicação
+                  </label>
+                  <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setEditingRule({ ...editingRule, postTarget: 'all_posts' })}
+                      style={{
+                        flex: 1,
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        border: editingRule.postTarget !== 'specific_post' ? '1px solid #00DB79' : '1px solid rgba(255,255,255,0.1)',
+                        background: editingRule.postTarget !== 'specific_post' ? 'rgba(0,219,121,0.15)' : 'rgba(255,255,255,0.03)',
+                        color: editingRule.postTarget !== 'specific_post' ? '#00DB79' : 'rgba(255,255,255,0.6)',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      🌐 Qualquer Post ou Reel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingRule({ ...editingRule, postTarget: 'specific_post' })}
+                      style={{
+                        flex: 1,
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        border: editingRule.postTarget === 'specific_post' ? '1px solid #00AAFF' : '1px solid rgba(255,255,255,0.1)',
+                        background: editingRule.postTarget === 'specific_post' ? 'rgba(0,170,255,0.15)' : 'rgba(255,255,255,0.03)',
+                        color: editingRule.postTarget === 'specific_post' ? '#00AAFF' : 'rgba(255,255,255,0.6)',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      🎯 Post ou Reel Específico
+                    </button>
+                  </div>
+
+                  {editingRule.postTarget === 'specific_post' && (
+                    <div style={{ marginTop: '10px' }}>
+                      <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                        Link ou ID do Post / Reel do Instagram
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ex: https://www.instagram.com/p/DHo7ASZuaBE/ ou https://www.instagram.com/reel/..."
+                        value={editingRule.targetPostUrl || ''}
+                        onChange={(e) => setEditingRule({ ...editingRule, targetPostUrl: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(0,170,255,0.3)',
+                          backgroundColor: 'rgba(0,170,255,0.05)',
+                          color: '#fff',
+                          fontSize: '12px',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                      <div style={{ marginTop: '6px', fontSize: '11px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.4 }}>
+                        💡 Cole o link completo da postagem. A automação só responderá comentários feitos nesta publicação específica.
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {editingRule.triggerType === 'post_comment' && (
                 <div style={{ marginBottom: '14px' }}>
