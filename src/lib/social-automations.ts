@@ -59,16 +59,32 @@ export interface ComplianceWindowStats {
 }
 
 export interface SocialAutomationConfig {
+  engineToken?: string;
+  engineConnected: boolean;
+  engineAccountName?: string;
   manychatApiKey?: string;
-  manychatConnected: boolean;
+  manychatConnected?: boolean;
   manychatPageName?: string;
-  metaPageId?: string;
-  metaAccessToken?: string;
-  metaConnected: boolean;
+  // Instagram
+  instagramAccessToken?: string;
+  instagramAccountId?: string;
+  instagramUsername?: string;
+  instagramConnected: boolean;
+  // Facebook
+  facebookPageId?: string;
+  facebookPageAccessToken?: string;
+  facebookPageName?: string;
+  facebookConnected: boolean;
+  // TikTok
+  tiktokClientKey?: string;
+  tiktokClientSecret?: string;
   tiktokAccessToken?: string;
   tiktokConnected: boolean;
+  // YouTube
   youtubeApiKey?: string;
+  youtubeChannelId?: string;
   youtubeConnected: boolean;
+  // Flags globais
   antiSpamVariationEnabled: boolean;
   humanizedDelayEnabled: boolean;
   autoSyncWithSdr: boolean;
@@ -335,16 +351,31 @@ const INITIAL_COMPLIANCE: ComplianceWindowStats = {
 };
 
 const INITIAL_CONFIG: SocialAutomationConfig = {
+  engineToken: '',
+  engineConnected: false,
+  engineAccountName: 'Angelo Brito | Agência de Marketing Digital',
   manychatApiKey: '',
   manychatConnected: false,
-  manychatPageName: 'Angelo Brito | Agência de Marketing Digital',
-  metaPageId: 'infinityondemand',
-  metaAccessToken: '',
-  metaConnected: true,
+  // Instagram
+  instagramAccessToken: process.env.INSTAGRAM_ACCESS_TOKEN || '',
+  instagramAccountId: process.env.INSTAGRAM_USER_ID || '17841467177463270',
+  instagramUsername: '@infinityondemand',
+  instagramConnected: !!process.env.INSTAGRAM_ACCESS_TOKEN,
+  // Facebook
+  facebookPageId: process.env.META_PAGE_ID || '308754922483880',
+  facebookPageAccessToken: process.env.META_USER_ACCESS_TOKEN || '',
+  facebookPageName: 'Infinity on Demand',
+  facebookConnected: !!process.env.META_USER_ACCESS_TOKEN,
+  // TikTok
+  tiktokClientKey: '',
+  tiktokClientSecret: '',
   tiktokAccessToken: '',
   tiktokConnected: false,
+  // YouTube
   youtubeApiKey: '',
+  youtubeChannelId: '@infinityondemand',
   youtubeConnected: false,
+  // Globais
   antiSpamVariationEnabled: true,
   humanizedDelayEnabled: true,
   autoSyncWithSdr: true,

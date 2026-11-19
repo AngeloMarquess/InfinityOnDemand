@@ -41,6 +41,23 @@ export default function SocialAutomationsTab() {
   const [testingManychat, setTestingManychat] = useState<boolean>(false);
   const [configMessage, setConfigMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  // Estados dos Campos de Cada Rede Social
+  const [openConfigCard, setOpenConfigCard] = useState<'instagram' | 'facebook' | 'tiktok' | 'youtube' | 'engine' | null>('instagram');
+  const [igToken, setIgToken] = useState<string>('');
+  const [igAccountId, setIgAccountId] = useState<string>('17841467177463270');
+  const [igUsername, setIgUsername] = useState<string>('@infinityondemand');
+  const [fbPageId, setFbPageId] = useState<string>('308754922483880');
+  const [fbToken, setFbToken] = useState<string>('');
+  const [fbPageName, setFbPageName] = useState<string>('Infinity on Demand');
+  const [ttClientKey, setTtClientKey] = useState<string>('');
+  const [ttClientSecret, setTtClientSecret] = useState<string>('');
+  const [ttToken, setTtToken] = useState<string>('');
+  const [ytApiKey, setYtApiKey] = useState<string>('');
+  const [ytChannelId, setYtChannelId] = useState<string>('@infinityondemand');
+
+  const [netLoading, setNetLoading] = useState<string | null>(null);
+  const [netMessage, setNetMessage] = useState<{ [key: string]: { type: 'success' | 'error'; text: string } }>({});
+
   // Copiar webhook
   const [copiedWebhook, setCopiedWebhook] = useState<boolean>(false);
 
@@ -55,8 +72,22 @@ export default function SocialAutomationsTab() {
         setContacts(json.data.contacts || []);
         setCompliance(json.data.compliance || null);
         setConfig(json.data.config || null);
-        if (json.data.config?.manychatApiKey) {
-          setManychatKeyInput(json.data.config.manychatApiKey);
+        const cfg = json.data.config;
+        if (cfg) {
+          if (cfg.engineToken || cfg.manychatApiKey) {
+            setManychatKeyInput(cfg.engineToken || cfg.manychatApiKey || '');
+          }
+          if (cfg.instagramAccessToken) setIgToken(cfg.instagramAccessToken);
+          if (cfg.instagramAccountId) setIgAccountId(cfg.instagramAccountId);
+          if (cfg.instagramUsername) setIgUsername(cfg.instagramUsername);
+          if (cfg.facebookPageId) setFbPageId(cfg.facebookPageId);
+          if (cfg.facebookPageAccessToken) setFbToken(cfg.facebookPageAccessToken);
+          if (cfg.facebookPageName) setFbPageName(cfg.facebookPageName);
+          if (cfg.tiktokClientKey) setTtClientKey(cfg.tiktokClientKey);
+          if (cfg.tiktokClientSecret) setTtClientSecret(cfg.tiktokClientSecret);
+          if (cfg.tiktokAccessToken) setTtToken(cfg.tiktokAccessToken);
+          if (cfg.youtubeApiKey) setYtApiKey(cfg.youtubeApiKey);
+          if (cfg.youtubeChannelId) setYtChannelId(cfg.youtubeChannelId);
         }
       }
     } catch (err) {
@@ -225,6 +256,67 @@ export default function SocialAutomationsTab() {
       setConfigMessage({ type: 'error', text: 'Erro ao conectar à API do ManyChat' });
     } finally {
       setTestingManychat(false);
+    }
+  };
+
+  // Salvar e testar conexão de rede específica
+  const handleSaveAndTestNetwork = async (network: 'instagram' | 'facebook' | 'tiktok' | 'youtube') => {
+    try {
+      setNetLoading(network);
+      setNetMessage((prev) => ({ ...prev, [network]: undefined as any }));
+
+      let credentials: any = {};
+      if (network === 'instagram') {
+        credentials = { instagramAccessToken: igToken.trim(), instagramAccountId: igAccountId.trim(), instagramUsername: igUsername.trim() };
+      } else if (network === 'facebook') {
+        credentials = { facebookPageId: fbPageId.trim(), facebookPageAccessToken: fbToken.trim(), facebookPageName: fbPageName.trim() };
+      } else if (network === 'tiktok') {
+        credentials = { tiktokClientKey: ttClientKey.trim(), tiktokClientSecret: ttClientSecret.trim(), tiktokAccessToken: ttToken.trim() };
+      } else if (network === 'youtube') {
+        credentials = { youtubeApiKey: ytApiKey.trim(), youtubeChannelId: ytChannelId.trim() };
+      }
+
+      // 1. Salva
+      await fetch('/api/social-automations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save_network_credentials', network, credentials }),
+      });
+
+      // 2. Testa
+      const testRes = await fetch('/api/social-automations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'test_network_connection',
+          network,
+          token: credentials.instagramAccessToken || credentials.facebookPageAccessToken || credentials.tiktokAccessToken,
+          accountId: credentials.instagramAccountId,
+          pageId: credentials.facebookPageId,
+          apiKey: credentials.youtubeApiKey,
+        }),
+      });
+
+      const testJson = await testRes.json();
+      if (testJson.success) {
+        setNetMessage((prev) => ({
+          ...prev,
+          [network]: { type: 'success', text: `✅ ${testJson.message || 'Conectado com sucesso!'}` },
+        }));
+        fetchData();
+      } else {
+        setNetMessage((prev) => ({
+          ...prev,
+          [network]: { type: 'error', text: `❌ ${testJson.error || 'Falha ao validar credenciais'}` },
+        }));
+      }
+    } catch {
+      setNetMessage((prev) => ({
+        ...prev,
+        [network]: { type: 'error', text: 'Erro ao conectar à API da rede social.' },
+      }));
+    } finally {
+      setNetLoading(null);
     }
   };
 
@@ -1467,38 +1559,473 @@ export default function SocialAutomationsTab() {
             </div>
           </div>
 
-          {/* Redes Conectadas */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
-            <div style={{ background: 'rgba(20,24,32,0.6)', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ color: '#E1306C', fontWeight: 700, fontSize: '14px' }}>📸 Instagram Direct API</span>
-                <span style={{ color: '#00DB79', fontSize: '11px', fontWeight: 700 }}>● Conectado</span>
+          {/* ── CENTRAL DE CONFIGURAÇÃO DE CADA REDE SOCIAL ── */}
+          <div style={{ marginTop: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#fff' }}>
+                  🌐 Credenciais & Configuração de Cada Rede Social
+                </h3>
+                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>
+                  Insira as credenciais de API oficiais para conectar os robôs de resposta e DM direta.
+                </p>
               </div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>@infinityondemand</div>
             </div>
 
-            <div style={{ background: 'rgba(20,24,32,0.6)', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ color: '#1877F2', fontWeight: 700, fontSize: '14px' }}>📘 Facebook Messenger</span>
-                <span style={{ color: '#00DB79', fontSize: '11px', fontWeight: 700 }}>● Conectado</span>
-              </div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>Infinity on Demand</div>
-            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
 
-            <div style={{ background: 'rgba(20,24,32,0.6)', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ color: '#FE2C55', fontWeight: 700, fontSize: '14px' }}>🎵 TikTok Business</span>
-                <span style={{ color: '#00DB79', fontSize: '11px', fontWeight: 700 }}>● Modo Escuta</span>
-              </div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>@infinityondemand</div>
-            </div>
+              {/* CARD 1: INSTAGRAM DIRECT & COMENTÁRIOS */}
+              <div
+                style={{
+                  background: 'rgba(20,24,32,0.7)',
+                  border: config?.instagramConnected ? '1px solid rgba(225,48,108,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '16px',
+                  padding: '20px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '20px' }}>📸</span>
+                    <div>
+                      <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#E1306C', margin: 0 }}>Instagram Direct API</h4>
+                      <small style={{ color: 'rgba(255,255,255,0.4)' }}>Auto-DM & Resposta a Comentários</small>
+                    </div>
+                  </div>
+                  <span
+                    style={{
+                      backgroundColor: config?.instagramConnected ? 'rgba(0,219,121,0.15)' : 'rgba(255,255,255,0.06)',
+                      color: config?.instagramConnected ? '#00DB79' : 'rgba(255,255,255,0.4)',
+                      padding: '4px 8px',
+                      borderRadius: '8px',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {config?.instagramConnected ? '● CONECTADO' : '○ NÃO CONFIGURADO'}
+                  </span>
+                </div>
 
-            <div style={{ background: 'rgba(20,24,32,0.6)', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ color: '#FF0000', fontWeight: 700, fontSize: '14px' }}>📺 YouTube Data API</span>
-                <span style={{ color: '#00DB79', fontSize: '11px', fontWeight: 700 }}>● Ativo</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                      Instagram Business Account ID
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex: 17841467177463270"
+                      value={igAccountId}
+                      onChange={(e) => setIgAccountId(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        backgroundColor: 'rgba(255,255,255,0.04)',
+                        color: '#fff',
+                        fontSize: '12px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                      @ Username da Conta
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="@infinityondemand"
+                      value={igUsername}
+                      onChange={(e) => setIgUsername(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        backgroundColor: 'rgba(255,255,255,0.04)',
+                        color: '#fff',
+                        fontSize: '12px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                      Meta Access Token (Token de Longa Duração)
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="EAA..."
+                      value={igToken}
+                      onChange={(e) => setIgToken(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        backgroundColor: 'rgba(255,255,255,0.04)',
+                        color: '#fff',
+                        fontSize: '12px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  {netMessage['instagram'] && (
+                    <div style={{ fontSize: '12px', padding: '8px 10px', borderRadius: '6px', backgroundColor: netMessage['instagram'].type === 'success' ? 'rgba(0,219,121,0.1)' : 'rgba(239,68,68,0.1)', color: netMessage['instagram'].type === 'success' ? '#00DB79' : '#EF4444' }}>
+                      {netMessage['instagram'].text}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => handleSaveAndTestNetwork('instagram')}
+                    disabled={netLoading === 'instagram'}
+                    style={{
+                      marginTop: '6px',
+                      background: 'linear-gradient(135deg, #E1306C, #F77737)',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '10px',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: netLoading === 'instagram' ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {netLoading === 'instagram' ? '⏳ Testando...' : 'Salvar & Conectar Instagram'}
+                  </button>
+                </div>
               </div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>Infinity On Demand Oficial</div>
+
+              {/* CARD 2: FACEBOOK MESSENGER */}
+              <div
+                style={{
+                  background: 'rgba(20,24,32,0.7)',
+                  border: config?.facebookConnected ? '1px solid rgba(24,119,242,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '16px',
+                  padding: '20px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '20px' }}>📘</span>
+                    <div>
+                      <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#1877F2', margin: 0 }}>Facebook Messenger</h4>
+                      <small style={{ color: 'rgba(255,255,255,0.4)' }}>Comentários & Respostas da Página</small>
+                    </div>
+                  </div>
+                  <span
+                    style={{
+                      backgroundColor: config?.facebookConnected ? 'rgba(0,219,121,0.15)' : 'rgba(255,255,255,0.06)',
+                      color: config?.facebookConnected ? '#00DB79' : 'rgba(255,255,255,0.4)',
+                      padding: '4px 8px',
+                      borderRadius: '8px',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {config?.facebookConnected ? '● CONECTADO' : '○ NÃO CONFIGURADO'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                      Facebook Page ID
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex: 308754922483880"
+                      value={fbPageId}
+                      onChange={(e) => setFbPageId(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        backgroundColor: 'rgba(255,255,255,0.04)',
+                        color: '#fff',
+                        fontSize: '12px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                      Nome da Página
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Infinity on Demand"
+                      value={fbPageName}
+                      onChange={(e) => setFbPageName(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        backgroundColor: 'rgba(255,255,255,0.04)',
+                        color: '#fff',
+                        fontSize: '12px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                      Page Access Token (Meta Graph API)
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="EAA..."
+                      value={fbToken}
+                      onChange={(e) => setFbToken(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        backgroundColor: 'rgba(255,255,255,0.04)',
+                        color: '#fff',
+                        fontSize: '12px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  {netMessage['facebook'] && (
+                    <div style={{ fontSize: '12px', padding: '8px 10px', borderRadius: '6px', backgroundColor: netMessage['facebook'].type === 'success' ? 'rgba(0,219,121,0.1)' : 'rgba(239,68,68,0.1)', color: netMessage['facebook'].type === 'success' ? '#00DB79' : '#EF4444' }}>
+                      {netMessage['facebook'].text}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => handleSaveAndTestNetwork('facebook')}
+                    disabled={netLoading === 'facebook'}
+                    style={{
+                      marginTop: '6px',
+                      background: 'linear-gradient(135deg, #1877F2, #00C6FF)',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '10px',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: netLoading === 'facebook' ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {netLoading === 'facebook' ? '⏳ Testando...' : 'Salvar & Conectar Facebook'}
+                  </button>
+                </div>
+              </div>
+
+              {/* CARD 3: TIKTOK BUSINESS */}
+              <div
+                style={{
+                  background: 'rgba(20,24,32,0.7)',
+                  border: config?.tiktokConnected ? '1px solid rgba(254,44,85,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '16px',
+                  padding: '20px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '20px' }}>🎵</span>
+                    <div>
+                      <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#FE2C55', margin: 0 }}>TikTok Business</h4>
+                      <small style={{ color: 'rgba(255,255,255,0.4)' }}>Webhook & Auto-resposta de Vídeos</small>
+                    </div>
+                  </div>
+                  <span
+                    style={{
+                      backgroundColor: config?.tiktokConnected ? 'rgba(0,219,121,0.15)' : 'rgba(255,255,255,0.06)',
+                      color: config?.tiktokConnected ? '#00DB79' : 'rgba(255,255,255,0.4)',
+                      padding: '4px 8px',
+                      borderRadius: '8px',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {config?.tiktokConnected ? '● CONECTADO' : '○ NÃO CONFIGURADO'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                      TikTok Client Key / App ID
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="aw..."
+                      value={ttClientKey}
+                      onChange={(e) => setTtClientKey(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        backgroundColor: 'rgba(255,255,255,0.04)',
+                        color: '#fff',
+                        fontSize: '12px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                      TikTok Access Token
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="act..."
+                      value={ttToken}
+                      onChange={(e) => setTtToken(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        backgroundColor: 'rgba(255,255,255,0.04)',
+                        color: '#fff',
+                        fontSize: '12px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  {netMessage['tiktok'] && (
+                    <div style={{ fontSize: '12px', padding: '8px 10px', borderRadius: '6px', backgroundColor: netMessage['tiktok'].type === 'success' ? 'rgba(0,219,121,0.1)' : 'rgba(239,68,68,0.1)', color: netMessage['tiktok'].type === 'success' ? '#00DB79' : '#EF4444' }}>
+                      {netMessage['tiktok'].text}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => handleSaveAndTestNetwork('tiktok')}
+                    disabled={netLoading === 'tiktok'}
+                    style={{
+                      marginTop: '6px',
+                      background: 'linear-gradient(135deg, #FE2C55, #25F4EE)',
+                      color: '#000',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '10px',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: netLoading === 'tiktok' ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {netLoading === 'tiktok' ? '⏳ Testando...' : 'Salvar & Conectar TikTok'}
+                  </button>
+                </div>
+              </div>
+
+              {/* CARD 4: YOUTUBE DATA API */}
+              <div
+                style={{
+                  background: 'rgba(20,24,32,0.7)',
+                  border: config?.youtubeConnected ? '1px solid rgba(255,0,0,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '16px',
+                  padding: '20px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '20px' }}>📺</span>
+                    <div>
+                      <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#FF0000', margin: 0 }}>YouTube Data API v3</h4>
+                      <small style={{ color: 'rgba(255,255,255,0.4)' }}>Auto-reply em Vídeos & Shorts</small>
+                    </div>
+                  </div>
+                  <span
+                    style={{
+                      backgroundColor: config?.youtubeConnected ? 'rgba(0,219,121,0.15)' : 'rgba(255,255,255,0.06)',
+                      color: config?.youtubeConnected ? '#00DB79' : 'rgba(255,255,255,0.4)',
+                      padding: '4px 8px',
+                      borderRadius: '8px',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {config?.youtubeConnected ? '● CONECTADO' : '○ NÃO CONFIGURADO'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                      YouTube Data API v3 Key (Google Cloud)
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="AIzaSy..."
+                      value={ytApiKey}
+                      onChange={(e) => setYtApiKey(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        backgroundColor: 'rgba(255,255,255,0.04)',
+                        color: '#fff',
+                        fontSize: '12px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginBottom: '4px' }}>
+                      Canal do YouTube / Identificador
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="@infinityondemand ou UC..."
+                      value={ytChannelId}
+                      onChange={(e) => setYtChannelId(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        backgroundColor: 'rgba(255,255,255,0.04)',
+                        color: '#fff',
+                        fontSize: '12px',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  {netMessage['youtube'] && (
+                    <div style={{ fontSize: '12px', padding: '8px 10px', borderRadius: '6px', backgroundColor: netMessage['youtube'].type === 'success' ? 'rgba(0,219,121,0.1)' : 'rgba(239,68,68,0.1)', color: netMessage['youtube'].type === 'success' ? '#00DB79' : '#EF4444' }}>
+                      {netMessage['youtube'].text}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => handleSaveAndTestNetwork('youtube')}
+                    disabled={netLoading === 'youtube'}
+                    style={{
+                      marginTop: '6px',
+                      background: 'linear-gradient(135deg, #FF0000, #CC0000)',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '10px',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: netLoading === 'youtube' ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {netLoading === 'youtube' ? '⏳ Testando...' : 'Salvar & Conectar YouTube'}
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
