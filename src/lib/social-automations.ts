@@ -103,6 +103,39 @@ const TMP_DATA_FILE = path.join('/tmp', 'social-automations.json');
 
 const INITIAL_RULES: SocialAutomationRule[] = [
   {
+    id: 'rule-instagram-velocidade-ia',
+    name: 'Instagram • Post "Velocidade de Resposta no WhatsApp" (Comenta "IA")',
+    platform: 'instagram',
+    triggerType: 'post_comment',
+    postTarget: 'specific_post',
+    targetPostUrl: 'https://www.instagram.com/p/velocidade-resposta-ia/',
+    keywordMatching: 'contains',
+    keywords: ['IA', 'I.A.', 'QUERO IA', 'ROBÔ', 'ROBO', 'WHATSAPP', 'SDR', 'FLASH SDR'],
+    publicReplyEnabled: true,
+    publicReplies: [
+      'Acabei de te enviar como funciona no Direct! Dá uma olhada lá 🚀',
+      'Te mandei no privado como não perder mais vendas no WhatsApp 😉',
+      'Prontinho! Quem responde primeiro leva o cliente. Mandei na sua DM 📩',
+      'Enviado no seu direct! Confere o material da IA para WhatsApp 🔥'
+    ],
+    privateDmMessage: 'Fala {{name}}! 🚀 Vi que você comentou no nosso post sobre Velocidade de Resposta no WhatsApp.\n\nA verdade é dura: se sua empresa demora 15 minutos para responder um lead, 70% das chances de venda vão para o concorrente.\n\nCom o Flash SDR da Infinity, seu WhatsApp responde em menos de 10 segundos com Inteligência Artificial, qualifica o cliente e agenda o atendimento ou fecha a venda 24 horas por dia.\n\nClique abaixo para ver uma demonstração gratuita ao vivo:',
+    buttonText: '⚡ Ver Demonstração da IA no WhatsApp',
+    buttonUrl: 'https://infinityondemand.com.br/#demo',
+    secondaryButtonText: '📲 Testar Robô no WhatsApp Agora',
+    secondaryButtonUrl: 'https://wa.me/5581981280719?text=Olá,%20vi%20o%20post%20sobre%20IA%20no%20Instagram%20e%20quero%20testar',
+    status: 'active',
+    delaySeconds: 3,
+    tags: ['Lead-Post-IA', 'Velocidade-WhatsApp', 'Interesse-Flash-SDR'],
+    stats: {
+      triggersCount: 12,
+      repliesSent: 12,
+      dmsSent: 12,
+      lastTriggeredAt: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
     id: 'rule-instagram-metricas',
     name: 'Instagram • Post Comentário "MÉTRICAS" → Envio de Checklist & Diagnóstico',
     platform: 'instagram',
@@ -398,8 +431,12 @@ export function loadSocialAutomations(): SocialAutomationDatabase {
     if (fs.existsSync(filePath)) {
       const raw = fs.readFileSync(filePath, 'utf-8');
       const data = JSON.parse(raw);
+      let rulesList = Array.isArray(data.rules) && data.rules.length > 0 ? data.rules : INITIAL_RULES;
+      if (!rulesList.some((r: any) => r.id === 'rule-instagram-velocidade-ia')) {
+        rulesList.unshift(INITIAL_RULES[0]);
+      }
       return {
-        rules: Array.isArray(data.rules) && data.rules.length > 0 ? data.rules : INITIAL_RULES,
+        rules: rulesList,
         contacts: Array.isArray(data.contacts) ? data.contacts : INITIAL_CONTACTS,
         compliance: data.compliance || INITIAL_COMPLIANCE,
         config: { ...INITIAL_CONFIG, ...(data.config || {}) },

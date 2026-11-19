@@ -1015,6 +1015,12 @@ export default function SocialAutomationsTab() {
                     }}
                   />
                   <button
+                    onClick={() => setSimComment('IA')}
+                    style={{ padding: '0 10px', background: 'rgba(0,219,121,0.15)', border: '1px solid rgba(0,219,121,0.3)', borderRadius: '8px', color: '#00DB79', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    IA 🔥
+                  </button>
+                  <button
                     onClick={() => setSimComment('MÉTRICAS')}
                     style={{ padding: '0 10px', background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: '8px', color: '#00AAFF', fontSize: '11px', cursor: 'pointer' }}
                   >
