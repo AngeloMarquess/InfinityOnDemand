@@ -11,6 +11,8 @@ import BriefingTab from './BriefingTab';
 import AcademyAdminTab from './AcademyAdminTab';
 import MktTab from './MktTab';
 import FormulariosTab from './FormulariosTab';
+import CloudflareAnalyticsTab from './CloudflareAnalyticsTab';
+import SocialAutomationsTab from './SocialAutomationsTab';
 
 /* ─────────── DATA ─────────── */
 const profileData = {
@@ -349,7 +351,7 @@ export default function RelatoriosInfinity() {
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'mkt' | 'evolucao' | 'briefing' | 'agent' | 'config' | 'sdr' | 'academy' | 'formularios'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda' | 'campanhas_ads' | 'mkt' | 'evolucao' | 'briefing' | 'agent' | 'config' | 'sdr' | 'academy' | 'formularios' | 'automations'>('overview');
   const [socialSubTab, setSocialSubTab] = useState<'overview' | 'content' | 'timing' | 'actions' | 'campaign' | 'creatives' | 'agenda'>('overview');
   const [selectedSocialNetwork, setSelectedSocialNetwork] = useState<'instagram' | 'facebook' | 'tiktok' | 'pinterest'>('instagram');
   const tabNavRef = React.useRef<HTMLDivElement>(null);
@@ -787,6 +789,8 @@ export default function RelatoriosInfinity() {
 
   const tabs = [
     { id: 'overview' as const, label: 'Visão Social Media', icon: '📱' },
+    { id: 'automations' as const, label: 'Automações & ManyChat', icon: '🤖' },
+    { id: 'analytics' as const, label: 'Analytics', icon: '☁️' },
     { id: 'formularios' as const, label: 'Formulários & Leads', icon: '📋' },
     { id: 'campanhas_ads' as const, label: 'Campanhas', icon: '💰' },
     { id: 'mkt' as const, label: 'MKT Data Lake', icon: '📊' },
@@ -1292,14 +1296,19 @@ export default function RelatoriosInfinity() {
                 { id: 'campaign', label: 'Campanha Social', icon: '🚀' },
                 { id: 'creatives', label: 'Criativos', icon: '🎨' },
                 { id: 'agenda', label: 'Agenda & Posts', icon: '📅' },
+                { id: 'automations_shortcut', label: 'Automações (ManyChat)', icon: '🤖' },
               ].map(sub => {
-                const isCurrent = currentSocialSubTab === sub.id;
+                const isCurrent = sub.id === 'automations_shortcut' ? activeTab === 'automations' : currentSocialSubTab === sub.id;
                 return (
                   <button
                     key={sub.id}
                     onClick={() => {
-                      setSocialSubTab(sub.id as any);
-                      setActiveTab('overview');
+                      if (sub.id === 'automations_shortcut') {
+                        setActiveTab('automations');
+                      } else {
+                        setSocialSubTab(sub.id as any);
+                        setActiveTab('overview');
+                      }
                     }}
                     style={{
                       padding: '8px 14px',
@@ -2295,6 +2304,10 @@ export default function RelatoriosInfinity() {
           );
         })()}
 
+        {/* ═══════════ TAB: AUTOMAÇÕES SOCIAL & MANYCHAT ═══════════ */}
+        {activeTab === 'automations' && <SocialAutomationsTab />}
+
+        {activeTab === 'analytics' && <CloudflareAnalyticsTab />}
         {activeTab === 'campanhas_ads' && <CampanhasTab />}
         {activeTab === 'formularios' && <FormulariosTab />}
         {activeTab === 'mkt' && <MktTab />}
