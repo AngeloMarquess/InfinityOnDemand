@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const token = searchParams.get('hub.verify_token');
     const challenge = searchParams.get('hub.challenge');
 
-    const VERIFY_TOKEN = process.env.META_WEBHOOK_VERIFY_TOKEN || 'infinity_manychat_secure_token_2026';
+    const VERIFY_TOKEN = process.env.META_WEBHOOK_VERIFY_TOKEN || 'infinity_social_secure_token_2026';
 
     if (mode === 'subscribe' && token === VERIFY_TOKEN) {
       console.log('[Meta Webhook Verified]');
@@ -20,8 +20,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       status: 'active',
       service: 'Infinity Social Automation Webhook Engine',
-      supportedPlatforms: ['Instagram Graph API', 'Facebook Graph API', 'ManyChat Webhook', 'TikTok Webhook'],
-      instructions: 'Configure esta URL no Painel Meta for Developers ou ManyChat Webhook.',
+      supportedPlatforms: ['Instagram Graph API', 'Facebook Graph API', 'TikTok Webhook', 'Universal Social Webhook'],
+      instructions: 'Configure esta URL no Painel Meta for Developers ou gerenciador de Webhooks.',
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -36,22 +36,22 @@ export async function POST(req: NextRequest) {
 
     console.log('[Social Automation Webhook Received]:', JSON.stringify(payload).slice(0, 300));
 
-    // Suporte a Payload do ManyChat
-    if (payload.event === 'new_subscriber' || payload.type === 'manychat_event') {
+    // Suporte a Payload de Webhooks Externos
+    if (payload.event === 'new_subscriber' || payload.type === 'manychat_event' || payload.type === 'infinity_event') {
       const subscriber = payload.subscriber || payload;
-      const contactName = subscriber.first_name ? `${subscriber.first_name} ${subscriber.last_name || ''}`.trim() : 'Lead ManyChat';
+      const contactName = subscriber.first_name ? `${subscriber.first_name} ${subscriber.last_name || ''}`.trim() : 'Lead Infinity';
       const username = subscriber.username || `@lead_${Date.now().toString().slice(-4)}`;
 
       const newContact: SocialContact = {
-        id: `cont-mc-${Date.now()}`,
+        id: `cont-inf-${Date.now()}`,
         platform: 'instagram',
         username,
         fullName: contactName,
         lastInteraction: new Date().toISOString(),
         within24hWindow: true,
-        ruleTriggered: 'ManyChat Webhook Sync',
-        lastMessageSent: 'Disparo via ManyChat sincronizado com a Infinity On Demand',
-        tags: ['ManyChat-Sync', 'Lead-Capturado'],
+        ruleTriggered: 'Infinity Webhook Sync',
+        lastMessageSent: 'Disparo via automação sincronizado com a Infinity On Demand',
+        tags: ['Infinity-Sync', 'Lead-Capturado'],
         status: 'lead_hot',
       };
 
