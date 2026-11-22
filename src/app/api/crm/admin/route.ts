@@ -222,18 +222,27 @@ export async function GET(request: Request) {
         const clientHistory = (subHistory || []).filter(h => h.user_id === profile.id);
         const totalPaid = clientHistory
           .filter(h => h.event_type === 'activated' || h.event_type === 'renewed' || h.event_type === 'payment_received')
-          .reduce((sum, h) => sum + (h.amount || (plan?.price_monthly ? plan.price_monthly / 100 : 0)), 0);
+          .reduce((sum, h) => {
+            const rawAmount = Number(h.amount) || 0;
+            // Se o valor estiver em centavos (> 500, ex: 5990 centavos = R$ 59,90), converte para reais
+            const valInReais = rawAmount > 500 ? rawAmount / 100 : rawAmount;
+            return sum + (valInReais > 0 ? valInReais : (plan?.price_monthly ? plan.price_monthly / 100 : 0));
+          }, 0);
+
+        const currentPlanPrice = plan?.price_monthly
+          ? plan.price_monthly / 100
+          : (profile.plan_id === 'starter' ? 39.90 : profile.plan_id === 'pro' ? 59.90 : profile.plan_id === 'advanced' ? 99.90 : 0);
 
         return {
           ...profile,
           company,
           phone,
-          plan_name: plan?.name || (profile.plan_id === 'starter' ? 'Starter' : profile.plan_id === 'pro' ? 'Pro' : 'Free'),
-          plan_price: plan?.price_monthly ? plan.price_monthly / 100 : (profile.plan_id === 'starter' ? 59.90 : profile.plan_id === 'pro' ? 99.90 : 0),
+          plan_name: plan?.name || (profile.plan_id === 'starter' ? 'Básico' : profile.plan_id === 'pro' ? 'Intermediário' : profile.plan_id === 'advanced' ? 'Avançado' : 'Free'),
+          plan_price: currentPlanPrice,
           subscription_status: computedStatus,
           is_overdue: isOverdue,
           days_overdue: daysOverdue,
-          total_revenue: totalPaid > 0 ? totalPaid : (computedStatus === 'active' ? (plan?.price_monthly ? plan.price_monthly / 100 : 59.90) : 0),
+          total_revenue: totalPaid > 0 ? totalPaid : (computedStatus === 'active' ? currentPlanPrice : 0),
           usage: {
             leads: leads.count || 0,
             proposals: proposals.count || 0,
