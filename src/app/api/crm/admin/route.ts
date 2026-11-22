@@ -61,11 +61,100 @@ async function verifyAdminAuth(request: Request): Promise<{ authorized: boolean;
   }
 }
 
-// GET /api/crm/admin — list all CRM clients with full stats, payments and usage
+// GET /api/crm/admin — list all CRM clients with full stats, payments and usage, or sync single client with Pagar.me
 export async function GET(request: Request) {
   const auth = await verifyAdminAuth(request);
   if (!auth.authorized) {
     return NextResponse.json({ error: auth.error || 'Unauthorized' }, { status: 401, headers: corsHeaders });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const action = searchParams.get('action');
+
+  // Ação especial: Sincronizar assinatura diretamente na API Pagar.me V5
+  if (action === 'sync_pagarme') {
+    const email = searchParams.get('email')?.toLowerCase().trim();
+    const userId = searchParams.get('user_id');
+
+    if (!email && !userId) {
+      return NextResponse.json({ error: 'email ou user_id é obrigatório para sincronização.' }, { status: 400, headers: corsHeaders });
+    }
+
+    try {
+      const pagarmeKey = process.env.PAGARME_SECRET_KEY || 'sk_3c941fe239c24a04b70eeed3b9bfdc20';
+      const pagarmeAuth = 'Basic ' + Buffer.from(`${pagarmeKey}:`).toString('base64');
+
+      const pagarmeRes = await fetch('https://api.pagar.me/core/v5/orders?page=1&size=50', {
+        headers: {
+          Authorization: pagarmeAuth,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!pagarmeRes.ok) {
+        throw new Error(`Erro API Pagar.me: ${pagarmeRes.statusText}`);
+      }
+
+      const pagarmeData = await pagarmeRes.json();
+      const orders = pagarmeData?.data || [];
+
+      // Procura pedido pago correspondente ao email ou userId
+      const paidOrder = orders.find((o: any) => {
+        const isPaid = o.status === 'paid';
+        const matchesEmail = email && o.customer?.email?.toLowerCase().trim() === email;
+        const matchesUserId = userId && o.metadata?.user_id === userId;
+        return isPaid && (matchesEmail || matchesUserId);
+      });
+
+      if (paidOrder) {
+        const supabase = getServiceSupabase();
+        const metadata = paidOrder.metadata || {};
+        const targetUserId = userId || metadata.user_id;
+
+        if (targetUserId) {
+          const rawPlan = metadata.plan_id || 'pro';
+          const planId = rawPlan === 'intermediario' ? 'pro' : rawPlan === 'enterprise' ? 'advanced' : rawPlan;
+          const isAnnual = metadata.billing_cycle === 'annual' || Number(paidOrder.amount) > 20000;
+          const durationDays = isAnnual ? 365 : 30;
+          const expiresAt = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toISOString();
+
+          // Atualiza perfil no Supabase
+          await supabase.from('crm_profiles').update({
+            plan_id: planId,
+            subscription_status: 'active',
+            subscription_expires_at: expiresAt,
+            updated_at: new Date().toISOString(),
+          }).eq('id', targetUserId);
+
+          // Registra no histórico
+          await supabase.from('crm_subscription_history').insert({
+            user_id: targetUserId,
+            plan_id: planId,
+            event_type: 'payment_received',
+            amount: paidOrder.amount,
+          });
+
+          return NextResponse.json({
+            success: true,
+            paid: true,
+            status: 'active',
+            order_id: paidOrder.id,
+            amount: paidOrder.amount,
+            plan_id: planId,
+            message: `Pagamento de R$ ${(paidOrder.amount / 100).toFixed(2)} confirmado no Pagar.me! Assinatura ativada com sucesso.`,
+          }, { headers: corsHeaders });
+        }
+      }
+
+      return NextResponse.json({
+        success: false,
+        paid: false,
+        message: `Nenhuma cobrança aprovada recente encontrada para ${email || userId} no Pagar.me.`,
+      }, { headers: corsHeaders });
+    } catch (err: any) {
+      console.error('[Sync Pagar.me Error]:', err);
+      return NextResponse.json({ error: 'Erro ao consultar Pagar.me', details: err?.message }, { status: 500, headers: corsHeaders });
+    }
   }
 
   try {
