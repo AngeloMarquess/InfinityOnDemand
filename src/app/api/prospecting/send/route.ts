@@ -54,7 +54,7 @@ function chooseTemplate(category: string): { name: string; language: string; has
  */
 export async function POST(request: NextRequest) {
   // Auth check
-  const auth = validateApiKey(request);
+  const auth = await validateApiKey(request);
   if (!auth.valid) return auth.error!;
 
   // Rate limit: 5 WhatsApp sends per minute

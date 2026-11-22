@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { createClient } from '@supabase/supabase-js';
 
 // ─── Environment Variable Reader ───
 function getEnvVar(name: string): string | undefined {
@@ -15,67 +16,56 @@ function getEnvVar(name: string): string | undefined {
   }
 }
 
-// ─── API Key Authentication ───
-// Validates requests using a shared secret key.
-// The CRM and internal services must send this key in the header:
-//   Authorization: Bearer <FLASH_API_SECRET>
-//
-// The key is stored in .env.local as FLASH_API_SECRET
-
-export function validateApiKey(request: NextRequest): { valid: boolean; error?: NextResponse } {
+// ─── API Key & Session Authentication ───
+// Validates requests using:
+// 1. Shared secret key (FLASH_API_SECRET) for internal services/cron jobs
+// 2. Supabase User JWT for authenticated CRM dashboard requests
+export async function validateApiKey(request: NextRequest): Promise<{ valid: boolean; error?: NextResponse; user?: any }> {
   const secret = getEnvVar('FLASH_API_SECRET');
-  
-  if (!secret) {
-    console.warn('⚠️ FLASH_API_SECRET not configured — API authentication disabled');
-    return { valid: true }; // Fail open in dev, but log warning
-  }
-
-  // Allow same-origin requests (internal Next.js pages calling their own APIs)
-  const origin = request.headers.get('origin') || '';
-  const referer = request.headers.get('referer') || '';
-  const allowedOrigins = [
-    'https://flash.infinityondemand.com.br',
-    'https://infinityondemand.com.br',
-    'https://www.infinityondemand.com.br',
-    'http://localhost:3000',
-    'http://localhost:3001',
-  ];
-  const isSameOrigin = allowedOrigins.some(o => origin.startsWith(o) || referer.startsWith(o));
-  if (isSameOrigin) return { valid: true };
-
-  // Cross-origin requests require Bearer token
-  const authHeader = request.headers.get('authorization');
+  const authHeader = request.headers.get('authorization') || request.headers.get('Authorization');
   
   if (!authHeader) {
     return {
       valid: false,
       error: NextResponse.json(
-        { error: 'Authentication required. Send Authorization: Bearer <API_KEY>' },
+        { error: 'Autenticação necessária. Envie Authorization: Bearer <TOKEN>' },
         { status: 401 }
       ),
     };
   }
 
-  const token = authHeader.replace('Bearer ', '').trim();
-  
-  if (token !== secret) {
-    return {
-      valid: false,
-      error: NextResponse.json(
-        { error: 'Invalid API key' },
-        { status: 403 }
-      ),
-    };
+  const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+
+  // 1. Chave secreta de serviço backend (cron/internal)
+  if (secret && token === secret) {
+    return { valid: true };
   }
 
-  return { valid: true };
+  // 2. Validação de token JWT do Supabase (usuário logado no CRM)
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (supabaseUrl && serviceKey && token.length > 20) {
+    try {
+      const supabase = createClient(supabaseUrl, serviceKey);
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+      if (!error && user) {
+        return { valid: true, user };
+      }
+    } catch {
+      // Falha ao validar token
+    }
+  }
+
+  return {
+    valid: false,
+    error: NextResponse.json(
+      { error: 'Chave ou token de autenticação inválido.' },
+      { status: 403 }
+    ),
+  };
 }
 
 // ─── Rate Limiter ───
-// Simple in-memory rate limiter per IP address.
-// Tracks request counts per window (default: 60s).
-// Resets automatically when the window expires.
-
 interface RateLimitEntry {
   count: number;
   resetAt: number;
@@ -98,38 +88,42 @@ export function rateLimit(
   options: { maxRequests?: number; windowMs?: number; keyPrefix?: string } = {}
 ): { allowed: boolean; error?: NextResponse; remaining: number } {
   const { maxRequests = 30, windowMs = 60_000, keyPrefix = 'global' } = options;
-  
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-    || request.headers.get('x-real-ip')
-    || 'unknown';
-  
+
+  // Extract client IP
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIp = request.headers.get('x-real-ip');
+  const ip = forwarded ? forwarded.split(',')[0].trim() : realIp || 'unknown';
+
   const key = `${keyPrefix}:${ip}`;
   const now = Date.now();
-  
-  let entry = rateLimitStore.get(key);
-  
+  const entry = rateLimitStore.get(key);
+
   if (!entry || now > entry.resetAt) {
-    entry = { count: 1, resetAt: now + windowMs };
-    rateLimitStore.set(key, entry);
+    // First request or window expired
+    rateLimitStore.set(key, { count: 1, resetAt: now + windowMs });
     return { allowed: true, remaining: maxRequests - 1 };
   }
-  
-  entry.count++;
-  
-  if (entry.count > maxRequests) {
-    const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+
+  if (entry.count >= maxRequests) {
+    const retryAfterSeconds = Math.ceil((entry.resetAt - now) / 1000);
     return {
       allowed: false,
       remaining: 0,
       error: NextResponse.json(
-        { error: 'Too many requests. Try again later.', retryAfter },
-        { 
+        {
+          error: 'Muitas requisições. Tente novamente mais tarde.',
+          retryAfter: retryAfterSeconds,
+        },
+        {
           status: 429,
-          headers: { 'Retry-After': String(retryAfter) }
+          headers: {
+            'Retry-After': String(retryAfterSeconds),
+          },
         }
       ),
     };
   }
-  
+
+  entry.count++;
   return { allowed: true, remaining: maxRequests - entry.count };
 }

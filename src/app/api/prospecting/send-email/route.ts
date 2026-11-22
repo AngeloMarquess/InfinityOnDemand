@@ -102,7 +102,7 @@ function detectSegmentPillar(lead: any): 'sites' | 'sistemas' | 'ecommerce' | 't
 
 export async function POST(request: NextRequest) {
   // Auth check
-  const auth = validateApiKey(request);
+  const auth = await validateApiKey(request);
   if (!auth.valid) return auth.error!;
 
   try {

@@ -8,7 +8,7 @@ import { validateApiKey, rateLimit } from '@/lib/api-security';
  * Requires: Authorization: Bearer <FLASH_API_SECRET>
  */
 export async function GET(request: NextRequest) {
-  const auth = validateApiKey(request);
+  const auth = await validateApiKey(request);
   if (!auth.valid) return auth.error!;
 
   const rl = rateLimit(request, { maxRequests: 30, windowMs: 60_000, keyPrefix: 'email-logs' });

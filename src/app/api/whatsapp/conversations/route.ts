@@ -4,7 +4,7 @@ import { validateApiKey, rateLimit } from '@/lib/api-security';
 
 // GET — List conversations or messages for a specific phone
 export async function GET(request: NextRequest) {
-  const auth = validateApiKey(request);
+  const auth = await validateApiKey(request);
   if (!auth.valid) return auth.error!;
 
   const rl = rateLimit(request, { maxRequests: 30, windowMs: 60_000, keyPrefix: 'wa-conv-read' });
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
 
 // POST — Save a manual message
 export async function POST(request: NextRequest) {
-  const auth = validateApiKey(request);
+  const auth = await validateApiKey(request);
   if (!auth.valid) return auth.error!;
 
   const rl = rateLimit(request, { maxRequests: 10, windowMs: 60_000, keyPrefix: 'wa-conv-write' });

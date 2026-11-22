@@ -15,22 +15,57 @@ function getServiceSupabase() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 }
 
+const ADMIN_EMAILS = [
+  'angelo.marques@infinityondemand.com.br',
+  'contato@infinityondemand.com.br',
+];
+
+async function verifyAdminAuth(request: Request): Promise<{ authorized: boolean; error?: string }> {
+  // 1. Verificar Authorization Bearer Token (Sessão Supabase)
+  const authHeader = request.headers.get('Authorization') || request.headers.get('authorization') || '';
+  const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+
+  // 2. Chave de serviço interna via env para background jobs/crons
+  const { searchParams } = new URL(request.url);
+  const queryKey = searchParams.get('key');
+  const serverSecret = process.env.ADMIN_API_SECRET || process.env.FLASH_API_SECRET;
+
+  if (serverSecret && (queryKey === serverSecret || token === serverSecret)) {
+    return { authorized: true };
+  }
+
+  if (!token) {
+    return { authorized: false, error: 'Autenticação necessária. Forneça o token de acesso.' };
+  }
+
+  // 3. Validar token com o Supabase Auth
+  try {
+    const supabase = getServiceSupabase();
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+
+    if (error || !user || !user.email) {
+      return { authorized: false, error: 'Sessão inválida ou expirada.' };
+    }
+
+    const email = user.email.toLowerCase().trim();
+    const envAdmins = process.env.ADMIN_EMAILS ? process.env.ADMIN_EMAILS.split(',').map(e => e.trim().toLowerCase()) : [];
+    const isMaster = ADMIN_EMAILS.includes(email) || envAdmins.includes(email) || user.user_metadata?.role === 'admin' || user.app_metadata?.role === 'admin';
+
+    if (!isMaster) {
+      return { authorized: false, error: 'Acesso restrito a administradores.' };
+    }
+
+    return { authorized: true };
+  } catch (err: any) {
+    return { authorized: false, error: 'Erro ao validar autorização: ' + (err?.message || err) };
+  }
+}
+
 // GET /api/crm/admin — list all CRM clients with full stats, payments and usage
 export async function GET(request: Request) {
-  // Admin auth check
-  const { searchParams } = new URL(request.url);
-  const adminKey = searchParams.get('key');
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
-  const isValidKey = 
-    adminKey === 'infinity2026' ||
-    adminKey === 'Infinity_Olimpo_Token_2026_Secured' ||
-    adminKey === 'mi3kiipDvk' ||
-    adminKey === serviceKey.slice(-10) ||
-    adminKey === serviceKey.slice(-11);
-
-  if (!isValidKey) {
-    return NextResponse.json({ error: 'Unauthorized', debug: 'key_mismatch' }, { status: 401, headers: corsHeaders });
+  const auth = await verifyAdminAuth(request);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error || 'Unauthorized' }, { status: 401, headers: corsHeaders });
   }
 
   try {
@@ -175,19 +210,9 @@ export async function GET(request: Request) {
 
 // POST /api/crm/admin — actions: create_client, update_password, update_profile, change_plan, block, unblock, record_payment, delete_user
 export async function POST(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const adminKey = searchParams.get('key');
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
-  const isValidKey = 
-    adminKey === 'infinity2026' ||
-    adminKey === 'Infinity_Olimpo_Token_2026_Secured' ||
-    adminKey === 'mi3kiipDvk' ||
-    adminKey === serviceKey.slice(-10) ||
-    adminKey === serviceKey.slice(-11);
-
-  if (!isValidKey) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
+  const auth = await verifyAdminAuth(request);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error || 'Unauthorized' }, { status: 401, headers: corsHeaders });
   }
 
   try {
