@@ -30,18 +30,22 @@ export async function POST(request: Request) {
       const metadata = data?.metadata || data?.order?.metadata || data?.subscription?.metadata || {};
       const userId = metadata?.user_id;
       const planId = metadata?.plan_id || 'starter';
-      const amount = data?.amount || data?.order?.amount || 5990;
+      const billingCycle = metadata?.billing_cycle;
+      const amount = data?.amount || data?.order?.amount || 3990;
 
       if (userId) {
-        const nextMonthIso = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        // Se billing_cycle for annual ou se o valor for superior a 200 reais (20000 centavos), é anuidade (365 dias)
+        const isAnnual = billingCycle === 'annual' || Number(amount) > 20000;
+        const durationDays = isAnnual ? 365 : 30;
+        const nextExpirationIso = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toISOString();
 
-        // Ativa ou renova por 30 dias
+        // Ativa ou renova pelo período correto
         await supabase
           .from('crm_profiles')
           .update({
             plan_id: planId === 'intermediario' ? 'pro' : planId === 'enterprise' ? 'advanced' : planId,
             subscription_status: 'active',
-            subscription_expires_at: nextMonthIso,
+            subscription_expires_at: nextExpirationIso,
           })
           .eq('id', userId);
 
@@ -49,11 +53,11 @@ export async function POST(request: Request) {
         await supabase.from('crm_subscription_history').insert({
           user_id: userId,
           plan_id: planId,
-          event_type: eventType === 'invoice.paid' ? 'renewed' : 'payment_received',
+          event_type: isAnnual ? 'annual_payment_received' : (eventType === 'invoice.paid' ? 'renewed' : 'payment_received'),
           amount: amount,
         });
 
-        console.log(`[Pagar.me Webhook] Assinatura renovada para user_id: ${userId}`);
+        console.log(`[Pagar.me Webhook] Assinatura (${isAnnual ? 'ANUAL - 365d' : 'MENSAL - 30d'}) ativada/renovada para user_id: ${userId}`);
       }
     }
 

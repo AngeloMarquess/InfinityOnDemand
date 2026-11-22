@@ -5,31 +5,55 @@ const PAGARME_SECRET_KEY = process.env.PAGARME_SECRET_KEY || 'sk_3c941fe239c24a0
 const PAGARME_AUTH = 'Basic ' + Buffer.from(`${PAGARME_SECRET_KEY}:`).toString('base64');
 
 // Mapeamento dos 3 Planos no Pagar.me
-const PAGARME_PLANS: Record<string, { id: string; name: string; priceCents: number }> = {
+const PAGARME_PLANS: Record<string, { id: string; name: string; priceCents: number; annualMonthly: string; annualTotalCents: number }> = {
   starter: {
     id: process.env.PAGARME_PLAN_STARTER || 'plan_ROg5pEwCncXkW6E7',
     name: 'Básico',
     priceCents: 3990,
+    annualMonthly: '25,90',
+    annualTotalCents: 31080, // 12x 25,90 = R$ 310,80
+  },
+  basico: {
+    id: process.env.PAGARME_PLAN_STARTER || 'plan_ROg5pEwCncXkW6E7',
+    name: 'Básico',
+    priceCents: 3990,
+    annualMonthly: '25,90',
+    annualTotalCents: 31080,
   },
   pro: {
     id: process.env.PAGARME_PLAN_PRO || 'plan_J6ZPW9ji3T0d7D9y',
     name: 'Intermediário',
     priceCents: 5990,
+    annualMonthly: '38,90',
+    annualTotalCents: 46680, // 12x 38,90 = R$ 466,80
   },
   intermediario: {
     id: process.env.PAGARME_PLAN_PRO || 'plan_J6ZPW9ji3T0d7D9y',
     name: 'Intermediário',
     priceCents: 5990,
+    annualMonthly: '38,90',
+    annualTotalCents: 46680,
   },
   advanced: {
     id: process.env.PAGARME_PLAN_ADVANCED || 'plan_kwGVDL34uRc9dby9',
     name: 'Avançado',
     priceCents: 9990,
+    annualMonthly: '64,90',
+    annualTotalCents: 77880, // 12x 64,90 = R$ 778,80
+  },
+  avancado: {
+    id: process.env.PAGARME_PLAN_ADVANCED || 'plan_kwGVDL34uRc9dby9',
+    name: 'Avançado',
+    priceCents: 9990,
+    annualMonthly: '64,90',
+    annualTotalCents: 77880,
   },
   enterprise: {
     id: process.env.PAGARME_PLAN_ADVANCED || 'plan_kwGVDL34uRc9dby9',
     name: 'Avançado',
     priceCents: 9990,
+    annualMonthly: '64,90',
+    annualTotalCents: 77880,
   },
 };
 
@@ -68,6 +92,7 @@ export async function POST(request: Request) {
       customer_document,
       customer_phone,
       payment_method = 'credit_card', // credit_card | pix | boleto
+      billing_cycle = 'monthly', // monthly | annual
       card, // { number, holder_name, exp_month, exp_year, cvv }
     } = body;
 
@@ -75,7 +100,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'plan_id e user_id são obrigatórios.' }, { status: 400, headers: corsHeaders });
     }
 
-    const targetPlan = PAGARME_PLANS[plan_id.toLowerCase()] || PAGARME_PLANS['starter'];
+    const planKey = (plan_id || 'starter').toLowerCase();
+    const targetPlan = PAGARME_PLANS[planKey] || PAGARME_PLANS['starter'];
+    const isAnnual = billing_cycle === 'annual';
+
+    // Determina valor em centavos e tempo de validade
+    // Anual: 12x cobrados de uma vez (ex: 12 x 25,90 = R$ 310,80) com 365 dias de acesso
+    // Mensal: R$ 39,90 / mês com 30 dias de acesso
+    const finalPriceCents = isAnnual ? targetPlan.annualTotalCents : targetPlan.priceCents;
+    const finalAmountFormatted = (finalPriceCents / 100).toFixed(2);
+    const durationDays = isAnnual ? 365 : 30;
+    const expiresAtIso = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000).toISOString();
+
+    const planDescription = isAnnual
+      ? `CRM Infinity OnDemand - Plano ${targetPlan.name} (Anual - 12x R$ ${targetPlan.annualMonthly} = R$ ${finalAmountFormatted})`
+      : `Mensalidade CRM Infinity OnDemand - Plano ${targetPlan.name} (R$ ${finalAmountFormatted}/mês)`;
+
     const supabase = getServiceSupabase();
 
     // Sanitização de dados do cliente
@@ -99,7 +139,7 @@ export async function POST(request: Request) {
     };
 
     // =========================================================================
-    // 1. FORMA DE PAGAMENTO: CARTÃO DE CRÉDITO RECORRENTE (ASSINATURA PAGAR.ME)
+    // 1. FORMA DE PAGAMENTO: CARTÃO DE CRÉDITO
     // =========================================================================
     if (payment_method === 'credit_card') {
       if (!card || !card.number || !card.cvv || !card.holder_name) {
@@ -111,6 +151,98 @@ export async function POST(request: Request) {
       let expYear = parseInt(String(card.exp_year).trim(), 10);
       if (expYear < 100) expYear += 2000;
 
+      // 1.1 Se for ANUAL no Cartão: Cobrança via Pedido (Orders) do Pagar.me no valor total de R$ 310,80
+      if (isAnnual) {
+        const orderPayload = {
+          customer: customerPayload,
+          items: [
+            {
+              amount: finalPriceCents,
+              description: planDescription,
+              quantity: 1,
+              code: targetPlan.id,
+            },
+          ],
+          payments: [
+            {
+              payment_method: 'credit_card',
+              credit_card: {
+                installments: 1,
+                statement_descriptor: 'INFINITY CRM',
+                card: {
+                  number: cardCleanNumber,
+                  holder_name: card.holder_name,
+                  exp_month: expMonth,
+                  exp_year: expYear,
+                  cvv: card.cvv.trim(),
+                },
+              },
+            },
+          ],
+          metadata: {
+            user_id,
+            plan_id: planKey,
+            billing_cycle: 'annual',
+            platform: 'CRM Infinity OnDemand',
+          },
+        };
+
+        const pagarmeRes = await fetch('https://api.pagar.me/core/v5/orders', {
+          method: 'POST',
+          headers: {
+            Authorization: PAGARME_AUTH,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(orderPayload),
+        });
+
+        const pagarmeData = await pagarmeRes.json();
+
+        if (!pagarmeRes.ok) {
+          console.error('Erro Pagar.me Anual Orders:', pagarmeData);
+          const errMsg = pagarmeData?.message || pagarmeData?.errors?.[Object.keys(pagarmeData.errors || {})[0]]?.[0] || 'Erro ao processar anuidade no cartão.';
+          return NextResponse.json({ error: errMsg, details: pagarmeData }, { status: 400, headers: corsHeaders });
+        }
+
+        const charge = pagarmeData?.charges?.[0];
+        if (charge && charge.status !== 'paid') {
+          return NextResponse.json({
+            error: `Pagamento ${charge.status}: ${charge.last_transaction?.gateway_response?.message || 'Transação não autorizada pela operadora.'}`,
+            details: pagarmeData
+          }, { status: 400, headers: corsHeaders });
+        }
+
+        // Ativação imediata no perfil por 1 ANO (365 dias)
+        await supabase
+          .from('crm_profiles')
+          .update({
+            plan_id: planKey === 'intermediario' ? 'pro' : planKey === 'enterprise' ? 'advanced' : planKey,
+            subscription_status: 'active',
+            subscription_expires_at: expiresAtIso,
+          })
+          .eq('id', user_id);
+
+        // Registro no histórico financeiro
+        await supabase.from('crm_subscription_history').insert({
+          user_id,
+          plan_id: planKey,
+          event_type: 'activated_annual',
+          amount: finalPriceCents,
+        });
+
+        return NextResponse.json({
+          success: true,
+          status: 'active',
+          message: 'Anuidade Infinity CRM confirmada e ativada por 1 ano com sucesso!',
+          order_id: pagarmeData.id,
+          plan: targetPlan.name,
+          billing_cycle: 'annual',
+          amount: finalAmountFormatted,
+          expires_at: expiresAtIso,
+        }, { headers: corsHeaders });
+      }
+
+      // 1.2 Se for MENSAL no Cartão: Cobrança recorrente via Subscriptions
       const subPayload = {
         plan_id: targetPlan.id,
         payment_method: 'credit_card',
@@ -128,7 +260,8 @@ export async function POST(request: Request) {
         },
         metadata: {
           user_id,
-          plan_id: plan_id.toLowerCase(),
+          plan_id: planKey,
+          billing_cycle: 'monthly',
           platform: 'CRM Infinity OnDemand',
         },
       };
@@ -150,23 +283,19 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: errMsg, details: pagarmeData }, { status: 400, headers: corsHeaders });
       }
 
-      // Sucesso na criação da assinatura!
-      const nextMonthIso = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-
-      // Ativação imediata no perfil do CRM Supabase
+      // Sucesso na criação da assinatura mensal!
       await supabase
         .from('crm_profiles')
         .update({
-          plan_id: plan_id === 'intermediario' ? 'pro' : plan_id === 'enterprise' ? 'advanced' : plan_id,
+          plan_id: planKey === 'intermediario' ? 'pro' : planKey === 'enterprise' ? 'advanced' : planKey,
           subscription_status: 'active',
-          subscription_expires_at: nextMonthIso,
+          subscription_expires_at: expiresAtIso,
         })
         .eq('id', user_id);
 
-      // Registro no histórico financeiro
       await supabase.from('crm_subscription_history').insert({
         user_id,
-        plan_id: plan_id,
+        plan_id: planKey,
         event_type: 'activated',
         amount: targetPlan.priceCents,
       });
@@ -177,7 +306,9 @@ export async function POST(request: Request) {
         message: 'Assinatura Pagar.me confirmada e ativada com sucesso!',
         subscription_id: pagarmeData.id,
         plan: targetPlan.name,
-        expires_at: nextMonthIso,
+        billing_cycle: 'monthly',
+        amount: finalAmountFormatted,
+        expires_at: expiresAtIso,
       }, { headers: corsHeaders });
     }
 
@@ -189,8 +320,8 @@ export async function POST(request: Request) {
         customer: customerPayload,
         items: [
           {
-            amount: targetPlan.priceCents,
-            description: `Mensalidade CRM Infinity OnDemand - Plano ${targetPlan.name}`,
+            amount: finalPriceCents,
+            description: planDescription,
             quantity: 1,
             code: targetPlan.id,
           },
@@ -205,7 +336,8 @@ export async function POST(request: Request) {
         ],
         metadata: {
           user_id,
-          plan_id: plan_id.toLowerCase(),
+          plan_id: planKey,
+          billing_cycle: isAnnual ? 'annual' : 'monthly',
           platform: 'CRM Infinity OnDemand',
         },
       };
@@ -237,7 +369,8 @@ export async function POST(request: Request) {
         qr_code: pixTransaction?.qr_code || '',
         qr_code_url: pixTransaction?.qr_code_url || '',
         expires_at: pixTransaction?.expires_at,
-        amount: (targetPlan.priceCents / 100).toFixed(2),
+        amount: finalAmountFormatted,
+        billing_cycle: isAnnual ? 'annual' : 'monthly',
         plan: targetPlan.name,
       }, { headers: corsHeaders });
     }
@@ -250,8 +383,8 @@ export async function POST(request: Request) {
         customer: customerPayload,
         items: [
           {
-            amount: targetPlan.priceCents,
-            description: `Mensalidade CRM Infinity OnDemand - Plano ${targetPlan.name}`,
+            amount: finalPriceCents,
+            description: planDescription,
             quantity: 1,
             code: targetPlan.id,
           },
@@ -260,14 +393,17 @@ export async function POST(request: Request) {
           {
             payment_method: 'boleto',
             boleto: {
-              instructions: 'Pagar até o vencimento para liberar o acesso ao CRM Infinity OnDemand.',
+              instructions: isAnnual
+                ? 'Pagar anuidade com 35% de desconto para liberar 1 ano de acesso ao CRM Infinity OnDemand.'
+                : 'Pagar até o vencimento para liberar o acesso ao CRM Infinity OnDemand.',
               due_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
             },
           },
         ],
         metadata: {
           user_id,
-          plan_id: plan_id.toLowerCase(),
+          plan_id: planKey,
+          billing_cycle: isAnnual ? 'annual' : 'monthly',
           platform: 'CRM Infinity OnDemand',
         },
       };
@@ -297,7 +433,8 @@ export async function POST(request: Request) {
         order_id: pagarmeData.id,
         boleto_url: boletoTransaction?.url || boletoTransaction?.pdf || '',
         barcode: boletoTransaction?.barcode || '',
-        amount: (targetPlan.priceCents / 100).toFixed(2),
+        amount: finalAmountFormatted,
+        billing_cycle: isAnnual ? 'annual' : 'monthly',
         plan: targetPlan.name,
       }, { headers: corsHeaders });
     }
