@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
+import TopAnnouncementBar from './TopAnnouncementBar';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function Header({ dict, locale }: { dict?: any; locale?: string }) {
@@ -43,6 +44,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
 
   return (
     <>
+      <TopAnnouncementBar />
       <header style={{
         padding: "16px 20px",
         display: "flex",
