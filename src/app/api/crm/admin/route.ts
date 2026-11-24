@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getPasswordResetEmailHtml } from '@/lib/emails/templates';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -202,16 +203,17 @@ export async function GET(request: Request) {
         const phone = authUser?.user_metadata?.phone || authUser?.phone || '';
 
         // Check overdue status
+        const isParceria = profile.plan_id === 'parceria' || profile.plan_id === 'partner';
         const expiresAt = profile.subscription_expires_at ? new Date(profile.subscription_expires_at) : null;
-        let computedStatus = profile.subscription_status || 'free';
+        let computedStatus = isParceria ? 'active' : (profile.subscription_status || 'free');
         let isOverdue = false;
         let daysOverdue = 0;
 
-        if (computedStatus === 'active' && expiresAt && expiresAt < now) {
+        if (!isParceria && computedStatus === 'active' && expiresAt && expiresAt < now) {
           computedStatus = 'past_due';
           isOverdue = true;
           daysOverdue = Math.floor((now.getTime() - expiresAt.getTime()) / (1000 * 60 * 60 * 24));
-        } else if (computedStatus === 'past_due') {
+        } else if (!isParceria && computedStatus === 'past_due') {
           isOverdue = true;
           if (expiresAt) {
             daysOverdue = Math.max(1, Math.floor((now.getTime() - expiresAt.getTime()) / (1000 * 60 * 60 * 24)));
@@ -229,7 +231,9 @@ export async function GET(request: Request) {
             return sum + (valInReais > 0 ? valInReais : (plan?.price_monthly ? plan.price_monthly / 100 : 0));
           }, 0);
 
-        const currentPlanPrice = plan?.price_monthly
+        const currentPlanPrice = isParceria
+          ? 0
+          : plan?.price_monthly
           ? plan.price_monthly / 100
           : (profile.plan_id === 'starter' ? 39.90 : profile.plan_id === 'pro' ? 59.90 : profile.plan_id === 'advanced' ? 99.90 : 0);
 
@@ -237,7 +241,9 @@ export async function GET(request: Request) {
           ...profile,
           company,
           phone,
-          plan_name: plan?.name || (profile.plan_id === 'starter' ? 'Básico' : profile.plan_id === 'pro' ? 'Intermediário' : profile.plan_id === 'advanced' ? 'Avançado' : 'Free'),
+          plan_name: isParceria
+            ? '⭐ Parceria (VIP)'
+            : plan?.name || (profile.plan_id === 'starter' ? 'Básico' : profile.plan_id === 'pro' ? 'Intermediário' : profile.plan_id === 'advanced' ? 'Avançado' : 'Free'),
           plan_price: currentPlanPrice,
           subscription_status: computedStatus,
           is_overdue: isOverdue,
@@ -375,22 +381,78 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'user_id é obrigatório.' }, { status: 400, headers: corsHeaders });
     }
 
-    // 2. Resetar / Atualizar Senha do Assinante
-    if (action === 'update_password') {
-      const { new_password } = body;
-      if (!new_password || new_password.length < 6) {
-        return NextResponse.json({ error: 'A nova senha deve ter no mínimo 6 caracteres.' }, { status: 400, headers: corsHeaders });
+    // 2. Resetar / Atualizar Senha do Assinante e Enviar por E-mail
+    if (action === 'update_password' || action === 'send_password_email') {
+      const { new_password, send_email } = body;
+      
+      if (action === 'update_password') {
+        if (!new_password || new_password.length < 6) {
+          return NextResponse.json({ error: 'A nova senha deve ter no mínimo 6 caracteres.' }, { status: 400, headers: corsHeaders });
+        }
+
+        const { error: pwdErr } = await supabase.auth.admin.updateUserById(user_id, {
+          password: new_password,
+        });
+
+        if (pwdErr) {
+          return NextResponse.json({ error: `Erro ao resetar senha: ${pwdErr.message}` }, { status: 400, headers: corsHeaders });
+        }
       }
 
-      const { error: pwdErr } = await supabase.auth.admin.updateUserById(user_id, {
-        password: new_password,
-      });
+      // Envio de email com as credenciais via Resend
+      let emailSent = false;
+      let emailError: string | null = null;
+      if (send_email || action === 'send_password_email') {
+        try {
+          const { data: targetUser } = await supabase.auth.admin.getUserById(user_id);
+          const targetEmail = body.email || targetUser?.user?.email;
+          const targetName = body.full_name || targetUser?.user?.user_metadata?.full_name || 'Assinante';
+          const pwdToSend = new_password || body.password || '';
 
-      if (pwdErr) {
-        return NextResponse.json({ error: `Erro ao resetar senha: ${pwdErr.message}` }, { status: 400, headers: corsHeaders });
+          if (targetEmail && pwdToSend) {
+            const resendApiKey = process.env.RESEND_API_KEY;
+            const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'angelo.marques@infinityondemand.com.br';
+
+            if (resendApiKey) {
+              const resendRes = await fetch('https://api.resend.com/emails', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${resendApiKey}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  from: `Infinity On Demand <${resendFromEmail}>`,
+                  to: [targetEmail],
+                  subject: 'Seus Novos Dados de Acesso ao CRM Infinity On Demand 🔑',
+                  html: getPasswordResetEmailHtml(targetName, targetEmail, pwdToSend),
+                }),
+              });
+
+              if (resendRes.ok) {
+                emailSent = true;
+              } else {
+                const errData = await resendRes.json();
+                console.error('Erro Resend:', errData);
+                emailError = errData?.message || 'Falha no envio do e-mail';
+              }
+            } else {
+              emailError = 'Chave Resend não configurada';
+            }
+          }
+        } catch (err: any) {
+          console.error('Erro ao enviar email de nova senha:', err);
+          emailError = err?.message || 'Erro inesperado no envio de e-mail';
+        }
       }
 
-      return NextResponse.json({ success: true, message: 'Senha atualizada com sucesso!' }, { headers: corsHeaders });
+      return NextResponse.json({
+        success: true,
+        message: emailSent
+          ? 'Senha atualizada e enviada para o e-mail do cliente com sucesso!'
+          : 'Senha atualizada com sucesso!',
+        email_sent: emailSent,
+        email_error: emailError
+      }, { headers: corsHeaders });
     }
 
     // 3. Atualizar Dados Cadastrais do Assinante (Nome, Empresa, Telefone, Vencimento)
@@ -449,23 +511,29 @@ export async function POST(request: Request) {
     // 5. Mudar Plano
     if (action === 'change_plan' && body.plan_id) {
       const targetPlan = body.plan_id;
+      const isParceria = targetPlan === 'parceria' || targetPlan === 'partner';
       await supabase
         .from('crm_profiles')
         .update({
           plan_id: targetPlan,
           subscription_status: targetPlan === 'free' ? 'free' : 'active',
-          subscription_expires_at: targetPlan === 'free' ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          subscription_expires_at: (targetPlan === 'free' || isParceria) ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         })
         .eq('id', user_id);
 
       await supabase.from('crm_subscription_history').insert({
         user_id,
         plan_id: targetPlan,
-        event_type: targetPlan === 'free' ? 'downgraded' : 'upgraded',
+        event_type: isParceria ? 'partner_assigned' : targetPlan === 'free' ? 'downgraded' : 'upgraded',
         amount: 0,
       });
 
-      return NextResponse.json({ success: true, message: `Plano atualizado para ${targetPlan}` }, { headers: corsHeaders });
+      return NextResponse.json({
+        success: true,
+        message: isParceria
+          ? 'Cliente definido como Parceiro da Agência com acesso total liberado!'
+          : `Plano atualizado para ${targetPlan}`
+      }, { headers: corsHeaders });
     }
 
     // 6. Cancelar Assinatura

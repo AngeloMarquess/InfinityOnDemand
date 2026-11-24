@@ -322,3 +322,168 @@ export function getConfirmationEmailHtml(): string {
 </body>
 </html>`;
 }
+
+export function getPasswordResetEmailHtml(name: string, email: string, newPassword: string): string {
+  const clientName = name || 'Assinante';
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seus Novos Dados de Acesso ao CRM Infinity On Demand 🔑</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0B0F19;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #FFFFFF;
+      -webkit-font-smoothing: antialiased;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #111622;
+      border: 1px solid #1F2A3F;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 40px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .header {
+      padding: 35px 40px 20px 40px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .content {
+      padding: 35px 40px;
+    }
+    .footer {
+      background-color: #0D111A;
+      padding: 25px 40px;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      font-size: 12px;
+      color: #5F6E80;
+    }
+    .logo-text-gradient {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #00DF81 0%, #00AAFF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+    .logo-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: #8F9CAE;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: -4px;
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: #FFFFFF;
+    }
+    p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #8F9CAE;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    .creds-box {
+      background-color: #0B0F19;
+      border: 1px solid rgba(0, 170, 255, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .cred-row {
+      margin-bottom: 12px;
+    }
+    .cred-row:last-child {
+      margin-bottom: 0;
+    }
+    .cred-label {
+      color: #8F9CAE;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 2px;
+    }
+    .cred-value {
+      color: #00DF81;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .btn-container {
+      margin-top: 25px;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    .btn {
+      background-color: #00DF81;
+      background-image: linear-gradient(135deg, #00DF81 0%, #00AAFF 100%);
+      color: #0B0F19 !important;
+      font-weight: 800;
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      display: inline-block;
+      font-size: 14px;
+      box-shadow: 0 4px 15px rgba(0, 223, 129, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <div class="logo-text-gradient">Infinity</div>
+      <div class="logo-sub">OnDemand CRM</div>
+    </div>
+    
+    <div class="content">
+      <h1>Seus Novos Dados de Acesso 🔑</h1>
+      
+      <p>Olá <strong>${clientName}</strong>,</p>
+      <p>Sua senha de acesso ao <strong>CRM Infinity OnDemand</strong> foi redefinida com sucesso pela administração da plataforma. Abaixo estão suas credenciais atualizadas:</p>
+      
+      <div class="creds-box">
+        <div class="cred-row">
+          <div class="cred-label">🌐 Endereço do Portal</div>
+          <div style="color: #FFFFFF; font-weight: 600;">https://crm.infinityondemand.com.br</div>
+        </div>
+        <div class="cred-row">
+          <div class="cred-label">📧 E-mail de Login</div>
+          <div style="color: #FFFFFF; font-weight: 600;">${email}</div>
+        </div>
+        <div class="cred-row">
+          <div class="cred-label">🔑 Nova Senha</div>
+          <div class="cred-value">${newPassword}</div>
+        </div>
+      </div>
+      
+      <div class="btn-container">
+        <a href="https://crm.infinityondemand.com.br" class="btn" target="_blank">Acessar Meu CRM Agora &rarr;</a>
+      </div>
+      
+      <p style="font-size: 12px; margin-bottom: 0;">Recomendamos alterar sua senha após o login no menu Configurações &gt; Minha Conta.</p>
+    </div>
+    
+    <div class="footer">
+      Equipe Infinity On Demand &bull; Suporte: contato@infinityondemand.com.br<br>
+      &copy; 2026 Infinity On Demand. Todos os direitos reservados.
+    </div>
+  </div>
+</body>
+</html>`;
+}
