@@ -2,18 +2,30 @@ import { NextResponse } from 'next/server';
 
 const DEFAULT_APIFY_TOKEN = process.env.APIFY_API_TOKEN || '';
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: corsHeaders });
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { nicho, cidade, cep, raioKm, lat, lng, limite = 15, minRating = 4.5, token } = body;
+    const { nicho, cidade, estado, cep, raioKm, lat, lng, limite = 15, minRating = 4.5, token } = body;
 
     const apifyToken = token || DEFAULT_APIFY_TOKEN;
 
-    // Constrói termo de busca inteligente com base em CEP ou Cidade
-    let searchTerm = `${nicho || 'Clínicas de Estética'} em ${cidade || 'Recife - PE'}`;
+    // Constrói termo de busca inteligente com base no Nicho e Localização
+    const nichoAlvo = nicho?.trim() || 'Empresas';
+    let searchTerm = `${nichoAlvo} em ${cidade ? `${cidade}, ` : ''}${estado || 'Brasil'}`;
+    
     if (cep) {
       const cleanCep = cep.replace(/\D/g, '');
-      searchTerm = `${nicho || 'Clínicas de Estética'} perto de CEP ${cleanCep}${raioKm ? ` raio ${raioKm}km` : ''}`;
+      searchTerm = `${nichoAlvo} perto de CEP ${cleanCep}${raioKm ? ` raio ${raioKm}km` : ''}`;
     }
 
     // Executa o crawler de Google Places do Apify
@@ -27,7 +39,6 @@ export async function POST(req: Request) {
       skipClosedPlaces: true,
     };
 
-    // Suporte nativo a CEP e Geolocation no Apify
     if (cep) {
       runInput.postalCode = cep.replace(/\D/g, '');
     }
@@ -35,7 +46,7 @@ export async function POST(req: Request) {
     if (lat && lng) {
       runInput.customGeolocation = {
         type: 'Point',
-        coordinates: [Number(lng), Number(lat)], // GeoJSON Geo standard: [longitude, latitude]
+        coordinates: [Number(lng), Number(lat)],
       };
     }
 
@@ -48,11 +59,14 @@ export async function POST(req: Request) {
     if (!apifyRes.ok) {
       const errText = await apifyRes.text();
       console.warn('Apify run response:', errText);
-      return NextResponse.json({
-        ok: false,
-        message: 'Apify timeout or busy, returning simulated fallback',
-        leads: [],
-      });
+      return NextResponse.json(
+        {
+          ok: false,
+          message: 'Apify timeout or busy, returning simulated fallback',
+          leads: [],
+        },
+        { headers: corsHeaders }
+      );
     }
 
     const rawItems = await apifyRes.json();
@@ -60,11 +74,12 @@ export async function POST(req: Request) {
       const rawPhone = p.phone || p.phoneNumber || '';
       const cleanPhone = rawPhone.replace(/\D/g, '');
       const whatsapp = cleanPhone.length >= 10 ? (cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`) : '';
+      const titleName = p.title || p.name || `${nichoAlvo} Local ${idx + 1}`;
 
       return {
         id: p.placeId || `apify_${Date.now()}_${idx}`,
-        name: p.title || p.name || 'Empresa Local',
-        tradeName: p.title || p.name,
+        name: titleName,
+        tradeName: titleName,
         phone: rawPhone,
         whatsapp,
         email: p.email || (p.emails && p.emails[0]) || '',
@@ -72,20 +87,24 @@ export async function POST(req: Request) {
         rating: p.totalScore || p.rating || 5.0,
         reviewsCount: p.reviewsCount || 0,
         address: p.address || p.street || cidade || (cep ? `CEP ${cep}` : ''),
-        city: p.city || cidade,
-        categoryName: p.categoryName || nicho,
+        city: p.city || cidade || 'Belo Horizonte',
+        state: estado || 'MG',
+        categoryName: p.categoryName || nichoAlvo,
         instagram: p.instagram || (p.socials && p.socials.instagram) || '',
         location: p.location || (lat && lng ? { lat: Number(lat), lng: Number(lng) } : undefined),
       };
     });
 
-    return NextResponse.json({
-      ok: true,
-      total: leads.length,
-      leads,
-    });
+    return NextResponse.json(
+      {
+        ok: true,
+        total: leads.length,
+        leads,
+      },
+      { headers: corsHeaders }
+    );
   } catch (error: any) {
     console.error('Erro na API SDR Apify:', error);
-    return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ ok: false, error: error.message }, { status: 500, headers: corsHeaders });
   }
 }
