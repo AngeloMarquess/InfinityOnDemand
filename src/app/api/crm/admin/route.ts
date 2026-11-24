@@ -204,16 +204,17 @@ export async function GET(request: Request) {
 
         // Check overdue status
         const isParceria = profile.plan_id === 'parceria' || profile.plan_id === 'partner';
+        const isFundador = profile.plan_id === 'fundador' || profile.plan_id === 'founder' || profile.plan_id === 'membro_fundador';
         const expiresAt = profile.subscription_expires_at ? new Date(profile.subscription_expires_at) : null;
-        let computedStatus = isParceria ? 'active' : (profile.subscription_status || 'free');
+        let computedStatus = (isParceria || isFundador) ? 'active' : (profile.subscription_status || 'free');
         let isOverdue = false;
         let daysOverdue = 0;
 
-        if (!isParceria && computedStatus === 'active' && expiresAt && expiresAt < now) {
+        if (!isParceria && !isFundador && computedStatus === 'active' && expiresAt && expiresAt < now) {
           computedStatus = 'past_due';
           isOverdue = true;
           daysOverdue = Math.floor((now.getTime() - expiresAt.getTime()) / (1000 * 60 * 60 * 24));
-        } else if (!isParceria && computedStatus === 'past_due') {
+        } else if (!isParceria && !isFundador && computedStatus === 'past_due') {
           isOverdue = true;
           if (expiresAt) {
             daysOverdue = Math.max(1, Math.floor((now.getTime() - expiresAt.getTime()) / (1000 * 60 * 60 * 24)));
@@ -231,7 +232,7 @@ export async function GET(request: Request) {
             return sum + (valInReais > 0 ? valInReais : (plan?.price_monthly ? plan.price_monthly / 100 : 0));
           }, 0);
 
-        const currentPlanPrice = isParceria
+        const currentPlanPrice = (isParceria || isFundador)
           ? 0
           : plan?.price_monthly
           ? plan.price_monthly / 100
@@ -241,7 +242,9 @@ export async function GET(request: Request) {
           ...profile,
           company,
           phone,
-          plan_name: isParceria
+          plan_name: isFundador
+            ? '🏛️ Membro Fundador'
+            : isParceria
             ? '⭐ Parceria (VIP)'
             : plan?.name || (profile.plan_id === 'starter' ? 'Básico' : profile.plan_id === 'pro' ? 'Intermediário' : profile.plan_id === 'advanced' ? 'Avançado' : 'Free'),
           plan_price: currentPlanPrice,
@@ -512,25 +515,28 @@ export async function POST(request: Request) {
     if (action === 'change_plan' && body.plan_id) {
       const targetPlan = body.plan_id;
       const isParceria = targetPlan === 'parceria' || targetPlan === 'partner';
+      const isFundador = targetPlan === 'fundador' || targetPlan === 'founder' || targetPlan === 'membro_fundador';
       await supabase
         .from('crm_profiles')
         .update({
           plan_id: targetPlan,
           subscription_status: targetPlan === 'free' ? 'free' : 'active',
-          subscription_expires_at: (targetPlan === 'free' || isParceria) ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          subscription_expires_at: (targetPlan === 'free' || isParceria || isFundador) ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         })
         .eq('id', user_id);
 
       await supabase.from('crm_subscription_history').insert({
         user_id,
         plan_id: targetPlan,
-        event_type: isParceria ? 'partner_assigned' : targetPlan === 'free' ? 'downgraded' : 'upgraded',
+        event_type: isFundador ? 'founder_assigned' : isParceria ? 'partner_assigned' : targetPlan === 'free' ? 'downgraded' : 'upgraded',
         amount: 0,
       });
 
       return NextResponse.json({
         success: true,
-        message: isParceria
+        message: isFundador
+          ? 'Cliente definido como Membro Fundador com acesso total liberado!'
+          : isParceria
           ? 'Cliente definido como Parceiro da Agência com acesso total liberado!'
           : `Plano atualizado para ${targetPlan}`
       }, { headers: corsHeaders });
@@ -595,7 +601,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, message: 'Acesso desbloqueado com sucesso!' }, { headers: corsHeaders });
     }
 
-    // 9. Excluir Usuário Completo
+    // 9. Arquivar Cliente Inativo
+    if (action === 'archive') {
+      await supabase
+        .from('crm_profiles')
+        .update({
+          subscription_status: 'archived',
+        })
+        .eq('id', user_id);
+
+      return NextResponse.json({ success: true, message: 'Cliente arquivado com sucesso!' }, { headers: corsHeaders });
+    }
+
+    // 10. Desarquivar Cliente
+    if (action === 'unarchive') {
+      const targetPlan = body.plan_id || 'free';
+      await supabase
+        .from('crm_profiles')
+        .update({
+          subscription_status: targetPlan === 'free' ? 'free' : 'active',
+        })
+        .eq('id', user_id);
+
+      return NextResponse.json({ success: true, message: 'Cliente desarquivado e restaurado com sucesso!' }, { headers: corsHeaders });
+    }
+
+    // 11. Excluir Usuário Completo
     if (action === 'delete_user') {
       // Deleta de tabelas do CRM
       await supabase.from('crm_subscription_history').delete().eq('user_id', user_id);

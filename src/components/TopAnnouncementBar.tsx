@@ -19,9 +19,9 @@ export default function TopAnnouncementBar({ initialConfig }: TopAnnouncementBar
   const [config, setConfig] = useState(initialConfig || {
     active: true,
     badgeText: '■ Black Friday Sale',
-    headline: 'Garanta 50% de Desconto',
+    headline: 'Garanta 35% de Desconto no Plano Anual',
     buttonText: 'Aproveitar Agora →',
-    buttonLink: '/crm',
+    buttonLink: 'https://crm.infinityondemand.com.br/configuracoes?tab=company&section=subscription&billing=annual',
     termsText: '*Termos & Condições aplicáveis',
     displayTarget: 'all',
     theme: 'honey_purple',
