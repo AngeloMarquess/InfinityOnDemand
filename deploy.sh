@@ -16,6 +16,8 @@ npm run build
 echo "📦 [2/3] Atualizando e compilando o CRM Infinity..."
 if [ -d "/var/www/crm-repo" ]; then
   cd /var/www/crm-repo
+  # Garante uso do host com a chave correta crm_infinity
+  git config remote.origin.url git@github.com-crm:AngeloMarquess/CRM-InfinityonDemand.git || true
   git fetch origin main
   git reset --hard origin/main
   git pull origin main
