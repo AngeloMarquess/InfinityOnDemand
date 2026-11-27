@@ -1,6 +1,9 @@
 {
   "locale": "pt",
   "header": {
+    "servicos": "Serviços",
+    "plataformas": "Plataformas & SaaS",
+    "branding": "Branding & Design",
     "sobre": "Sobre",
     "labs": "Labs",
     "consultoria": "Consultoria",

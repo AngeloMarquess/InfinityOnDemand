@@ -1,0 +1,17 @@
+<svg width="600" height="150" viewBox="0 0 600 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="inf-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stopColor="#00DF81" />
+      <stop offset="100%" stopColor="#00AAFF" />
+    </linearGradient>
+    <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <path d="M 100 45 C 50 45 35 75 35 75 C 35 75 50 105 100 105 C 150 105 180 45 230 45 C 280 45 295 75 295 75 C 295 75 280 105 230 105 C 180 105 150 45 100 45 Z" stroke="url(#inf-grad)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow)"/>
+  
+  <text x="330" y="85" fill="url(#inf-grad)" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="56" letter-spacing="2">INFINITY</text>
+  <text x="334" y="112" fill="#F8FAFC" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="22" letter-spacing="1">ONDEMAND</text>
+</svg>

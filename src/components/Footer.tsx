@@ -73,6 +73,7 @@ export default function Footer({ dict, locale }: { dict?: any; locale?: string }
           <div>
             <h4 style={{ fontWeight: 700, marginBottom: "20px", fontSize: "15px", color: "var(--text-primary)" }}>{t.solucoes}</h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "12px", fontSize: "14px" }}>
+              <li><Link href={`${prefix}/branding`} className="text-secondary" style={{ transition: "color 0.2s", color: "#00DF81", fontWeight: 700 }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = "#00DF81"}>Branding & Identidade Visual ✨</Link></li>
               <li><Link href={`${prefix}/ecommerce`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>E-commerce Customizado</Link></li>
               <li><a href="https://crm.infinityondemand.com.br/" target="_blank" rel="noopener noreferrer" className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Infinity CRM</a></li>
               <li><Link href={`${prefix}/delivery`} className="text-secondary" style={{ transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"} onMouseOut={(e) => e.currentTarget.style.color = ""}>Infinity Delivery SaaS</Link></li>
