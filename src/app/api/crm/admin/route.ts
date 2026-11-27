@@ -258,6 +258,7 @@ export async function GET(request: Request) {
             tasks: tasks.count || 0,
           },
           last_activity: profile.updated_at || profile.created_at,
+          last_sign_in_at: authUser?.last_sign_in_at || null,
         };
       })
     );
@@ -516,12 +517,14 @@ export async function POST(request: Request) {
       const targetPlan = body.plan_id;
       const isParceria = targetPlan === 'parceria' || targetPlan === 'partner';
       const isFundador = targetPlan === 'fundador' || targetPlan === 'founder' || targetPlan === 'membro_fundador';
+      const isWhiteLabel = targetPlan === 'whitelabel' || targetPlan === 'revenda';
       await supabase
         .from('crm_profiles')
         .update({
           plan_id: targetPlan,
+          is_reseller: isWhiteLabel ? true : undefined,
           subscription_status: targetPlan === 'free' ? 'free' : 'active',
-          subscription_expires_at: (targetPlan === 'free' || isParceria || isFundador) ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          subscription_expires_at: (targetPlan === 'free' || isParceria || isFundador || isWhiteLabel) ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         })
         .eq('id', user_id);
 
