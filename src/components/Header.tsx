@@ -92,7 +92,13 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
         {/* Brand Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
           <Link href={prefix || '/'} style={{ display: "flex", alignItems: "center", minWidth: 0 }}>
-            <img src="/logo-infinity.png" alt="Infinity OnDemand" style={{ height: "40px", width: "auto" }} />
+            <img 
+              src="/logo-infinity.png" 
+              alt="Infinity OnDemand" 
+              style={{ height: "58px", width: "auto", objectFit: "contain", transition: "transform 0.2s" }} 
+              onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.04)"}
+              onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+            />
           </Link>
         </div>
 
@@ -574,31 +580,58 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
             )}
           </div>
 
-          {/* ========== DIRECT LINKS: ACADEMY & SOBRE ========== */}
-          <Link 
-            href={`${prefix}/academy`} 
+          {/* ========== DIRECT LINKS: CRM, ANALYTICS & BI, ACADEMY ========== */}
+          <a 
+            href="https://crm.infinityondemand.com.br/" 
+            target="_blank" 
+            rel="noopener noreferrer"
             style={{ 
-              padding: "8px 14px", 
-              borderRadius: "8px", 
-              color: "#00DF81", 
-              fontWeight: 700,
-              fontSize: "14px"
-            }}
-          >
-            {academyLabel}
-          </Link>
-
-          <Link 
-            href={`${prefix}/sobre`} 
-            style={{ 
-              padding: "8px 14px", 
+              padding: "8px 12px", 
               borderRadius: "8px", 
               color: "var(--text-primary)", 
               fontWeight: 600,
-              fontSize: "14px"
+              fontSize: "14px",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              textDecoration: "none",
+              transition: "color 0.2s"
+            }}
+            onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"}
+            onMouseOut={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+          >
+            <span>CRM</span>
+          </a>
+
+          <Link 
+            href="/relatorios_infinity" 
+            style={{ 
+              padding: "8px 12px", 
+              borderRadius: "8px", 
+              color: "var(--text-primary)", 
+              fontWeight: 600,
+              fontSize: "14px",
+              textDecoration: "none",
+              transition: "color 0.2s"
+            }}
+            onMouseOver={(e) => e.currentTarget.style.color = "#00DF81"}
+            onMouseOut={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+          >
+            Analytics & BI
+          </Link>
+
+          <Link 
+            href={`${prefix}/academy`} 
+            style={{ 
+              padding: "8px 12px", 
+              borderRadius: "8px", 
+              color: "#00DF81", 
+              fontWeight: 700,
+              fontSize: "14px",
+              textDecoration: "none"
             }}
           >
-            {t.sobre || 'Sobre'}
+            {academyLabel}
           </Link>
 
           {/* Language Switcher */}
@@ -664,7 +697,7 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
         {/* Top bar: Logo + Close button */}
         <div className="mobile-menu-topbar">
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <img src="/logo-infinity.png" alt="Infinity OnDemand" style={{ height: "40px", width: "auto" }} />
+            <img src="/logo-infinity.png" alt="Infinity OnDemand" style={{ height: "50px", width: "auto", objectFit: "contain" }} />
           </div>
 
           {/* Close X button */}
@@ -794,8 +827,21 @@ export default function Header({ dict, locale }: { dict?: any; locale?: string }
             )}
           </div>
 
-          <Link href={`${prefix}/academy`} onClick={closeMenu} style={{ color: "#00DF81", fontWeight: 700 }}>{academyLabel}</Link>
-          <Link href={`${prefix}/sobre`} onClick={closeMenu}>{t.sobre || 'Sobre'}</Link>
+          <a 
+            href="https://crm.infinityondemand.com.br/" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            onClick={closeMenu}
+            style={{ color: "var(--text-primary)", fontWeight: 600 }}
+          >
+            CRM ↗
+          </a>
+          <Link href="/relatorios_infinity" onClick={closeMenu} style={{ color: "var(--text-primary)", fontWeight: 600 }}>
+            Analytics & BI
+          </Link>
+          <Link href={`${prefix}/academy`} onClick={closeMenu} style={{ color: "#00DF81", fontWeight: 700 }}>
+            {academyLabel}
+          </Link>
 
           <a
             href="https://helpdesk.infinityondemand.com.br/cliente/login"
